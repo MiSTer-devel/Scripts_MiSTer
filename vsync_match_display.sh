@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Copyright 2018-2019 Alessandro "Locutus73" Miele
+# Copyright 2019 Alessandro "Locutus73" Miele
 
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
