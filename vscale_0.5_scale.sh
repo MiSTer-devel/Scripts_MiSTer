@@ -18,8 +18,19 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
-# Version 1.0 - 2019-01-07 - First commit
+# Version 1.1 - 2019-01-08 - MiSTer.ini downloaded from GitHub if missing.
+# Version 1.0 - 2019-01-07 - First commit.
 
+if [ ! -f "/media/fat/config/MiSTer.ini" ]
+then
+	echo "Downloading MiSTer.ini"
+	if ! curl -kL "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "/media/fat/config/MiSTer.ini"
+	then
+		echo "Unable to download"
+		echo "MiSTer.ini"
+		exit 1
+	fi
+fi
 cp /media/fat/config/MiSTer.ini /media/fat/config/MiSTer.ini.bak
 VSCALE_VALUE=2
 sed -i "1,/vscale_mode=[0-9]/{s/vscale_mode=[0-9]/vscale_mode=$VSCALE_VALUE/}" /media/fat/config/MiSTer.ini
