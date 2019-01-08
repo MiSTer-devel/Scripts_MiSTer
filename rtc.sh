@@ -38,7 +38,7 @@ then
 	then
 		echo "RTC set."
 	else
-		echo "Unable to set the RTC"
+		echo "Unable to set the RTC."
 	fi
 else
 	echo "Unable to sync."
