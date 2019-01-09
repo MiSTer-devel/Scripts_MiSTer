@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.1 - 2019-01-09 - Fixed regular expression for not matching commented parameters.
 # Version 1.0 - 2019-01-08 - First commit.
 
 if [ ! -f "/media/fat/config/MiSTer.ini" ]
@@ -32,7 +33,7 @@ then
 fi
 cp /media/fat/config/MiSTer.ini /media/fat/config/MiSTer.ini.bak
 DATECODE_VALUE=1
-sed -i "1,/rbf_hide_datecode=[0-9]/{s/rbf_hide_datecode=[0-9]/rbf_hide_datecode=$DATECODE_VALUE/}" /media/fat/config/MiSTer.ini
+sed -i "1,/^\s*rbf_hide_datecode=[0-9]*/{s/^\s*rbf_hide_datecode=[0-9]*/rbf_hide_datecode=$DATECODE_VALUE/}" /media/fat/config/MiSTer.ini
 echo "rbf_hide_datecode=$DATECODE_VALUE"
 reboot now
 exit 0

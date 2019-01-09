@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.1 - 2019-01-09 - Fixed regular expression for not matching commented parameters.
 # Version 1.0 - 2019-01-08 - First commit.
 
 if [ ! -f "/media/fat/config/MiSTer.ini" ]
@@ -32,7 +33,7 @@ then
 fi
 cp /media/fat/config/MiSTer.ini /media/fat/config/MiSTer.ini.bak
 VGA_SCALER_VALUE=0
-sed -i "1,/vga_scaler=[0-9]/{s/vga_scaler=[0-9]/vga_scaler=$VGA_SCALER_VALUE/}" /media/fat/config/MiSTer.ini
+sed -i "1,/^\s*vga_scaler=[0-9]*/{s/^\s*vga_scaler=[0-9]*/vga_scaler=$VGA_SCALER_VALUE/}" /media/fat/config/MiSTer.ini
 echo "vga_scaler=$VGA_SCALER_VALUE"
 reboot now
 exit 0

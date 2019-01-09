@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.1 - 2019-01-09 - Fixed regular expression for not matching commented parameters.
 # Version 1.0 - 2019-01-08 - First commit.
 
 if [ ! -f "/media/fat/config/MiSTer.ini" ]
@@ -32,7 +33,7 @@ then
 fi
 cp /media/fat/config/MiSTer.ini /media/fat/config/MiSTer.ini.bak
 VIDEO_INFO_VALUE=10
-sed -i "1,/video_info=[0-9]/{s/video_info=[0-9]/video_info=$VIDEO_INFO_VALUE/}" /media/fat/config/MiSTer.ini
+sed -i "1,/^\*svideo_info=[0-9]*/{s/^\s*video_info=[0-9]*/video_info=$VIDEO_INFO_VALUE/}" /media/fat/config/MiSTer.ini
 echo "video_info=$VIDEO_INFO_VALUE"
 reboot now
 exit 0
