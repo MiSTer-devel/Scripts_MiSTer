@@ -18,23 +18,11 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 2.0 - 2019-01-14 - Using change_ini_property.sh.inc
 # Version 1.1.1 - 2019-01-09 - Fixed regular expression for not matching commented parameters.
 # Version 1.1 - 2019-01-08 - MiSTer.ini downloaded from GitHub if missing.
 # Version 1.0 - 2019-01-07 - First commit.
 
-if [ ! -f "/media/fat/config/MiSTer.ini" ]
-then
-	echo "Downloading MiSTer.ini"
-	if ! curl -kL "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "/media/fat/config/MiSTer.ini"
-	then
-		echo "Unable to download"
-		echo "MiSTer.ini"
-		exit 1
-	fi
-fi
-cp /media/fat/config/MiSTer.ini /media/fat/config/MiSTer.ini.bak
-VSCALE_VALUE=1
-sed -i "1,/^\s*vscale_mode=[0-9]*/{s/^\s*vscale_mode=[0-9]*/vscale_mode=$VSCALE_VALUE/}" /media/fat/config/MiSTer.ini
-echo "vscale_mode=$VSCALE_VALUE"
-reboot now
-exit 0
+PROPERTY_NAME="vscale_mode"
+PROPERTY_VALUE="1"
+source "$(dirname $(readlink -f $0))/change_ini_property.sh.inc"
