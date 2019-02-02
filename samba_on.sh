@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1 - 2019-02-02 - Remounting / as RW before altering /etc/init.d/ so the script actually works from OSD.
 # Version 1.0 - 2019-02-02 - First commit
 
 
@@ -29,7 +30,10 @@ then
 	exit 1
 fi
 
+mount / -o remount,rw
 mv /etc/init.d/_S91smb /etc/init.d/S91smb > /dev/null 2>&1
+sync
+mount / -o remount,ro
 if [ -f /media/fat/linux/iptables.up.rules ]
 then
 	sed -e '/--dport 137 /s/^#//g' -i /media/fat/linux/iptables.up.rules

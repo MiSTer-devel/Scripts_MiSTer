@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1 - 2019-02-02 - Remounting / as RW before altering /etc/init.d/ so the script actually works from OSD.
 # Version 1.0 - 2019-02-02 - First commit
 
 
@@ -30,8 +31,10 @@ then
 fi
 
 echo "*filter"$'\n'"COMMIT" | iptables-restore
+mount / -o remount,rw
 rm /etc/network/if-pre-up.d/iptables  > /dev/null 2>&1
 sync
+mount / -o remount,ro
 
 echo "Firewall is off and"
 echo "inactive at startup."
