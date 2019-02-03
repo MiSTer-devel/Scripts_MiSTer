@@ -18,7 +18,8 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
-# Version 1.1 - 2019-02-02 - Remounting / as RW before altering /etc/init.d/ so the script actually works from OSD.
+# Version 1.0.2 - 2019-02-03 - Remounting / as RW only when needed; downgraded version from 1.1 to 1.0.2.
+# Version 1.0.1 - 2019-02-02 - Remounting / as RW before altering /etc/init.d/ so the script actually works from OSD.
 # Version 1.0 - 2019-02-02 - First commit
 
 
@@ -103,11 +104,12 @@ then
 	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"COMMIT"
 	echo "$IPTABLES_UP_RULES" > /media/fat/linux/iptables.up.rules
 fi
-mount / -o remount,rw
+mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
+[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
 echo "#!/bin/bash"$'\n'"iptables-restore < /media/fat/linux/iptables.up.rules" > /etc/network/if-pre-up.d/iptables
 chmod +x /etc/network/if-pre-up.d/iptables
 sync
-mount / -o remount,ro
+[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
 /etc/network/if-pre-up.d/iptables
 
 echo "Firewall is on and"
