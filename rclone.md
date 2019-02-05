@@ -51,10 +51,10 @@ In the first three cases a browser window will appear requiring to complete the 
 ## Copy rclone.conf to MiSTer
 1. At this point, if the authentication process was successful, you will have a *rclone.conf* file in your current directory (the one where you extracted the rclone binary).
 2. Please copy *rclone.conf* to your MiSTer in the same directory where the rclone scripts are (usually */media/fat/#Scripts*) using the method you prefer, i.e.
-  * FTP
-  * SCP
-  * Samba share
-  * Copying directly the file with a SD adapter
+     * FTP
+     * SCP
+     * Samba share
+     * Copying directly the file with a SD adapter
 
 ## Enjoy the rclone scripts
 1. Use *rclone_config_download.sh*, *rclone_config_upload.sh*, *rclone_saves_download.sh* and *rclone_saves_upload.sh* either through the OSD Script menu (hit F12 while running MiSTer main menu) or manually launching them in a SSH session.
