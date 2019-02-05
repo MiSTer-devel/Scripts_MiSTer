@@ -1,5 +1,5 @@
 # MiSTer rclone configuration guide
-These instructions will guide you through the process of creating a rclone.conf configuration file needed by MiSTer rclone_config_download.sh, rclone_config_upload.sh, rclone_saves_download.sh and rclone_saves_upload.sh. These scripts let you upload and download saves or config directory to the cloud storages supported by rclone:
+These instructions will guide you through the process of creating a *rclone.conf* configuration file needed by MiSTer *rclone_config_download.sh*, *rclone_config_upload.sh*, *rclone_saves_download.sh* and *rclone_saves_upload.sh*. These scripts let you upload and download saves or config directory to the cloud storages supported by rclone:
 * Amazon Drive
 * Amazon S3 Compliant Storage Providers (AWS, Ceph, Dreamhost, IBM COS, Minio)
 * Backblaze B2
@@ -57,4 +57,4 @@ In the first three cases a browser window will appear requiring to complete the 
   * Copying directly the file with a SD adapter
 
 ## Enjoy the rclone scripts
-1. Use rclone_config_download.sh, rclone_config_upload.sh, rclone_saves_download.sh and rclone_saves_upload.sh either through the OSD Script menu (hit F12 while running MiSTer main menu) or manually launching them in a SSH session.
+1. Use *rclone_config_download.sh*, *rclone_config_upload.sh*, *rclone_saves_download.sh* and *rclone_saves_upload.sh* either through the OSD Script menu (hit F12 while running MiSTer main menu) or manually launching them in a SSH session.
