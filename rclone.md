@@ -1,3 +1,4 @@
+# MiSTer rclone configuration guide
 These instructions will guide you through the process of creating a rclone.conf configuration file needed by MiSTer rclone_config_download.sh, rclone_config_upload.sh, rclone_saves_download.sh and rclone_saves_upload.sh. These scripts let you upload and download saves or config directory to the cloud storages supported by rclone:
 * Amazon Drive
 * Amazon S3 Compliant Storage Providers (AWS, Ceph, Dreamhost, IBM COS, Minio)
