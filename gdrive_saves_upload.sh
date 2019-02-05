@@ -18,9 +18,12 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.1 - 2019-02-05 - Changed the way the include file is loaded.
 # Version 1.0 - 2019-02-02 - First commit
 
 
+
+SCRIPT_PATH="$(realpath "$0")"
 
 GDRIVE_URL="https://github.com/odeke-em/drive"
 GDRIVE_COMMAND="gdrive"
@@ -28,4 +31,4 @@ GDRIVE_OPTIONS="push -exclude-ops delete -ignore-conflict -no-prompt"
 BASE_PATH="/media/fat"
 SYNC_PATH="$BASE_PATH/saves"
 
-source "$(dirname $(readlink -f $0))/gdrive.sh.inc"
+source "$(dirname "$SCRIPT_PATH")/gdrive.sh.inc"
