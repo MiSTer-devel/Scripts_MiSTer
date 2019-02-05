@@ -46,7 +46,8 @@ These instructions will guide you through the process of creating a *rclone.conf
     * for other cloud storages
       * on Windows launch *type nul > ".\rclone.conf" && .\rclone config --config=".\rclone.conf"*
       * on OSX/Linux launch *echo -n "" > "./rclone.conf" && ./rclone config --config="./rclone.conf"*
-In the first three cases a browser window will appear requiring to complete the authentication process. In the last one, please follow the detailed instructions listed here https://rclone.org/docs/; please always use *MiSTer* as remote name.
+
+     In the first three cases a browser window will appear requiring to complete the authentication process. In the last one, please follow the detailed instructions listed here https://rclone.org/docs/; please always use *MiSTer* as remote name.
 
 ## Copy rclone.conf to MiSTer
 1. At this point, if the authentication process was successful, you will have a *rclone.conf* file in your current directory (the one where you extracted the rclone binary).
