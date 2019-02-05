@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.3 - 2019-02-05 - Cosmetic changes.
 # Version 1.0.2 - 2019-02-03 - Remounting / as RW only when needed; downgraded version from 1.1 to 1.0.2.
 # Version 1.0.1 - 2019-02-02 - Remounting / as RW before altering /etc/init.d/ so the script actually works from OSD.
 # Version 1.0 - 2019-02-02 - First commit
@@ -63,6 +64,9 @@ then
 		IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"#-A INPUT -p tcp -m state --state NEW --dport 22 -j ACCEPT"
 	fi
 	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'""
+	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"# Now you should read up on iptables rules and consider whether ssh access"
+	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"# for everyone is really desired. Most likely you will only allow access from certain IPs."
+	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'""
 	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"# Allows FTP connections"
 	if [ -f /etc/init.d/S50proftpd ]
 	then
@@ -84,9 +88,6 @@ then
 		IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"#-A INPUT -p tcp -m state --state NEW --dport 139 -j ACCEPT"
 		IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"#-A INPUT -p tcp -m state --state NEW --dport 445 -j ACCEPT"
 	fi
-	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'""
-	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"# Now you should read up on iptables rules and consider whether ssh access"
-	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"# for everyone is really desired. Most likely you will only allow access from certain IPs."
 	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'""
 	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"# Allow ping"
 	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"#  note that blocking other types of icmp packets is considered a bad idea by some"
