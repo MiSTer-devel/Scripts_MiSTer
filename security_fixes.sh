@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1 - 2019-02-06 - Checking current Kernel release is 4.5.0-socfpga-r1 before updating it for firewalling/iptables support.
 # Version 1.0.1 - 2019-02-05 - Cosmetic changes.
 # Version 1.0 - 2019-02-02 - First commit
 
@@ -244,34 +245,36 @@ then
 				echo ""
 				case "$REPLY" in
 					y|Y)
-					
-					
-					curl -L "https://github.com/MiSTer-devel/Scripts_MiSTer/blob/master/firewall-kernel/zImage_dtb?raw=true" -o "/media/fat/linux/zImage_dtb.new"
-					case $? in
-						0)
-							if md5sum /media/fat/linux/zImage_dtb.new | grep -q "^e8a1be0c17a0b6487f6291e5320fd410 "
-							then
-								mv /media/fat/linux/zImage_dtb /media/fat/linux/zImage_dtb.old
-								mv /media/fat/linux/zImage_dtb.new /media/fat/linux/zImage_dtb
-								sync
-								FIREWALL_KERNEL="true"
-							else
-								rm /media/fat/linux/zImage_dtb.new > /dev/null 2>&1
-								echo "Something went wrong with the Kernel download so it was deleted."
-							fi
-							;;
-						60)
-							echo "==============================================================="
-							echo "CA certificates need to be fixed before downloading the Kernel."
-							echo "Please run this script again to fix this."
-							echo "==============================================================="
-							;;
-						*)
-							rm /media/fat/linux/zImage_dtb.new > /dev/null 2>&1
-							echo "No Internet connection, please try again later."
-							;;
-					esac
-					
+						if [ "$(uname -r)" == "4.5.0-socfpga-r1" ]
+						then
+							curl -L "https://github.com/MiSTer-devel/Scripts_MiSTer/blob/master/firewall-kernel/zImage_dtb?raw=true" -o "/media/fat/linux/zImage_dtb.new"
+							case $? in
+								0)
+									if md5sum /media/fat/linux/zImage_dtb.new | grep -q "^e8a1be0c17a0b6487f6291e5320fd410 "
+									then
+										mv /media/fat/linux/zImage_dtb /media/fat/linux/zImage_dtb.old
+										mv /media/fat/linux/zImage_dtb.new /media/fat/linux/zImage_dtb
+										sync
+										FIREWALL_KERNEL="true"
+									else
+										rm /media/fat/linux/zImage_dtb.new > /dev/null 2>&1
+										echo "Something went wrong with the Kernel download so it was deleted."
+									fi
+									;;
+								60)
+									echo "==============================================================="
+									echo "CA certificates need to be fixed before downloading the Kernel."
+									echo "Please run this script again to fix this."
+									echo "==============================================================="
+									;;
+								*)
+									rm /media/fat/linux/zImage_dtb.new > /dev/null 2>&1
+									echo "No Internet connection, please try again later."
+									;;
+							esac
+						else
+							echo "Current Kernel release is $(uname -r), only 4.5.0-socfpga-r1 is supported for now."
+						fi
 						;;
 					*)
 						echo "You can't enable the Firewall withouth a Kernel supporting it."
