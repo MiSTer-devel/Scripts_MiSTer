@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2.1 - 2019-02-06 - Refined the check for standard root password.
 # Version 1.2 - 2019-02-06 - Added security fix for Samba minimum allowed protocol.
 # Version 1.1.1 - 2019-02-06 - Changed the name of the repository Kernel file to zImage_dtb_socfpga-4.5.
 # Version 1.1 - 2019-02-06 - Checking current Kernel release is 4.5.0-socfpga-r1 before updating it for firewalling/iptables support.
@@ -47,7 +48,7 @@ if (( $EUID != 0 )); then
     exit 3
 fi
 
-if [ "$(cat /etc/shadow | grep -o "^root:[^:]*" | md5sum)" == "9104842aa3318a956e51a081d052d2ee  -" ]
+if cat /etc/shadow | grep -o "^root:[^:]*" | md5sum | grep -q "\(^9104842aa3318a956e51a081d052d2ee \)\|\(^18de777543175ec29c71ebf177590199 \)"
 then
 	echo "root password is the original one from"
 	echo "the SD-Installer; it should be changed."
