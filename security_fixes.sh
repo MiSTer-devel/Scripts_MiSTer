@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2 - 2019-02-06 - Added security fix for Samba minimum allowed protocol.
 # Version 1.1.1 - 2019-02-06 - Changed the name of the repository Kernel file to zImage_dtb_socfpga-4.5.
 # Version 1.1 - 2019-02-06 - Checking current Kernel release is 4.5.0-socfpga-r1 before updating it for firewalling/iptables support.
 # Version 1.0.1 - 2019-02-05 - Cosmetic changes.
@@ -224,6 +225,28 @@ then
 	esac
 else
 	echo "Samba daemon is correctly inactive at startup."
+fi
+
+echo ""
+if ! cat /etc/samba/smb.conf | grep -q "min protocol"
+then
+	echo "Samba minimum allowed protocol isn't configured;"
+	echo "it should be configured at least for SMB2".
+	read -p "Do you want me to fix it?? [y|n]" -n 1 -r
+	echo ""
+	case "$REPLY" in
+		y|Y)
+			sed '/\[global\]/a\\n   min protocol = SMB2\n' -i /etc/samba/smb.conf
+			sync
+			echo "Now Samba is configured with \"min protocol = SMB2\"."
+			;;
+		*)
+			;;
+	esac
+else
+	echo "Samba minimum allowed protocol is already configured."
+	cat /etc/samba/smb.conf | grep "min protocol"
+	echo "Please be sure it's at least SMB2."
 fi
 
 echo ""
