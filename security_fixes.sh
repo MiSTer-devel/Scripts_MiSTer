@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.1 - 2019-02-06 - Changed the name of the repository Kernel file to zImage_dtb_socfpga-4.5.
 # Version 1.1 - 2019-02-06 - Checking current Kernel release is 4.5.0-socfpga-r1 before updating it for firewalling/iptables support.
 # Version 1.0.1 - 2019-02-05 - Cosmetic changes.
 # Version 1.0 - 2019-02-02 - First commit
@@ -247,7 +248,7 @@ then
 					y|Y)
 						if [ "$(uname -r)" == "4.5.0-socfpga-r1" ]
 						then
-							curl -L "https://github.com/MiSTer-devel/Scripts_MiSTer/blob/master/firewall-kernel/zImage_dtb?raw=true" -o "/media/fat/linux/zImage_dtb.new"
+							curl -L "https://github.com/MiSTer-devel/Scripts_MiSTer/blob/master/firewall-kernel/zImage_dtb_socfpga-4.5?raw=true" -o "/media/fat/linux/zImage_dtb.new"
 							case $? in
 								0)
 									if md5sum /media/fat/linux/zImage_dtb.new | grep -q "^e8a1be0c17a0b6487f6291e5320fd410 "
