@@ -18,13 +18,14 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2 - 2019-03-02 - Changed "/media/fat/timezone" to "/media/fat/linux/timezone", removed -k option from curl.
 # Version 1.1 - 2019-01-08 - Changed "http://ip-api.com/json/" to "http://www.ip-api.com/json/".
 # Version 1.0 - 2019-01-08 - First commit.
 
-TIMEZONE="$(curl -ksLf "http://www.ip-api.com/json/" | grep -o "\"timezone\" *: *\"[^\"]*" | grep -o "[^\"]*$")"
+TIMEZONE="$(curl -sLf "http://www.ip-api.com/json/" | grep -o "\"timezone\" *: *\"[^\"]*" | grep -o "[^\"]*$")"
 if echo "$TIMEZONE" | grep -q "/"
 then
-	cp "/usr/share/zoneinfo/posix/$TIMEZONE" "/media/fat/timezone"
+	cp "/usr/share/zoneinfo/posix/$TIMEZONE" "/media/fat/linux/timezone"
 	echo "Timezone set to"
 	echo "$TIMEZONE."
 else
