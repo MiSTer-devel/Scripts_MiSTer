@@ -16,13 +16,14 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.1 - 2019-03-03 - Corrected a bug in MiSTer.ini download.
 # Version 1.1 - 2019-02-09 - Support for video_mode_ntsc and video_mode_pal; the script tries to download MiSTer.ini (when needed) using SSL certificate verification; corrected a regular expression bug.
 # Version 1.0 - 2019-01-14 - First commit.
 
 if [ ! -f "/media/fat/config/MiSTer.ini" ]
 then
 	echo "Downloading MiSTer.ini"
-	curl -k "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "/media/fat/config/MiSTer.ini"
+	curl -L "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "/media/fat/config/MiSTer.ini"
 	case $? in
 		0)
 			;;
