@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2.2 - 2019-04-03 - Updated openssl deb package URL.
 # Version 1.2.1 - 2019-02-06 - Refined the check for standard root password.
 # Version 1.2 - 2019-02-06 - Added security fix for Samba minimum allowed protocol.
 # Version 1.1.1 - 2019-02-06 - Changed the name of the repository Kernel file to zImage_dtb_socfpga-4.5.
@@ -97,9 +98,9 @@ case $? in
 				if ! which "openssl" &>/dev/null
 				then
 					echo "Downloading openssl"
-					curl http://security-cdn.debian.org/debian-security/pool/updates/main/o/openssl/openssl_1.0.1t-1+deb8u10_armhf.deb -o /tmp/openssl_1.0.1t-1+deb8u10_armhf.deb
-					ar p /tmp/openssl_1.0.1t-1+deb8u10_armhf.deb data.tar.xz | tar xJ --strip-components=3 -C "/media/fat/linux" ./usr/bin/openssl
-					rm /tmp/openssl_1.0.1t-1+deb8u10_armhf.deb
+					curl http://security-cdn.debian.org/debian-security/pool/updates/main/o/openssl/openssl_1.0.1t-1+deb8u11_armhf.deb -o /tmp/openssl_1.0.1t-1+deb8u11_armhf.deb
+					ar p /tmp/openssl_1.0.1t-1+deb8u11_armhf.deb data.tar.xz | tar xJ --strip-components=3 -C "/media/fat/linux" ./usr/bin/openssl
+					rm /tmp/openssl_1.0.1t-1+deb8u11_armhf.deb
 				fi
 				echo "Downloading and processing https://curl.haxx.se/ca/cacert.pem into /etc/ssl/certs;"
 				echo "this may take some time..."
