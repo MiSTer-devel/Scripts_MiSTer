@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2.3 - 2019-04-04 - Refined the check for standard root password.
 # Version 1.2.2 - 2019-04-03 - Updated openssl deb package URL.
 # Version 1.2.1 - 2019-02-06 - Refined the check for standard root password.
 # Version 1.2 - 2019-02-06 - Added security fix for Samba minimum allowed protocol.
@@ -49,7 +50,7 @@ if (( $EUID != 0 )); then
     exit 3
 fi
 
-if cat /etc/shadow | grep -o "^root:[^:]*" | md5sum | grep -q "\(^9104842aa3318a956e51a081d052d2ee \)\|\(^18de777543175ec29c71ebf177590199 \)"
+if cat /etc/shadow | grep -o "^root:[^:]*" | md5sum | grep -q "\(^9104842aa3318a956e51a081d052d2ee \)\|\(^18de777543175ec29c71ebf177590199 \)\|\(^b136a9bff6f6f09feb2f30e12be37e22 \)"
 then
 	echo "root password is the original one from"
 	echo "the SD-Installer; it should be changed."
