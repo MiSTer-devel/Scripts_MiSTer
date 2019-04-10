@@ -39,7 +39,7 @@ then
 	echo "on a MiSTer system."
 	exit 1
 fi
-if [ "$(tty)" == "not a tty" ]
+if [[ ! (-t 0 && -t 1 && -t 2) ]]
 then
 	echo "This script must be run"
 	echo "from a SSH/UART terminal"
