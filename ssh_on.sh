@@ -36,11 +36,12 @@ mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
 mv /etc/init.d/_S50sshd /etc/init.d/S50sshd > /dev/null 2>&1
 sync
 [ "$RO_ROOT" == "true" ] && mount / -o remount,ro
-if [ -f /media/fat/linux/iptables.up.rules ]
-then
-	sed -e '/--dport 22 /s/^#//g' -i /media/fat/linux/iptables.up.rules
-fi
+
+# start listening port 22 (SSH)
+IP_FILTERING="/media/fat/linux/iptables.up.rules"
+[[ -f "${IP_FILTERING}" ]] && sed -i '/--dport 22 / s/^#//' "${IP_FILTERING}"
 sync
+
 if [ -f /etc/network/if-pre-up.d/iptables ]
 then
 	/etc/network/if-pre-up.d/iptables
