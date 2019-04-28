@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1 - 2019-04-28 - Now the script checks if a Bluetooth interface is available before launching wminput; added WAIT_FOR_BT_INTERFACE option, "true" in order to wait for the Bluetooth interface (the USB dongle) to be available, useful when using this script at boot time; now START_AT_BOOT="true" works.
 # Version 1.0 - 2019-04-27 - First commit
 
 
@@ -30,7 +31,9 @@
 #it will create start script in /etc/init.d.
 START_AT_BOOT="false"
 
-
+#"true" in order to wait for the Bluetooth interface (the USB dongle)
+#to be available; useful when using this script at boot time.
+WAIT_FOR_BT_INTERFACE="false"
 
 #========= ADVANCED OPTIONS =========
 BASE_PATH="/media/fat"
@@ -149,6 +152,7 @@ done
 STARTUP_SCRIPT="/etc/init.d/S99_$(basename ${ORIGINAL_SCRIPT_PATH%.*})"
 if [ "$START_AT_BOOT" == "true" ]
 then
+	WAIT_FOR_BT_INTERFACE="true"
 	if [ ! -f "${STARTUP_SCRIPT}" ]
 	then
 		mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
@@ -169,12 +173,28 @@ else
 	fi
 fi
 
-if ! ps | grep "[w]minput"
+if [ "${WAIT_FOR_BT_INTERFACE}" == "true" ]
 then
-	export LD_LIBRARY_PATH="${CWIID_PATH}"
-	export PYTHONPATH="${CWIID_PATH}"
-	"${CWIID_PATH}/wminput" --daemon --config "${CWIID_PATH}/${CWIID_CONFIG}" &
-	echo "cwiid's wminput started"
+	echo "Waiting for a"
+	echo "Bluetooth interface..."
+	until hcitool dev | grep -q hci
+	do
+		sleep 1
+	done
+fi
+
+if ! ps | grep -q "[w]minput"
+then
+	if hcitool dev | grep -q hci
+	then
+		export LD_LIBRARY_PATH="${CWIID_PATH}"
+		export PYTHONPATH="${CWIID_PATH}"
+		"${CWIID_PATH}/wminput" --daemon --config "${CWIID_PATH}/${CWIID_CONFIG}" &
+		echo "cwiid's wminput started"
+	else
+		echo "No Bluetooth interface found!"
+		exit 3
+	fi
 else
 	echo "cwiid's wminput"
 	echo "already running"
