@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2 - 2019-05-01 - Moved the script to https://github.com/MiSTer-devel/Scripts_MiSTer/tree/master/superseded since its function is not embedded in MiSTer Linux system.
 # Version 1.1 - 2019-04-28 - Now the script checks if a Bluetooth interface is available before launching wminput; added WAIT_FOR_BT_INTERFACE option, "true" in order to wait for the Bluetooth interface (the USB dongle) to be available, useful when using this script at boot time; now START_AT_BOOT="true" works.
 # Version 1.0 - 2019-04-27 - First commit
 
@@ -39,7 +40,7 @@ WAIT_FOR_BT_INTERFACE="false"
 BASE_PATH="/media/fat"
 CWIID_PATH="${BASE_PATH}/linux/cwiid"
 MAPS_PATH="${BASE_PATH}/config"
-MISTER_CWIID_URL="https://github.com/MiSTer-devel/Scripts_MiSTer/blob/master/cwiid"
+MISTER_CWIID_URL="https://github.com/MiSTer-devel/Scripts_MiSTer/tree/master/superseded/cwiid"
 KERNEL_MODULES="uinput.ko"
 CWIID_FILES="AUTHORS|COPYING|MiSTer.config|README|acc.so|cwiid.so|ir_fps.so|ir_ptr.so|led.so|libcwiid.so.1|nunchuk_acc.so|nunchuk_kb.so|nunchuk_stick2btn.so|wminput"
 MAP_FILES="NES_input_0001_0001_v2.map|NES_input_0079_1803_v2.map|input_0001_0001_v2.map|input_0079_1802_v2.map|input_0079_1803_v2.map"
