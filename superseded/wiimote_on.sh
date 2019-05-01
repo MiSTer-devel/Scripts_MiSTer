@@ -18,7 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
-# Version 1.2 - 2019-05-01 - Moved the script to https://github.com/MiSTer-devel/Scripts_MiSTer/tree/master/superseded since its function is not embedded in MiSTer Linux system.
+# Version 1.2 - 2019-05-01 - Moved the script to https://github.com/MiSTer-devel/Scripts_MiSTer/tree/master/superseded since its function is now natively embedded in MiSTer Linux system.
 # Version 1.1 - 2019-04-28 - Now the script checks if a Bluetooth interface is available before launching wminput; added WAIT_FOR_BT_INTERFACE option, "true" in order to wait for the Bluetooth interface (the USB dongle) to be available, useful when using this script at boot time; now START_AT_BOOT="true" works.
 # Version 1.0 - 2019-04-27 - First commit
 
