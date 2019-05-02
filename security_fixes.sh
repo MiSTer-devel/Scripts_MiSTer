@@ -18,7 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
-# Version 1.2.5 - 2019-04-08 - Allow to run from any terminal, not only SSH.
+# Version 1.2.5 - 2019-05-02 - Code review by makigumo, now the script runs from any terminal, not only SSH, thank you very much.
 # Version 1.2.4 - 2019-04-08 - Refined the check for standard root password.
 # Version 1.2.3 - 2019-04-04 - Refined the check for standard root password.
 # Version 1.2.2 - 2019-04-03 - Updated openssl deb package URL.
