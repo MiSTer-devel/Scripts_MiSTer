@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.3 - 2019-05-02 - Code review by by frederic-mahe, now the script performs more compact tests and operations, thank you very much.
 # Version 1.0.2 - 2019-02-03 - Remounting / as RW only when needed; downgraded version from 1.1 to 1.0.2.
 # Version 1.0.1 - 2019-02-02 - Remounting / as RW before altering /etc/init.d/ so the script actually works from OSD.
 # Version 1.0 - 2019-02-02 - First commit
