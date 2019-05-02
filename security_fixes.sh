@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2.5 - 2019-04-08 - Allow to run from any terminal, not only SSH.
 # Version 1.2.4 - 2019-04-08 - Refined the check for standard root password.
 # Version 1.2.3 - 2019-04-04 - Refined the check for standard root password.
 # Version 1.2.2 - 2019-04-03 - Updated openssl deb package URL.
@@ -38,10 +39,10 @@ then
 	echo "on a MiSTer system."
 	exit 1
 fi
-if [ "$SSH_CLIENT" == "" ]
+if [[ ! (-t 0 && -t 1 && -t 2) ]]
 then
 	echo "This script must be run"
-	echo "from a SSH terminal"
+	echo "from a SSH/UART terminal"
 	echo "because it will ask"
 	echo "some questions."
 	exit 2
