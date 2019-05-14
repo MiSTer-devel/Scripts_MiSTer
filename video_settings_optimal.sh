@@ -18,12 +18,13 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.1 - 2019-05-14 - Changed hdmi_audio_96k from 1 to 0
 # Version 1.0 - 2019-05-13 - First commit
 
 
 
 # ========= OPTIONS ==================
-INI_PROPERTIES="hdmi_audio_96k=1 vscale_mode=0 video_mode=8 video_info=10 vsync_adjust=2 video_mode_ntsc_pal=1"
+INI_PROPERTIES="hdmi_audio_96k=0 vscale_mode=0 video_mode=8 video_info=10 vsync_adjust=2 video_mode_ntsc_pal=1"
 AUTHOR_NAME="Locutus73"
 
 # ========= CODE STARTS HERE =========
