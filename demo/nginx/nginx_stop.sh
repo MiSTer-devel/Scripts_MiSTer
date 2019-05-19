@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer/tree/master/demo/nginx
 
+# Version 1.0.1 - 2019-05-19 - Added proper exit codes.
 # Version 1.0 - 2019-05-19 - First commit.
 
 

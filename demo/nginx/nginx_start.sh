@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer/tree/master/demo/nginx
 
+# Version 1.0.1 - 2019-05-19 - Added a prompt for opening MiSTer IP address with a web browser; added proper exit codes.
 # Version 1.0 - 2019-05-19 - First commit.
 
 
@@ -78,8 +79,13 @@ mkdir -p /tmp/nginx-logs
 if ${NGINX_PATH}/nginx -c ${NGINX_PATH}/conf/nginx.conf -g "error_log /tmp/nginx-logs/error.log;" > /dev/null 2>&1
 then
 	echo "NGINX started"
+	echo "please open"
+	echo "http://$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')"
+	echo "with your web browser"
+	exit 0
 else
 	echo "NGINX not started"
 	echo "please see"
 	echo "/tmp/nginx-logs/error.log"
+	exit 1
 fi
