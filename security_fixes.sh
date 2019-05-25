@@ -54,7 +54,7 @@ if (( $EUID != 0 )); then
     exit 3
 fi
 
-if cat /etc/shadow | grep -o "^root:[^:]*" | md5sum | grep -q "\(^9104842aa3318a956e51a081d052d2ee \)\|\(^18de777543175ec29c71ebf177590199 \)\|\(^b136a9bff6f6f09feb2f30e12be37e22 \)\|\(^beca3beae21066c49e2f11d13fe68342 \)\|\(^8fe03c31a7fcc77d0af7177bd1f84825 \)|\(^dba15e7cbfe81723120d89dba1cb6b91 \)"
+if cat /etc/shadow | grep -o "^root:[^:]*" | md5sum | grep -q "\(^9104842aa3318a956e51a081d052d2ee \)\|\(^18de777543175ec29c71ebf177590199 \)\|\(^b136a9bff6f6f09feb2f30e12be37e22 \)\|\(^beca3beae21066c49e2f11d13fe68342 \)\|\(^8fe03c31a7fcc77d0af7177bd1f84825 \)\|\(^dba15e7cbfe81723120d89dba1cb6b91 \)"
 then
 	echo "root password is the original one from"
 	echo "the SD-Installer; it should be changed."
