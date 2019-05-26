@@ -18,7 +18,8 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
-# Version 1.0.1 - 2019-05-26 - Added  Windows(CrLf)<->Unix(Lf) character handling.
+# Version 1.0.2 - 2019-05-26 - Added error checking during DEB packages downloading.
+# Version 1.0.1 - 2019-05-26 - Added Windows(CrLf)<->Unix(Lf) character handling.
 # Version 1.0 - 2019-05-26 - First commit
 
 
@@ -268,9 +269,10 @@ function installDEBS () {
 					MAX_DEB_NAME="${DEB_NAME}"
 				fi
 			done
-			
+			[ "${MAX_DEB_NAME}" == "" ] && echo "Error searching for ${DEB_PREFIX} in ${DEBS_URL}" && exit 1
 			echo "Downloading ${MAX_DEB_NAME}"
 			${CURL} "${DEBS_URL}/${MAX_DEB_NAME}" -o "${TEMP_PATH}/${MAX_DEB_NAME}"
+			[ ! -f "${TEMP_PATH}/${MAX_DEB_NAME}" ] && echo "Error: no ${TEMP_PATH}/${MAX_DEB_NAME} found." && exit 1
 			echo "Extracting ${ARCHIVE_FILES}"
 			ORIGINAL_DIR="$(pwd)"
 			cd "${TEMP_PATH}"
@@ -279,6 +281,7 @@ function installDEBS () {
 			cd "${ORIGINAL_DIR}"
 			rm "${TEMP_PATH}/${MAX_DEB_NAME}"
 			mkdir -p "${DEST_DIR}"
+			[ ! -f "${TEMP_PATH}/data.tar.xz" ] && echo "Error: no ${TEMP_PATH}/data.tar.xz found." && exit 1
 			tar -xJf "${TEMP_PATH}/data.tar.xz" --wildcards --no-anchored --strip-components="${STRIP_COMPONENTS}" -C "${DEST_DIR}" "${ARCHIVE_FILES}"
 			rm "${TEMP_PATH}/data.tar.xz" > /dev/null 2>&1
 		fi
