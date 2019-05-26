@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.1 - 2019-05-26 - Added  Windows(CrLf)<->Unix(Lf) character handling.
 # Version 1.0 - 2019-05-26 - First commit
 
 
@@ -341,7 +342,7 @@ function loadMiSTerINI {
 		echo "Downloading MiSTer.ini"
 		${CURL} "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "${MISTER_INI_FILE}"
 	fi
-	MISTER_INI_ORIGINAL="$(cat ${MISTER_INI_FILE})"
+	MISTER_INI_ORIGINAL="$(cat "${MISTER_INI_FILE}" | dos2unix)"
 	MISTER_INI="${MISTER_INI_ORIGINAL}"
 }
 
@@ -502,7 +503,7 @@ while true; do
 			${DIALOG_EXTRA})
 				# Extra=Save
 				cp "${MISTER_INI_FILE}" "${MISTER_INI_FILE}.bak"
-				echo "${MISTER_INI}" > "${MISTER_INI_FILE}"
+				echo "${MISTER_INI}" | unix2dos > "${MISTER_INI_FILE}"
 				sync
 				${DIALOG} --clear --title "MiSTer INI Settings" --defaultno --yesno "Do you want to reboot in order to apply the changes?" 0 0 && reboot now
 				break;;
