@@ -18,7 +18,8 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
-# Version 1.0.2 - 2019-05-26 - Added error checking during DEB packages downloading.
+# Version 1.0.3 - 2019-05-26 - Improved DEB packages downloading routine.
+# Version 1.0.2 - 2019-05-26 - Added error checks during DEB packages downloading.
 # Version 1.0.1 - 2019-05-26 - Added Windows(CrLf)<->Unix(Lf) character handling.
 # Version 1.0 - 2019-05-26 - First commit
 
@@ -258,11 +259,11 @@ function installDEBS () {
 		IFS="${OLD_IFS}"
 		if [ ! -f "${DEST_DIR}/$(echo $ARCHIVE_FILES | sed 's/*//g')" ]
 		then
-			DEB_NAMES=$(${CURL_SILENT} "${DEBS_URL}" | grep -oE "\"${DEB_PREFIX}[a-zA-Z0-9./_+-]*_(armhf|all)\.deb\"" | sed 's/\"//g')
+			DEB_NAMES=$(${CURL_SILENT} "${DEBS_URL}" | grep -oE "\"${DEB_PREFIX}[a-zA-Z0-9%./_+-]*_(armhf|all)\.deb\"" | sed 's/\"//g')
 			MAX_VERSION=""
 			MAX_DEB_NAME=""
 			for DEB_NAME in $DEB_NAMES; do
-				CURRENT_VERSION=$(echo "${DEB_NAME}" | grep -o '_[a-zA-Z0-9.+-]*_' | sed 's/_//g')
+				CURRENT_VERSION=$(echo "${DEB_NAME}" | grep -o '_[a-zA-Z0-9%.+-]*_' | sed 's/_//g')
 				if [[ "${CURRENT_VERSION}" > "${MAX_VERSION}" ]]
 				then
 					MAX_VERSION="${CURRENT_VERSION}"
