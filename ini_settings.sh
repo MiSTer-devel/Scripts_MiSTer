@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.7 - 2019-05-27 - Improved textual descriptions of options.
 # Version 1.0.6 - 2019-05-27 - setupCURL (so Internet connectivity check) is called only when needed; improved textual descriptions of options.
 # Version 1.0.5 - 2019-05-27 - Improved textual descriptions of options.
 # Version 1.0.4 - 2019-05-27 - Improved ini value reading: only the first instance of a key is read, so specific core settings will be ignored.
@@ -112,27 +113,27 @@ KEY_dvi_mode=(
 )
 
 KEY_vga_scaler=(
-	"Connects VGA to the scaler output"
-	"0|Off"
-	"1|On"
+	"Connects analog video output to the scaler output, changing the resolution"
+	"0|Off|Analog video will output native core resolution"
+	"1|On|Analog video output will output same resolution as HDMI port"
 )
 
 KEY_forced_scandoubler=(
-	"Forces scandoubler on VGA output, good for VGA monitors not supporting 15KHz"
-	"0|Off|15KHz VGA out for 15KHz cores, works on CRT TV sets, but may have problems with PC monitors"
-	"1|On|30KHz VGA out for 15KHz cores, good for VGA monitors not supporting 15KHz"
+	"Forces scandoubler (240p/15kHz to 480p/31kHz) on analog video output"
+	"0|Off|15KHz analog video out for 15KHz cores, works on CRT TV sets, but may have problems with PC monitors"
+	"1|On|30KHz analog video out for 15KHz cores (core dependent), good for VGA monitors not supporting 15KHz"
 )
 
 KEY_ypbpr=(
-	"Sets YPbPr on VGA output"
-	"0|Off|RGB VGA output"
-	"1|On|YPbPr VGA output"
+	"Enables component video (YPbPr) on analog video output"
+	"0|Off|RGB analog video output; please disable Sync-on-Green (SOG) switch (position further from HDMI port)"
+	"1|On|YPbPr analog video output; please enable Sync-on-Green (SOG) switch (position closest to HDMI port)"
 )
 
 KEY_composite_sync=(
-	"Sets composite sync on HSync signal of VGA output"
-	"0|Off|Normal HSync signal of VGA output"
-	"1|On|Composite sync on HSync signal of VGA output"
+	"Sets composite sync on HSync signal of analog video output; used for display compatibility"
+	"0|Off|Separate sync (RGBHV); used for VGA monitors"
+	"1|On|Composite sync (RGBS); used for most other displays including RGB CRTs, PVMs, BVMS, and upscaler devices"
 )
 
 KEY_hdmi_audio_96k=(
@@ -165,7 +166,7 @@ KEY_video_info=(
 )
 
 KEY_font=(
-	"Custom font. Put custom fonts in /media/fat/font"
+	"Custom font; put custom fonts in /media/fat/font"
 )
 
 KEY_volumectl=(
