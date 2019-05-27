@@ -99,9 +99,9 @@ KEY_vsync_adjust=(
 )
 
 KEY_hdmi_limited=(
-	"Sets HDMI RGB output to limited (16-235, full range otherwise)"
-	"0|Off|Full RGB (0-255) HDMI output"
-	"1|On|Limited RGB (16-235) HDMI output"
+	"Sets HDMI RGB output"
+	"0|Full-range|RGB Range = 0 to 255"
+	"1|Limited Range|RGB Range = 16 to 235"
 )
 
 KEY_dvi_mode=(
@@ -111,33 +111,33 @@ KEY_dvi_mode=(
 )
 
 KEY_vga_scaler=(
-	"Connects VGA to the scaler output"
-	"0|Off"
-	"1|On"
+	"Sets analog video resolution"
+	"0|Native|Analog video output will output native core resolution"
+	"1|Scaled|Analog video output will output same resolution as HDMI port"
 )
 
 KEY_forced_scandoubler=(
-	"Forces scandoubler on VGA output, good for VGA monitors not supporting 15KHz"
-	"0|Off|15KHz VGA out for 15KHz cores, works on CRT TV sets, but may have problems with PC monitors"
-	"1|On|30KHz VGA out for 15KHz cores, good for VGA monitors not supporting 15KHz"
+	"Forces scan doubler (240p/15kHz to 480p/31kHz) on analog video output"
+	"0|Off|Analog video output resolution will not be doubled"
+	"1|On|Analog video output resolution will be doubled (core dependent)"
 )
 
 KEY_ypbpr=(
-	"Sets YPbPr on VGA output"
-	"0|Off|RGB VGA output"
-	"1|On|YPbPr VGA output"
+	"Enables component video (YPbPr) on analog video output"
+	"0|Off|Disable Sync-on-Green (SOG) switch (position further from HDMI port)"
+	"1|On|Enable Sync-on-Green (SOG) switch (position closest to HDMI port)"
 )
 
 KEY_composite_sync=(
-	"Sets composite sync on HSync signal of VGA output"
-	"0|Off|Normal HSync signal of VGA output"
-	"1|On|Composite sync on HSync signal of VGA output"
+	"Sets analog video sync format"
+	"0|Separate sync (RGBHV)|Used for VGA monitors"
+	"1|Composite sync (RGBS)|Used for most other displays including RGB CRTs, PVMs, BVMS, and upscaler devices"
 )
 
 KEY_hdmi_audio_96k=(
-	"Sets HDMI audio to 96KHz/16bit (48KHz/16bit otherwise)"
-	"0|Off|48KHz/16bit HDMI audio output"
-	"1|On|96KHz/16bit HDMI audio output"
+	"Sets HDMI audio to 96khz/16bit (48khz/16bit otherwise)"
+	"0|48khz/16bit|Compatible with most HDMI devices"
+	"1|96khz/16bit|Better quality but not compatible with all HDMI devices"
 )
 
 KEY_fb_size=(
