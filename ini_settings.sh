@@ -18,6 +18,9 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.8 - 2019-05-27 - Improved textual descriptions of options, may thanks to misteraddons.
+# Version 1.0.7 - 2019-05-27 - Improved textual descriptions of options.
+# Version 1.0.6 - 2019-05-27 - setupCURL (so Internet connectivity check) is called only when needed; improved textual descriptions of options.
 # Version 1.0.5 - 2019-05-27 - Improved textual descriptions of options.
 # Version 1.0.4 - 2019-05-27 - Improved ini value reading: only the first instance of a key is read, so specific core settings will be ignored.
 # Version 1.0.4 - 2019-05-27 - Improved textual descriptions of options; removed hostname check, so users can use different hostnames than MiSTer; pressing ESC in submenus returns to the main menu instead of quitting the script.
@@ -99,9 +102,9 @@ KEY_vsync_adjust=(
 )
 
 KEY_hdmi_limited=(
-	"Sets HDMI RGB output"
-	"0|Full-range|RGB Range = 0 to 255"
-	"1|Limited Range|RGB Range = 16 to 235"
+	"Sets HDMI RGB output to limited (16-235, full range otherwise)"
+	"0|Off|Full RGB (0-255) HDMI output"
+	"1|On|Limited RGB (16-235) HDMI output"
 )
 
 KEY_dvi_mode=(
@@ -111,33 +114,33 @@ KEY_dvi_mode=(
 )
 
 KEY_vga_scaler=(
-	"Sets analog video output resolution"
-	"0|Native|Analog video output will output native core resolution"
-	"1|Scaled|Analog video output will output same resolution as HDMI port"
+	"Connects analog video output to the scaler output, changing the resolution"
+	"0|Off|Analog video will output native core resolution"
+	"1|On|Analog video output will output same resolution as HDMI port"
 )
 
 KEY_forced_scandoubler=(
-	"Forces scan doubler (240p/15kHz to 480p/31kHz) on analog video output"
-	"0|Off|Analog video output resolution will not be doubled"
-	"1|On|Analog video output resolution will be doubled (core dependent)"
+	"Forces scandoubler (240p/15kHz to 480p/31kHz) on analog video output"
+	"0|Off|15KHz analog video out for 15KHz cores, works on CRT TV sets, but may have problems with PC monitors"
+	"1|On|30KHz analog video out for 15KHz cores (core dependent), good for VGA monitors not supporting 15KHz"
 )
 
 KEY_ypbpr=(
 	"Enables component video (YPbPr) on analog video output"
-	"0|Off|Disable Sync-on-Green (SOG) switch (position further from HDMI port)"
-	"1|On|Enable Sync-on-Green (SOG) switch (position closest to HDMI port)"
+	"0|Off|RGB analog video output; please disable Sync-on-Green (SOG) switch (position further from HDMI port)"
+	"1|On|YPbPr analog video output; please enable Sync-on-Green (SOG) switch (position closest to HDMI port)"
 )
 
 KEY_composite_sync=(
-	"Sets analog video output sync format"
-	"0|Separate sync (RGBHV)|Used for VGA monitors"
-	"1|Composite sync (RGBS)|Used for most other displays including RGB CRTs, PVMs, BVMS, and upscaler devices"
+	"Sets composite sync on HSync signal of analog video output; used for display compatibility"
+	"0|Off|Separate sync (RGBHV); used for VGA monitors"
+	"1|On|Composite sync (RGBS); used for most other displays including RGB CRTs, PVMs, BVMS, and upscaler devices"
 )
 
 KEY_hdmi_audio_96k=(
-	"Sets HDMI audio to 96khz/16bit (48khz/16bit otherwise)"
-	"0|48khz/16bit|Compatible with most HDMI devices"
-	"1|96khz/16bit|Better quality but not compatible with all HDMI devices"
+	"Sets HDMI audio to 96KHz/16bit (48KHz/16bit otherwise)"
+	"0|Off|48KHz/16bit HDMI audio output; compatible with most HDMI devices"
+	"1|On|96KHz/16bit HDMI audio output; better quality but not compatible with all HDMI devices"
 )
 
 KEY_fb_size=(
@@ -164,7 +167,7 @@ KEY_video_info=(
 )
 
 KEY_font=(
-	"Custom font. Put custom fonts in /media/fat/font"
+	"Custom font; put custom fonts in /media/fat/font"
 )
 
 KEY_volumectl=(
@@ -346,6 +349,7 @@ function readDIALOGtempfile {
 function loadMiSTerINI {
 	if [ ! -f "${MISTER_INI_FILE}" ]
 	then
+		setupCURL
 		echo "Downloading MiSTer.ini"
 		${CURL} "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "${MISTER_INI_FILE}"
 	fi
@@ -433,7 +437,7 @@ function showOptionMENU {
 		"font")
 			[ ! -d /media/fat/font ] && return ${DIALOG_CANCEL}
 			ADDITIONAL_OPTIONS="--no-items"
-			INI_KEY_HELP="$(eval echo \${KEY_${INI_KEY}[0]})"
+			INI_KEY_HELP="${INI_KEY}:\n$(eval echo \${KEY_${INI_KEY}[0]})"
 			for FONT in /media/fat/font/*.pf
 			do
 				INI_VALUE_RAW="${FONT}"
@@ -474,7 +478,6 @@ function showOptionMENU {
 
 checkTERMINAL
 setupScriptINI
-setupCURL
 setupDIALOG
 
 loadMiSTerINI
