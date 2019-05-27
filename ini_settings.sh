@@ -111,7 +111,7 @@ KEY_dvi_mode=(
 )
 
 KEY_vga_scaler=(
-	"Sets analog video resolution"
+	"Sets analog video output resolution"
 	"0|Native|Analog video output will output native core resolution"
 	"1|Scaled|Analog video output will output same resolution as HDMI port"
 )
@@ -129,7 +129,7 @@ KEY_ypbpr=(
 )
 
 KEY_composite_sync=(
-	"Sets analog video sync format"
+	"Sets analog video output sync format"
 	"0|Separate sync (RGBHV)|Used for VGA monitors"
 	"1|Composite sync (RGBS)|Used for most other displays including RGB CRTs, PVMs, BVMS, and upscaler devices"
 )
