@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.8 - 2019-05-27 - Improved textual descriptions of options, may thanks to misteraddons.
 # Version 1.0.7 - 2019-05-27 - Improved textual descriptions of options.
 # Version 1.0.6 - 2019-05-27 - setupCURL (so Internet connectivity check) is called only when needed; improved textual descriptions of options.
 # Version 1.0.5 - 2019-05-27 - Improved textual descriptions of options.
@@ -138,8 +139,8 @@ KEY_composite_sync=(
 
 KEY_hdmi_audio_96k=(
 	"Sets HDMI audio to 96KHz/16bit (48KHz/16bit otherwise)"
-	"0|Off|48KHz/16bit HDMI audio output"
-	"1|On|96KHz/16bit HDMI audio output"
+	"0|Off|48KHz/16bit HDMI audio output; compatible with most HDMI devices"
+	"1|On|96KHz/16bit HDMI audio output; better quality but not compatible with all HDMI devices"
 )
 
 KEY_fb_size=(
