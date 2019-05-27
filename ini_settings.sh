@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.5 - 2019-05-27 - Improved textual descriptions of options.
 # Version 1.0.4 - 2019-05-27 - Improved ini value reading: only the first instance of a key is read, so specific core settings will be ignored.
 # Version 1.0.4 - 2019-05-27 - Improved textual descriptions of options; removed hostname check, so users can use different hostnames than MiSTer; pressing ESC in submenus returns to the main menu instead of quitting the script.
 # Version 1.0.3 - 2019-05-26 - Improved DEB packages downloading routine.
@@ -98,9 +99,9 @@ KEY_vsync_adjust=(
 )
 
 KEY_hdmi_limited=(
-	"Sets HDMI RGB output to limited (16 to 235, full range otherwise)"
-	"0|Off"
-	"1|On"
+	"Sets HDMI RGB output to limited (16-235, full range otherwise)"
+	"0|Off|Full RGB (0-255) HDMI output"
+	"1|On|Limited RGB (16-235) HDMI output"
 )
 
 KEY_dvi_mode=(
@@ -116,27 +117,27 @@ KEY_vga_scaler=(
 )
 
 KEY_forced_scandoubler=(
-	"Forces scandoubler on VGA output"
-	"0|Off"
-	"1|On"
+	"Forces scandoubler on VGA output, good for VGA monitors not supporting 15KHz"
+	"0|Off|15KHz VGA out for 15KHz cores, works on CRT TV sets, but may have problems with PC monitors"
+	"1|On|30KHz VGA out for 15KHz cores, good for VGA monitors not supporting 15KHz"
 )
 
 KEY_ypbpr=(
 	"Sets YPbPr on VGA output"
-	"0|Off"
-	"1|On"
+	"0|Off|RGB VGA output"
+	"1|On|YPbPr VGA output"
 )
 
 KEY_composite_sync=(
 	"Sets composite sync on HSync signal of VGA output"
-	"0|Off"
-	"1|On"
+	"0|Off|Normal HSync signal of VGA output"
+	"1|On|Composite sync on HSync signal of VGA output"
 )
 
 KEY_hdmi_audio_96k=(
-	"Sets HDMI audio to 96khz/16bit (48khz/16bit otherwise)"
-	"0|Off"
-	"1|On"
+	"Sets HDMI audio to 96KHz/16bit (48KHz/16bit otherwise)"
+	"0|Off|48KHz/16bit HDMI audio output"
+	"1|On|96KHz/16bit HDMI audio output"
 )
 
 KEY_fb_size=(
@@ -447,7 +448,7 @@ function showOptionMENU {
 				KEY_VALUE_CONFIG="$(eval echo \${KEY_${INI_KEY}[${INDEX}]})"
 				if [ "${INDEX}" == "0" ]
 				then
-					INI_KEY_HELP="${KEY_VALUE_CONFIG}"
+					INI_KEY_HELP="${INI_KEY}:\n${KEY_VALUE_CONFIG}"
 				else
 					INI_VALUE_RAW=$(echo "${KEY_VALUE_CONFIG}" | sed "s/|.*//")
 					INI_VALUE_DESCRIPTION=$(echo "${KEY_VALUE_CONFIG}" | sed "s/^[^|]*|//" | sed "s/|.*//")
