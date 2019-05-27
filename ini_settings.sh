@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.6 - 2019-05-27 - setupCURL (so Internet connectivity check) is called only when needed; improved textual descriptions of options.
 # Version 1.0.5 - 2019-05-27 - Improved textual descriptions of options.
 # Version 1.0.4 - 2019-05-27 - Improved ini value reading: only the first instance of a key is read, so specific core settings will be ignored.
 # Version 1.0.4 - 2019-05-27 - Improved textual descriptions of options; removed hostname check, so users can use different hostnames than MiSTer; pressing ESC in submenus returns to the main menu instead of quitting the script.
@@ -346,6 +347,7 @@ function readDIALOGtempfile {
 function loadMiSTerINI {
 	if [ ! -f "${MISTER_INI_FILE}" ]
 	then
+		setupCURL
 		echo "Downloading MiSTer.ini"
 		${CURL} "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "${MISTER_INI_FILE}"
 	fi
@@ -433,7 +435,7 @@ function showOptionMENU {
 		"font")
 			[ ! -d /media/fat/font ] && return ${DIALOG_CANCEL}
 			ADDITIONAL_OPTIONS="--no-items"
-			INI_KEY_HELP="$(eval echo \${KEY_${INI_KEY}[0]})"
+			INI_KEY_HELP="${INI_KEY}:\n$(eval echo \${KEY_${INI_KEY}[0]})"
 			for FONT in /media/fat/font/*.pf
 			do
 				INI_VALUE_RAW="${FONT}"
@@ -474,7 +476,6 @@ function showOptionMENU {
 
 checkTERMINAL
 setupScriptINI
-setupCURL
 setupDIALOG
 
 loadMiSTerINI
