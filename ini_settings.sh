@@ -18,7 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
-# Version 1.0.8 - 2019-05-27 - Improved textual descriptions of options, may thanks to misteraddons.
+# Version 1.0.8 - 2019-05-27 - Improved textual descriptions of options, many thanks to misteraddons.
 # Version 1.0.7 - 2019-05-27 - Improved textual descriptions of options.
 # Version 1.0.6 - 2019-05-27 - setupCURL (so Internet connectivity check) is called only when needed; improved textual descriptions of options.
 # Version 1.0.5 - 2019-05-27 - Improved textual descriptions of options.
