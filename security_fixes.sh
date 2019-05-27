@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2.8 - 2019-05-27 - Refined the check for standard root password.
 # Version 1.2.7 - 2019-05-25 - Refined the check for standard root password.
 # Version 1.2.6 - 2019-05-11 - Refined the check for standard root password.
 # Version 1.2.5 - 2019-05-02 - Code review by makigumo, now the script runs from any terminal, not only SSH, thank you very much.
@@ -54,7 +55,7 @@ if (( $EUID != 0 )); then
     exit 3
 fi
 
-if cat /etc/shadow | grep -o "^root:[^:]*" | md5sum | grep -q "\(^9104842aa3318a956e51a081d052d2ee \)\|\(^18de777543175ec29c71ebf177590199 \)\|\(^b136a9bff6f6f09feb2f30e12be37e22 \)\|\(^beca3beae21066c49e2f11d13fe68342 \)\|\(^8fe03c31a7fcc77d0af7177bd1f84825 \)\|\(^dba15e7cbfe81723120d89dba1cb6b91 \)"
+if cat /etc/shadow | grep -o "^root:[^:]*" | md5sum | grep -q "\(^9104842aa3318a956e51a081d052d2ee \)\|\(^18de777543175ec29c71ebf177590199 \)\|\(^b136a9bff6f6f09feb2f30e12be37e22 \)\|\(^beca3beae21066c49e2f11d13fe68342 \)\|\(^8fe03c31a7fcc77d0af7177bd1f84825 \)\|\(^dba15e7cbfe81723120d89dba1cb6b91 \)\|\(^6b0cbc28900d54dc8517793507fd70f4 \)"
 then
 	echo "root password is the original one from"
 	echo "the SD-Installer; it should be changed."
@@ -399,4 +400,5 @@ fi
 echo ""
 echo "Done!"
 echo "You can reboot now for actually applying changes."
+
 exit 0
