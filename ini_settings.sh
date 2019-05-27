@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.4 - 2019-05-27 - Improved textual descriptions of options; removed hostname check, so users can use different hostnames than MiSTer; pressing ESC in submenus returns to the main menu instead of quitting the script.
 # Version 1.0.3 - 2019-05-26 - Improved DEB packages downloading routine.
 # Version 1.0.2 - 2019-05-26 - Added error checks during DEB packages downloading.
 # Version 1.0.1 - 2019-05-26 - Added Windows(CrLf)<->Unix(Lf) character handling.
@@ -82,16 +83,16 @@ KEY_video_mode_pal=(
 
 KEY_vscale_mode=(
 	"Video scaling mode"
-	"0|Scale to fit the screen height|Some possible shimmering during vertical scroolling, not optimal for scanlines"
-	"1|Use integer scale only|No shimmering during vertical scroolling, optimal for scanlines"
-	"2|Use 0.5 steps of scale|Some possible shimmering during vertical scroolling, good scanlines"
-	"3|Use 0.25 steps of scale|Some possible shimmering during vertical scroolling, good scanlines"
+	"0|Scale to fit the screen height|Some possible shimmering during vertical scrolling, not optimal for scanlines"
+	"1|Use integer scale only|No shimmering during vertical scrolling, optimal for scanlines"
+	"2|Use 0.5 steps of scale|Some possible shimmering during vertical scrolling, good scanlines"
+	"3|Use 0.25 steps of scale|Some possible shimmering during vertical scrolling, good scanlines"
 )
 
 KEY_vsync_adjust=(
 	"Video scaling sync frequency"
 	"0|Match display frequency|Best display compatibility, some stuttering, 1-2 frames of lag"
-	"1|Match core frequency (some lag, possible incompatibilities)|Some display incompatibilities, no stuttering, 1-2 frames of lag"
+	"1|Match core frequency|Some display incompatibilities, no stuttering, 1-2 frames of lag"
 	"2|Low lag|Some display incompatibilities, no stuttering, virtually no lag"
 )
 
@@ -177,12 +178,12 @@ ALLOW_INSECURE_SSL="true"
 # ========= CODE STARTS HERE =========
 
 function checkTERMINAL {
-	if [ "$(uname -n)" != "MiSTer" ]
-	then
-		echo "This script must be run"
-		echo "on a MiSTer system."
-		exit 1
-	fi
+#	if [ "$(uname -n)" != "MiSTer" ]
+#	then
+#		echo "This script must be run"
+#		echo "on a MiSTer system."
+#		exit 1
+#	fi
 	if [[ ! (-t 0 && -t 1 && -t 2) ]]
 	then
 		echo "This script must be run"
@@ -495,7 +496,7 @@ while true; do
 					${DIALOG_CANCEL})
 						;;
 					${DIALOG_ESC})
-						break;;
+						;;
 				esac
 				;;
 			${DIALOG_CANCEL})
@@ -525,7 +526,8 @@ while true; do
 				SHOW_GUI="true"
 				;;
 			${DIALOG_ESC})
-				break;;
+				SHOW_GUI="true"
+				;;
 		esac
 	fi
 done
