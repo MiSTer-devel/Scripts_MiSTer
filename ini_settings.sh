@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.4 - 2019-05-27 - Improved ini value reading: only the first instance of a key is read, so specific core settings will be ignored.
 # Version 1.0.4 - 2019-05-27 - Improved textual descriptions of options; removed hostname check, so users can use different hostnames than MiSTer; pressing ESC in submenus returns to the main menu instead of quitting the script.
 # Version 1.0.3 - 2019-05-26 - Improved DEB packages downloading routine.
 # Version 1.0.2 - 2019-05-26 - Added error checks during DEB packages downloading.
@@ -360,7 +361,7 @@ function checkKEY () {
 
 function getVALUE () {
 	INI_KEY="${1}"
-	INI_VALUE=$(echo "${MISTER_INI}" | grep -oE "^\s*${INI_KEY}\s*=\s*[a-zA-Z0-9.,/_-]+"|sed "s/^\s*${INI_KEY}\s*=\s*//")
+	INI_VALUE=$(echo "${MISTER_INI}" | grep -oE -m 1 "^\s*${INI_KEY}\s*=\s*[a-zA-Z0-9.,/_-]+"|sed "s/^\s*${INI_KEY}\s*=\s*//")
 }
 
 function setVALUE () {
