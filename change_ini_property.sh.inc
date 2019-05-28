@@ -16,6 +16,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.3 - 2019-05-28 - Changed MiSTer.ini directory to /media/fat (previously it was /media/fat/config).
 # Version 1.1.2 - 2019-05-13 - The script doesn't reboot the system at the end of the execution anymore, it just prompts the user; changed output when video_mode_ntsc_pal=1; corrected MiSTer.ini comment char from "#" to ";".
 # Version 1.1.1 - 2019-03-03 - Corrected a bug in MiSTer.ini download.
 # Version 1.1 - 2019-02-09 - Support for video_mode_ntsc and video_mode_pal; the script tries to download MiSTer.ini (when needed) using SSL certificate verification; corrected a regular expression bug.
@@ -24,29 +25,34 @@
 
 
 # ========= ADVANCED OPTIONS =========
-MISTER_INI=/media/fat/config/MiSTer.ini
+MISTER_INI=/media/fat/MiSTer.ini
 
 # ========= CODE STARTS HERE =========
 if [ ! -f "${MISTER_INI}" ]
 then
-	echo "Downloading MiSTer.ini"
-	curl -L "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "${MISTER_INI}"
-	case $? in
-		0)
-			;;
-		60)
-			if ! curl -kL "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "${MISTER_INI}"
-			then
+	if [ -f "/media/fat/config/MiSTer.ini" ]
+	then
+		mv "/media/fat/config/MiSTer.ini" "${MISTER_INI}"
+	else
+		echo "Downloading MiSTer.ini"
+		curl -L "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "${MISTER_INI}"
+		case $? in
+			0)
+				;;
+			60)
+				if ! curl -kL "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "${MISTER_INI}"
+				then
+					echo "Unable to download"
+					echo "MiSTer.ini"
+					exit 1
+				fi
+				;;
+			*)
 				echo "Unable to download"
 				echo "MiSTer.ini"
 				exit 1
-			fi
-			;;
-		*)
-			echo "Unable to download"
-			echo "MiSTer.ini"
-			exit 1
-	esac
+		esac
+	fi
 fi
 
 cp ${MISTER_INI} ${MISTER_INI}.bak
