@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.9 - 2019-05-28 - Changed MiSTer.ini directory to /media/fat (previously it was /media/fat/config); now the script checks if ~/.dialogrc exists and creates .dialogrc in the current directory when needed (previously it used /media/fat/config/dialogrc); improved some texts.
 # Version 1.0.8 - 2019-05-27 - Improved textual descriptions of options, many thanks to misteraddons.
 # Version 1.0.7 - 2019-05-27 - Improved textual descriptions of options.
 # Version 1.0.6 - 2019-05-27 - setupCURL (so Internet connectivity check) is called only when needed; improved textual descriptions of options.
@@ -34,7 +35,7 @@
 # ========= OPTIONS ==================
 
 # ========= ADVANCED OPTIONS =========
-MISTER_INI_FILE="/media/fat/config/MiSTer.ini"
+MISTER_INI_FILE="/media/fat/MiSTer.ini"
 
 INI_KEYS="video_mode video_mode_ntsc video_mode_pal vsync_adjust vscale_mode hdmi_limited dvi_mode vga_scaler forced_scandoubler ypbpr composite_sync hdmi_audio_96k fb_size video_info font volumectl"
 
@@ -306,18 +307,23 @@ function setupDIALOG {
 			installDEBS "http://http.us.debian.org/debian/pool/main/d/dialog|dialog_1.3-2016|dialog|3|/media/fat/linux/dialog" "http://http.us.debian.org/debian/pool/main/n/ncurses|libncursesw5_6.0|libncursesw.so.5*|3|/media/fat/linux/dialog" "http://http.us.debian.org/debian/pool/main/n/ncurses|libtinfo5_6.0|libtinfo.so.5*|3|/media/fat/linux/dialog"
 		fi
 		DIALOG="/media/fat/linux/dialog/dialog"
+		export LD_LIBRARY_PATH="/media/fat/linux/dialog"
 	fi
-	export LD_LIBRARY_PATH="/media/fat/linux/dialog"
-	export NCURSES_NO_UTF8_ACS=1
-	export DIALOGRC="/media/fat/config/dialogrc"
 	
-	if [ ! -f "${DIALOGRC}" ]
+	rm -f "/media/fat/config/dialogrc"
+	if [ ! -f "~/.dialogrc" ]
 	then
-		${DIALOG} --create-rc "${DIALOGRC}"
-		sed -i "s/use_colors = OFF/use_colors = ON/g" "${DIALOGRC}"
-		sed -i "s/screen_color = (CYAN,BLUE,ON)/screen_color = (CYAN,BLACK,ON)/g" "${DIALOGRC}"
-		sync
+		export DIALOGRC="$(dirname ${ORIGINAL_SCRIPT_PATH})/.dialogrc"
+		if [ ! -f "${DIALOGRC}" ]
+		then
+			${DIALOG} --create-rc "${DIALOGRC}"
+			sed -i "s/use_colors = OFF/use_colors = ON/g" "${DIALOGRC}"
+			sed -i "s/screen_color = (CYAN,BLUE,ON)/screen_color = (CYAN,BLACK,ON)/g" "${DIALOGRC}"
+			sync
+		fi
 	fi
+	
+	export NCURSES_NO_UTF8_ACS=1
 	
 	: ${DIALOG_OK=0}
 	: ${DIALOG_CANCEL=1}
@@ -349,9 +355,15 @@ function readDIALOGtempfile {
 function loadMiSTerINI {
 	if [ ! -f "${MISTER_INI_FILE}" ]
 	then
-		setupCURL
-		echo "Downloading MiSTer.ini"
-		${CURL} "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "${MISTER_INI_FILE}"
+		if [ -f "/media/fat/config/MiSTer.ini" ]
+		then
+			mv "/media/fat/config/MiSTer.ini" "${MISTER_INI_FILE}"
+		else
+			setupCURL
+			echo "Downloading MiSTer.ini"
+			${CURL} "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "${MISTER_INI_FILE}"
+		fi
+		
 	fi
 	MISTER_INI_ORIGINAL="$(cat "${MISTER_INI_FILE}" | dos2unix)"
 	MISTER_INI="${MISTER_INI_ORIGINAL}"
@@ -366,14 +378,14 @@ function checkKEY () {
 
 function getVALUE () {
 	INI_KEY="${1}"
-	INI_VALUE=$(echo "${MISTER_INI}" | grep -oE -m 1 "^\s*${INI_KEY}\s*=\s*[a-zA-Z0-9.,/_-]+"|sed "s/^\s*${INI_KEY}\s*=\s*//")
+	INI_VALUE=$(echo "${MISTER_INI}" | grep -oE -m 1 "^\s*${INI_KEY}\s*=\s*[a-zA-Z0-9%().,/_-]+"|sed "s/^\s*${INI_KEY}\s*=\s*//")
 }
 
 function setVALUE () {
 	INI_KEY="${1}"
 	INI_VALUE="${2}"
 	INI_VALUE=$(echo "${INI_VALUE}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
-	MISTER_INI=$(echo "${MISTER_INI}" | sed "1,/^\s*$INI_KEY=[a-zA-Z0-9.,/_-]*/{s/^\s*$INI_KEY=[a-zA-Z0-9.,/_-]*/$INI_KEY=$INI_VALUE/}")
+	MISTER_INI=$(echo "${MISTER_INI}" | sed "1,/^\s*$INI_KEY=[a-zA-Z0-9%().,/_-]*/{s/^\s*$INI_KEY=[a-zA-Z0-9%().,/_-]*/$INI_KEY=$INI_VALUE/}")
 }
 
 
@@ -437,7 +449,7 @@ function showOptionMENU {
 		"font")
 			[ ! -d /media/fat/font ] && return ${DIALOG_CANCEL}
 			ADDITIONAL_OPTIONS="--no-items"
-			INI_KEY_HELP="${INI_KEY}:\n$(eval echo \${KEY_${INI_KEY}[0]})"
+			INI_KEY_HELP="$(eval echo \${KEY_${INI_KEY}[0]})"
 			for FONT in /media/fat/font/*.pf
 			do
 				INI_VALUE_RAW="${FONT}"
@@ -452,7 +464,7 @@ function showOptionMENU {
 				KEY_VALUE_CONFIG="$(eval echo \${KEY_${INI_KEY}[${INDEX}]})"
 				if [ "${INDEX}" == "0" ]
 				then
-					INI_KEY_HELP="${INI_KEY}:\n${KEY_VALUE_CONFIG}"
+					INI_KEY_HELP="${KEY_VALUE_CONFIG}"
 				else
 					INI_VALUE_RAW=$(echo "${KEY_VALUE_CONFIG}" | sed "s/|.*//")
 					INI_VALUE_DESCRIPTION=$(echo "${KEY_VALUE_CONFIG}" | sed "s/^[^|]*|//" | sed "s/|.*//")
@@ -463,10 +475,11 @@ function showOptionMENU {
 			done
 			;;
 	esac
+	INI_KEY_HELP="${INI_KEY_HELP}\n\nPress space to select a value;\nan asterisk marks the selected one"
 	
 	setupDIALOGtempfile
 	eval ${DIALOG} --clear  --item-help \
-		--title \"MiSTer INI Settings\" \
+		--title \"MiSTer INI Settings: ${INI_KEY}\" \
 		${ADDITIONAL_OPTIONS} \
 		--radiolist \"${INI_KEY_HELP}\" 0 0 0 \
 		${MENU_ITEMS} \
