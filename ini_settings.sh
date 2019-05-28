@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.10 - 2019-05-28 - Changed value selection page from a radiolist to a menu in order to improve usability; now the font value is displayed withouth path and extension.
 # Version 1.0.9 - 2019-05-28 - Changed MiSTer.ini directory to /media/fat (previously it was /media/fat/config); now the script checks if ~/.dialogrc exists and creates .dialogrc in the current directory when needed (previously it used /media/fat/config/dialogrc); improved some texts.
 # Version 1.0.8 - 2019-05-27 - Improved textual descriptions of options, many thanks to misteraddons.
 # Version 1.0.7 - 2019-05-27 - Improved textual descriptions of options.
@@ -36,6 +37,11 @@
 
 # ========= ADVANCED OPTIONS =========
 MISTER_INI_FILE="/media/fat/MiSTer.ini"
+
+ALLOW_INSECURE_SSL="true"
+
+FONTS_DIRECTORY="/media/fat/font"
+FONTS_EXTENSION="pf"
 
 INI_KEYS="video_mode video_mode_ntsc video_mode_pal vsync_adjust vscale_mode hdmi_limited dvi_mode vga_scaler forced_scandoubler ypbpr composite_sync hdmi_audio_96k fb_size video_info font volumectl"
 
@@ -168,7 +174,7 @@ KEY_video_info=(
 )
 
 KEY_font=(
-	"Custom font; put custom fonts in /media/fat/font"
+	"Custom font; put custom fonts in ${FONTS_DIRECTORY}"
 )
 
 KEY_volumectl=(
@@ -176,8 +182,6 @@ KEY_volumectl=(
 	"0|Off"
 	"1|on"
 )
-
-ALLOW_INSECURE_SSL="true"
 
 
 
@@ -379,11 +383,14 @@ function checkKEY () {
 function getVALUE () {
 	INI_KEY="${1}"
 	INI_VALUE=$(echo "${MISTER_INI}" | grep -oE -m 1 "^\s*${INI_KEY}\s*=\s*[a-zA-Z0-9%().,/_-]+"|sed "s/^\s*${INI_KEY}\s*=\s*//")
+	[ ${INI_KEY} == "font" ] && INI_VALUE="${INI_VALUE/*\//}" && INI_VALUE="${INI_VALUE%.*}"
+
 }
 
 function setVALUE () {
 	INI_KEY="${1}"
 	INI_VALUE="${2}"
+	[ ${INI_KEY} == "font" ] && INI_VALUE="${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}"
 	INI_VALUE=$(echo "${INI_VALUE}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
 	MISTER_INI=$(echo "${MISTER_INI}" | sed "1,/^\s*$INI_KEY=[a-zA-Z0-9%().,/_-]*/{s/^\s*$INI_KEY=[a-zA-Z0-9%().,/_-]*/$INI_KEY=$INI_VALUE/}")
 }
@@ -447,16 +454,18 @@ function showOptionMENU {
 	getVALUE "${INI_KEY}"
 	case "${INI_KEY}" in
 		"font")
-			[ ! -d /media/fat/font ] && return ${DIALOG_CANCEL}
-			ADDITIONAL_OPTIONS="--no-items"
+			[ ! -d "${FONTS_DIRECTORY}" ] && return ${DIALOG_CANCEL}
+			# ADDITIONAL_OPTIONS="--no-items"
 			INI_KEY_HELP="$(eval echo \${KEY_${INI_KEY}[0]})"
-			for FONT in /media/fat/font/*.pf
+			for FONT in "${FONTS_DIRECTORY}"/*."${FONTS_EXTENSION}"
 			do
-				INI_VALUE_RAW="${FONT}"
-				# INI_VALUE_DESCRIPTION="${FONT}"
-				{ echo "${FONT}" | grep -q "^${INI_VALUE}$"; } && INI_VALUE_SELECTED="ON" || INI_VALUE_SELECTED="off"
+				INI_VALUE_RAW="${FONT/*\//}" && INI_VALUE_RAW="${INI_VALUE_RAW%.*}"
+				INI_VALUE_DESCRIPTION="${FONT}"
+				# { echo "${FONT}" | grep -q "^${INI_VALUE}$"; } && INI_VALUE_SELECTED="ON" || INI_VALUE_SELECTED="off"
+				{ echo "${FONT}" | grep -q "^${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}$"; } && INI_VALUE_COLOR="\Z1\Zu" || INI_VALUE_COLOR=""
 				INI_VALUE_HELP=""
-				MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" ${INI_VALUE_SELECTED} \"${INI_VALUE_HELP}\""
+				# MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" ${INI_VALUE_SELECTED} \"${INI_VALUE_HELP}\""
+				MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" \"${INI_VALUE_COLOR}${INI_VALUE_DESCRIPTION}\" \"${INI_VALUE_HELP}\""
 			done
 			;;
 		*)
@@ -468,20 +477,22 @@ function showOptionMENU {
 				else
 					INI_VALUE_RAW=$(echo "${KEY_VALUE_CONFIG}" | sed "s/|.*//")
 					INI_VALUE_DESCRIPTION=$(echo "${KEY_VALUE_CONFIG}" | sed "s/^[^|]*|//" | sed "s/|.*//")
-					{ echo "${KEY_VALUE_CONFIG}" | grep -q "^${INI_VALUE}|"; } && INI_VALUE_SELECTED="ON" || INI_VALUE_SELECTED="off"
+					# { echo "${KEY_VALUE_CONFIG}" | grep -q "^${INI_VALUE}|"; } && INI_VALUE_SELECTED="ON" || INI_VALUE_SELECTED="off"
+					{ echo "${KEY_VALUE_CONFIG}" | grep -q "^${INI_VALUE}|"; } && INI_VALUE_COLOR="\Z1\Zu" || INI_VALUE_COLOR=""
 					{ echo "${KEY_VALUE_CONFIG}" | grep -q "|.*|"; } && INI_VALUE_HELP=$(echo "${KEY_VALUE_CONFIG}" | sed "s/^.*|//") || INI_VALUE_HELP=""
-					MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" \"${INI_VALUE_DESCRIPTION}\" ${INI_VALUE_SELECTED} \"${INI_VALUE_HELP}\""
+					# MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" \"${INI_VALUE_DESCRIPTION}\" ${INI_VALUE_SELECTED} \"${INI_VALUE_HELP}\""
+					MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" \"${INI_VALUE_COLOR}${INI_VALUE_DESCRIPTION}\" \"${INI_VALUE_HELP}\""
 				fi
 			done
 			;;
 	esac
-	INI_KEY_HELP="${INI_KEY_HELP}\n\nPress space to select a value;\nan asterisk marks the selected one"
+	# INI_KEY_HELP="${INI_KEY_HELP}\n\nPress space to select a value;\nan asterisk marks the selected one"
 	
 	setupDIALOGtempfile
-	eval ${DIALOG} --clear  --item-help \
+	eval ${DIALOG} --clear --colors --item-help --ok-label \"Select\" \
 		--title \"MiSTer INI Settings: ${INI_KEY}\" \
 		${ADDITIONAL_OPTIONS} \
-		--radiolist \"${INI_KEY_HELP}\" 0 0 0 \
+		--menu \"${INI_KEY_HELP}\" 0 0 0 \
 		${MENU_ITEMS} \
 		2> ${DIALOG_TEMPFILE}
 	readDIALOGtempfile
