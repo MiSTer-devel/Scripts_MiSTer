@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.5 - 2019-05-29 - Added "Please wait..." screens; font value now is stored as font=/font/myfont.pf without the leading /media/fat.
 # Version 1.1.4 - 2019-05-29 - The advanced editor starts with the Cancel button selected.
 # Version 1.1.3 - 2019-05-29 - Improved textual descriptions of options.
 # Version 1.1.2 - 2019-05-29 - Added support for fb_terminal, vscale_border, bootscreen, mouse_throttle, key_menu_as_rgui, keyrah_mode, rbf_hide_datecode, bootcore and bootcore_timeout.
@@ -394,7 +395,7 @@ function setupDIALOG {
 		export LD_LIBRARY_PATH="/media/fat/linux/dialog"
 	fi
 	
-	rm -f "/media/fat/config/dialogrc"
+	[ -f "/media/fat/config/dialogrc" ] && rm -f "/media/fat/config/dialogrc"
 	if [ ! -f "~/.dialogrc" ]
 	then
 		export DIALOGRC="$(dirname ${ORIGINAL_SCRIPT_PATH})/.dialogrc"
@@ -470,7 +471,7 @@ function getVALUE () {
 function setVALUE () {
 	INI_KEY="${1}"
 	INI_VALUE="${2}"
-	[ ${INI_KEY} == "font" ] && INI_VALUE="${FONTS_DIRECTORY}/${INI_VALUE//\*/}.${FONTS_EXTENSION}"
+	[ ${INI_KEY} == "font" ] && INI_VALUE="${FONTS_DIRECTORY/\/media\/fat/}/${INI_VALUE/[* ]/}.${FONTS_EXTENSION}"
 	INI_VALUE=$(echo "${INI_VALUE}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
 	checkKEY ${INI_KEY} || MISTER_INI=$(echo "${MISTER_INI}" | sed "1,/^\s*;\s*$INI_KEY\s*=\s*/{s/^\s*;\s*$INI_KEY\s*=\s*/$INI_KEY=/}")
 	checkKEY ${INI_KEY} || MISTER_INI=$(echo "${MISTER_INI}" | sed '/\[MiSTer\]/a\'$INI_KEY'=')
@@ -478,6 +479,7 @@ function setVALUE () {
 }
 
 function showMainMENU_GUI {
+	showPleaseWAIT
 	MENU_ITEMS=""
 	for INI_KEY in ${INI_KEYS}; do
 		# checkKEY ${INI_KEY} || continue
@@ -529,6 +531,7 @@ function showMainMENU_EDITOR {
 }
 
 function showOptionMENU {
+	showPleaseWAIT
 	INI_KEY=${DIALOG_OUTPUT}
 	getVALUE "${INI_KEY}"
 	MENU_ITEMS=""
@@ -545,7 +548,9 @@ function showOptionMENU {
 				# INI_VALUE_DESCRIPTION="${FONT}"
 				# { echo "${FONT}" | grep -q "^${INI_VALUE}$"; } && INI_VALUE_SELECTED="ON" || INI_VALUE_SELECTED="off"
 				# { echo "${FONT}" | grep -q "^${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}$"; } && INI_VALUE_COLOR="\Z1\Zu" || INI_VALUE_COLOR=""
-				{ echo "${FONT}" | grep -q "^${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}$"; } && INI_VALUE_RAW="***${INI_VALUE_RAW}***"
+				# { echo "${FONT}" | grep -q "^${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}$"; } && INI_VALUE_RAW="***${INI_VALUE_RAW}***"
+				# { echo "${FONT}" | grep -q "^${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}$"; } && INI_VALUE_RAW="*${INI_VALUE_RAW}" || INI_VALUE_RAW=" ${INI_VALUE_RAW}"
+				[ "${INI_VALUE_RAW}" == "${INI_VALUE}" ] && INI_VALUE_RAW="*${INI_VALUE_RAW}" || INI_VALUE_RAW=" ${INI_VALUE_RAW}"
 				INI_VALUE_HELP=""
 				# MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" ${INI_VALUE_SELECTED} \"${INI_VALUE_HELP}\""
 				# MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" \"${INI_VALUE_COLOR}${INI_VALUE_DESCRIPTION}\" \"${INI_VALUE_HELP}\""
@@ -580,6 +585,11 @@ function showOptionMENU {
 		${MENU_ITEMS} \
 		2> ${DIALOG_TEMPFILE}
 	readDIALOGtempfile
+}
+
+function showPleaseWAIT {
+	${DIALOG} --title "MiSTer INI Settings" \
+	--infobox "Please wait..." 0 0
 }
 
 
