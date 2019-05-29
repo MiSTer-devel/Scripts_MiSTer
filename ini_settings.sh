@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.3 - 2019-05-29 - Improved textual descriptions of options.
 # Version 1.1.2 - 2019-05-29 - Added support for fb_terminal, vscale_border, bootscreen, mouse_throttle, key_menu_as_rgui, keyrah_mode, rbf_hide_datecode, bootcore and bootcore_timeout.
 # Version 1.1.1 - 2019-05-29 - Improved textual descriptions of options.
 # Version 1.1 - 2019-05-29 - Added support for setting non existing or commented keys; the font selection page has a single row now.
@@ -234,8 +235,8 @@ KEY_key_menu_as_rgui=(
 )
 
 KEY_keyrah_mode=(
-	"VIDPID of keyrah for special code translation"
-	"0x18d80002|0x18d80002"
+	"VIDPID of Keyrah for special code translation"
+	"0x18d80002|0x18d80002|Use this for original Keyrah"
 	"0x23418037|0x23418037|Use this for Arduino Micro"
 )
 
