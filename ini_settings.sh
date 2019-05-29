@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.4 - 2019-05-29 - The advanced editor starts with the Cancel button selected.
 # Version 1.1.3 - 2019-05-29 - Improved textual descriptions of options.
 # Version 1.1.2 - 2019-05-29 - Added support for fb_terminal, vscale_border, bootscreen, mouse_throttle, key_menu_as_rgui, keyrah_mode, rbf_hide_datecode, bootcore and bootcore_timeout.
 # Version 1.1.1 - 2019-05-29 - Improved textual descriptions of options.
@@ -518,7 +519,7 @@ function showMainMENU_EDITOR {
 	EDITOR_TEMPFILE=/tmp/editor_tempfile$$
 	echo "${MISTER_INI}" > "${EDITOR_TEMPFILE}"
 	setupDIALOGtempfile
-	eval ${DIALOG} --clear \
+	eval ${DIALOG} --clear --defaultno \
 		--title \"MiSTer INI Settings\" \
 		--editbox "${EDITOR_TEMPFILE}" 0 0 \
 		2> ${DIALOG_TEMPFILE}
