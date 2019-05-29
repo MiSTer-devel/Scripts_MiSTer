@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1 - 2019-05-29 - Added support for setting non existing or commented keys; the font selection page has a single row now.
 # Version 1.0.10 - 2019-05-28 - Changed value selection page from a radiolist to a menu in order to improve usability; now the font value is displayed withouth path and extension.
 # Version 1.0.9 - 2019-05-28 - Changed MiSTer.ini directory to /media/fat (previously it was /media/fat/config); now the script checks if ~/.dialogrc exists and creates .dialogrc in the current directory when needed (previously it used /media/fat/config/dialogrc); improved some texts.
 # Version 1.0.8 - 2019-05-27 - Improved textual descriptions of options, many thanks to misteraddons.
@@ -390,17 +391,19 @@ function getVALUE () {
 function setVALUE () {
 	INI_KEY="${1}"
 	INI_VALUE="${2}"
-	[ ${INI_KEY} == "font" ] && INI_VALUE="${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}"
+	[ ${INI_KEY} == "font" ] && INI_VALUE="${FONTS_DIRECTORY}/${INI_VALUE//\*/}.${FONTS_EXTENSION}"
 	INI_VALUE=$(echo "${INI_VALUE}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
-	MISTER_INI=$(echo "${MISTER_INI}" | sed "1,/^\s*$INI_KEY=[a-zA-Z0-9%().,/_-]*/{s/^\s*$INI_KEY=[a-zA-Z0-9%().,/_-]*/$INI_KEY=$INI_VALUE/}")
+	checkKEY ${INI_KEY} || MISTER_INI=$(echo "${MISTER_INI}" | sed "1,/^\s*;\s*$INI_KEY\s*=\s*/{s/^\s*;\s*$INI_KEY\s*=\s*/$INI_KEY=/}")
+	checkKEY ${INI_KEY} || MISTER_INI=$(echo "${MISTER_INI}" | sed '/\[MiSTer\]/a\'$INI_KEY'=')
+	MISTER_INI=$(echo "${MISTER_INI}" | sed "1,/^\s*$INI_KEY\s*=\s*[a-zA-Z0-9%().,/_-]*/{s/^\s*$INI_KEY\s*=\s*[a-zA-Z0-9%().,/_-]*/$INI_KEY=$INI_VALUE/}")
 }
-
 
 function showMainMENU_GUI {
 	MENU_ITEMS=""
 	for INI_KEY in ${INI_KEYS}; do
-		checkKEY ${INI_KEY} || continue
+		# checkKEY ${INI_KEY} || continue
 		getVALUE "${INI_KEY}"
+		[ "${INI_VALUE}" = "" ] && INI_VALUE="Not set or commented"
 		INI_KEY_HELP=""
 		INI_VALUE_DESCRIPTION=""
 		for INDEX in $(eval echo \${!KEY_${INI_KEY}[@]}); do
@@ -455,17 +458,19 @@ function showOptionMENU {
 	case "${INI_KEY}" in
 		"font")
 			[ ! -d "${FONTS_DIRECTORY}" ] && return ${DIALOG_CANCEL}
-			# ADDITIONAL_OPTIONS="--no-items"
+			ADDITIONAL_OPTIONS="--no-items"
 			INI_KEY_HELP="$(eval echo \${KEY_${INI_KEY}[0]})"
 			for FONT in "${FONTS_DIRECTORY}"/*."${FONTS_EXTENSION}"
 			do
 				INI_VALUE_RAW="${FONT/*\//}" && INI_VALUE_RAW="${INI_VALUE_RAW%.*}"
-				INI_VALUE_DESCRIPTION="${FONT}"
+				# INI_VALUE_DESCRIPTION="${FONT}"
 				# { echo "${FONT}" | grep -q "^${INI_VALUE}$"; } && INI_VALUE_SELECTED="ON" || INI_VALUE_SELECTED="off"
-				{ echo "${FONT}" | grep -q "^${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}$"; } && INI_VALUE_COLOR="\Z1\Zu" || INI_VALUE_COLOR=""
+				# { echo "${FONT}" | grep -q "^${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}$"; } && INI_VALUE_COLOR="\Z1\Zu" || INI_VALUE_COLOR=""
+				{ echo "${FONT}" | grep -q "^${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}$"; } && INI_VALUE_RAW="***${INI_VALUE_RAW}***"
 				INI_VALUE_HELP=""
 				# MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" ${INI_VALUE_SELECTED} \"${INI_VALUE_HELP}\""
-				MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" \"${INI_VALUE_COLOR}${INI_VALUE_DESCRIPTION}\" \"${INI_VALUE_HELP}\""
+				# MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" \"${INI_VALUE_COLOR}${INI_VALUE_DESCRIPTION}\" \"${INI_VALUE_HELP}\""
+				MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" \"${INI_VALUE_HELP}\""
 			done
 			;;
 		*)
