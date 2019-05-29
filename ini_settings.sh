@@ -224,7 +224,7 @@ KEY_mouse_throttle=(
 	"70|70" "71|71" "72|72" "73|73" "74|74" "75|75" "76|76" "77|77" "78|78" "79|79"
 	"80|80" "81|81" "82|82" "83|83" "84|84" "85|85" "86|86" "87|87" "88|88" "89|89"
 	"90|90" "91|91" "92|92" "93|93" "94|94" "95|95" "96|96" "97|97" "98|98" "99|99"
-	"100|100|"
+	"100|100"
 )
 
 KEY_key_menu_as_rgui=(
@@ -255,7 +255,7 @@ KEY_bootcore=(
 KEY_bootcore_timeout=(
 	"Sets the timeout before autoboot"
 	 "10|10 seconds" "11|11 seconds" "12|12 seconds" "13|13 seconds" "14|14 seconds"
-	 "15|15 seconds"	 "16|16 seconds" "17|17 seconds" "18|18 seconds" "19|19 seconds"
+	 "15|15 seconds" "16|16 seconds" "17|17 seconds" "18|18 seconds" "19|19 seconds"
 	 "20|20 seconds" "21|21 seconds" "22|22 seconds" "23|23 seconds" "24|24 seconds"
 	 "25|25 seconds" "26|26 seconds" "27|27 seconds" "28|28 seconds" "29|29 seconds"
 	 "30|30 seconds"
