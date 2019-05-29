@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.2 - 2019-05-29 - Added support for fb_terminal, vscale_border, bootscreen, mouse_throttle, key_menu_as_rgui, keyrah_mode, rbf_hide_datecode, bootcore and bootcore_timeout.
 # Version 1.1.1 - 2019-05-29 - Improved textual descriptions of options.
 # Version 1.1 - 2019-05-29 - Added support for setting non existing or commented keys; the font selection page has a single row now.
 # Version 1.0.10 - 2019-05-28 - Changed value selection page from a radiolist to a menu in order to improve usability; now the font value is displayed withouth path and extension.
@@ -45,7 +46,7 @@ ALLOW_INSECURE_SSL="true"
 FONTS_DIRECTORY="/media/fat/font"
 FONTS_EXTENSION="pf"
 
-INI_KEYS="video_mode video_mode_ntsc video_mode_pal vsync_adjust vscale_mode hdmi_limited dvi_mode vga_scaler forced_scandoubler ypbpr composite_sync hdmi_audio_96k fb_size video_info font volumectl"
+INI_KEYS="video_mode video_mode_ntsc video_mode_pal vsync_adjust vscale_mode vscale_border hdmi_limited dvi_mode vga_scaler forced_scandoubler ypbpr composite_sync hdmi_audio_96k video_info font volumectl mouse_throttle bootscreen key_menu_as_rgui keyrah_mode rbf_hide_datecode bootcore bootcore_timeout fb_size fb_terminal"
 
 KEY_video_mode=(
 	"Video resolution and frequency"
@@ -183,6 +184,81 @@ KEY_volumectl=(
 	"Enables audio volume control with multimedia keys"
 	"0|Off"
 	"1|on"
+)
+
+KEY_fb_terminal=(
+	"Enables the framebuffer terminl (the one you are using now) for the Scripts menu"
+	"0|Off"
+	"1|on"
+)
+
+KEY_vscale_border=(
+	"Adds a vertical border for TV sets cutting the upper/bottom part of the screen"
+	"0|0" "1|1" "2|2" "3|3" "4|4" "5|5" "6|6" "7|7" "8|8" "9|9"
+	"10|10" "11|11" "12|12" "13|13" "14|14" "15|15" "16|16" "17|17" "18|18" "19|19"
+	"20|20" "21|21" "22|22" "23|23" "24|24" "25|25" "26|26" "27|27" "28|28" "29|29"
+	"30|30" "31|31" "32|32" "33|33" "34|34" "35|35" "36|36" "37|37" "38|38" "39|39"
+	"40|40" "41|41" "42|42" "43|43" "44|44" "45|45" "46|46" "47|47" "48|48" "49|49"
+	"50|50" "51|51" "52|52" "53|53" "54|54" "55|55" "56|56" "57|57" "58|58" "59|59"
+	"60|60" "61|61" "62|62" "63|63" "64|64" "65|65" "66|66" "67|67" "68|68" "69|69"
+	"70|70" "71|71" "72|72" "73|73" "74|74" "75|75" "76|76" "77|77" "78|78" "79|79"
+	"80|80" "81|81" "82|82" "83|83" "84|84" "85|85" "86|86" "87|87" "88|88" "89|89"
+	"90|90" "91|91" "92|92" "93|93" "94|94" "95|95" "96|96" "97|97" "98|98" "99|99"
+)
+
+KEY_bootscreen=(
+	"Enables boot screen of some cores like Minimig"
+	"0|Off"
+	"1|on"
+)
+
+KEY_mouse_throttle=(
+	"1-100 mouse speed divider; useful for very sensitive mice"
+	"1|1" "2|2" "3|3" "4|4" "5|5" "6|6" "7|7" "8|8" "9|9"
+	"10|10" "11|11" "12|12" "13|13" "14|14" "15|15" "16|16" "17|17" "18|18" "19|19"
+	"20|20" "21|21" "22|22" "23|23" "24|24" "25|25" "26|26" "27|27" "28|28" "29|29"
+	"30|30" "31|31" "32|32" "33|33" "34|34" "35|35" "36|36" "37|37" "38|38" "39|39"
+	"40|40" "41|41" "42|42" "43|43" "44|44" "45|45" "46|46" "47|47" "48|48" "49|49"
+	"50|50" "51|51" "52|52" "53|53" "54|54" "55|55" "56|56" "57|57" "58|58" "59|59"
+	"60|60" "61|61" "62|62" "63|63" "64|64" "65|65" "66|66" "67|67" "68|68" "69|69"
+	"70|70" "71|71" "72|72" "73|73" "74|74" "75|75" "76|76" "77|77" "78|78" "79|79"
+	"80|80" "81|81" "82|82" "83|83" "84|84" "85|85" "86|86" "87|87" "88|88" "89|89"
+	"90|90" "91|91" "92|92" "93|93" "94|94" "95|95" "96|96" "97|97" "98|98" "99|99"
+	"100|100|"
+)
+
+KEY_key_menu_as_rgui=(
+	"Enables the MENU key map to RGUI in Minimig (e.g. for Right Amiga)"
+	"0|Off"
+	"1|on"
+)
+
+KEY_keyrah_mode=(
+	"VIDPID of keyrah for special code translation"
+	"0x18d80002|0x18d80002"
+	"0x23418037|0x23418037|Use this for Arduino Micro"
+)
+
+KEY_rbf_hide_datecode=(
+	"Hides datecodes/timestamps for rbf file names; press F2 for quick temporary toggle"
+	"0|Off|Datecodes/timestamps visible"
+	"1|on|Datecodes/timestamps not visible"
+)
+
+KEY_bootcore=(
+	"Enables core autobooting"
+	 "|Disabled"
+	 "lastcore|lastcore|Autoboot the last loaded core (corename autosaved in CONFIG/lastcore.dat) first found on the SD/USB"
+	 "lastexactcore|lastexactcore|Autoboot the last loaded exact core (corename_yyyymmdd.rbf autosaved in CONFIG/lastcore.dat) first found on the SD/USB"
+)
+
+KEY_bootcore_timeout=(
+	"Sets the timeout before autoboot"
+	 "10|10 seconds" "11|11 seconds" "12|12 seconds" "13|13 seconds" "14|14 seconds"
+	 "15|15 seconds"	 "16|16 seconds" "17|17 seconds" "18|18 seconds" "19|19 seconds"
+	 "20|20 seconds" "21|21 seconds" "22|22 seconds" "23|23 seconds" "24|24 seconds"
+	 "25|25 seconds" "26|26 seconds" "27|27 seconds" "28|28 seconds" "29|29 seconds"
+	 "30|30 seconds"
 )
 
 
