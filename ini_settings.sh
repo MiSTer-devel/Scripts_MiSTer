@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.1 - 2019-05-29 - Improved textual descriptions of options.
 # Version 1.1 - 2019-05-29 - Added support for setting non existing or commented keys; the font selection page has a single row now.
 # Version 1.0.10 - 2019-05-28 - Changed value selection page from a radiolist to a menu in order to improve usability; now the font value is displayed withouth path and extension.
 # Version 1.0.9 - 2019-05-28 - Changed MiSTer.ini directory to /media/fat (previously it was /media/fat/config); now the script checks if ~/.dialogrc exists and creates .dialogrc in the current directory when needed (previously it used /media/fat/config/dialogrc); improved some texts.
@@ -63,7 +64,7 @@ KEY_video_mode=(
 )
 
 KEY_video_mode_ntsc=(
-	"Video resolution and frequency for NTSC cores"
+	"Video resolution and frequency for NTSC cores; if you use this, please set video_mode_pal too"
 	"0|1280x720 60Hz"
 	"1|1024x768 60Hz"
 	"2|720x480 60Hz"
@@ -79,7 +80,7 @@ KEY_video_mode_ntsc=(
 )
 
 KEY_video_mode_pal=(
-	"Video resolution and frequency PAL cores"
+	"Video resolution and frequency PAL cores; if you use this, please set video_mode_ntsc too"
 	"0|1280x720 60Hz"
 	"1|1024x768 60Hz"
 	"2|720x480 60Hz"
