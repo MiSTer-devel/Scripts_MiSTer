@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.6 - 2019-05-29 - Speed optimizations.
 # Version 1.1.5 - 2019-05-29 - Added "Please wait..." screens; font value now is stored as font=/font/myfont.pf without the leading /media/fat.
 # Version 1.1.4 - 2019-05-29 - The advanced editor starts with the Cancel button selected.
 # Version 1.1.3 - 2019-05-29 - Improved textual descriptions of options.
@@ -433,8 +434,6 @@ function setupDIALOGtempfile {
 function readDIALOGtempfile {
 	DIALOG_RETVAL=$?
 	DIALOG_OUTPUT="$(cat ${DIALOG_TEMPFILE})"
-	#rm -f ${DIALOG_TEMPFILE}
-	#unset DIALOG_TEMPFILE
 }
 
 function loadMiSTerINI {
@@ -460,18 +459,27 @@ function checkKEY () {
 	return ${?}
 }
 
+#declare -A valueCACHE
 
 function getVALUE () {
 	INI_KEY="${1}"
-	INI_VALUE=$(echo "${MISTER_INI}" | grep -oE -m 1 "^\s*${INI_KEY}\s*=\s*[a-zA-Z0-9%().,/_-]+"|sed "s/^\s*${INI_KEY}\s*=\s*//")
+	#if [ -v "valueCACHE[${INI_KEY}]" ]
+	#then
+	#	#echo "CACHE HIT"
+	#	INI_VALUE="${valueCACHE[${INI_KEY}]}"
+	#else 
+	#	#echo "CACHE MISS"
+		INI_VALUE=$(echo "${MISTER_INI}" | grep -oE -m 1 "^\s*${INI_KEY}\s*=\s*[a-zA-Z0-9%().,/_-]+"|sed "s/^\s*${INI_KEY}\s*=\s*//")
+	#	valueCACHE["${INI_KEY}"]="${INI_VALUE}"
+	#fi	
 	[ ${INI_KEY} == "font" ] && INI_VALUE="${INI_VALUE/*\//}" && INI_VALUE="${INI_VALUE%.*}"
-
 }
 
 function setVALUE () {
 	INI_KEY="${1}"
 	INI_VALUE="${2}"
 	[ ${INI_KEY} == "font" ] && INI_VALUE="${FONTS_DIRECTORY/\/media\/fat/}/${INI_VALUE/[* ]/}.${FONTS_EXTENSION}"
+	#valueCACHE["${INI_KEY}"]="${INI_VALUE}"
 	INI_VALUE=$(echo "${INI_VALUE}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
 	checkKEY ${INI_KEY} || MISTER_INI=$(echo "${MISTER_INI}" | sed "1,/^\s*;\s*$INI_KEY\s*=\s*/{s/^\s*;\s*$INI_KEY\s*=\s*/$INI_KEY=/}")
 	checkKEY ${INI_KEY} || MISTER_INI=$(echo "${MISTER_INI}" | sed '/\[MiSTer\]/a\'$INI_KEY'=')
@@ -493,9 +501,10 @@ function showMainMENU_GUI {
 			then
 				INI_KEY_HELP="${KEY_VALUE_CONFIG}"
 			else
-				if echo "${KEY_VALUE_CONFIG}" | grep -q "^${INI_VALUE}|"
+				INI_VALUE_RAW="${KEY_VALUE_CONFIG%%|*}"
+				if [ "${INI_VALUE_RAW}" == "${INI_VALUE}" ]
 				then
-					INI_VALUE_DESCRIPTION=$(echo "${KEY_VALUE_CONFIG}" | sed "s/^${INI_VALUE}|//" | sed "s/|.*//")
+					INI_VALUE_DESCRIPTION="${KEY_VALUE_CONFIG#*|}" && INI_VALUE_DESCRIPTION="${INI_VALUE_DESCRIPTION%%|*}"
 					break
 				fi
 			fi
@@ -533,7 +542,6 @@ function showMainMENU_EDITOR {
 function showOptionMENU {
 	showPleaseWAIT
 	INI_KEY=${DIALOG_OUTPUT}
-	getVALUE "${INI_KEY}"
 	MENU_ITEMS=""
 	ADDITIONAL_OPTIONS=""
 	getVALUE "${INI_KEY}"
@@ -546,14 +554,8 @@ function showOptionMENU {
 			do
 				INI_VALUE_RAW="${FONT/*\//}" && INI_VALUE_RAW="${INI_VALUE_RAW%.*}"
 				# INI_VALUE_DESCRIPTION="${FONT}"
-				# { echo "${FONT}" | grep -q "^${INI_VALUE}$"; } && INI_VALUE_SELECTED="ON" || INI_VALUE_SELECTED="off"
-				# { echo "${FONT}" | grep -q "^${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}$"; } && INI_VALUE_COLOR="\Z1\Zu" || INI_VALUE_COLOR=""
-				# { echo "${FONT}" | grep -q "^${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}$"; } && INI_VALUE_RAW="***${INI_VALUE_RAW}***"
-				# { echo "${FONT}" | grep -q "^${FONTS_DIRECTORY}/${INI_VALUE}.${FONTS_EXTENSION}$"; } && INI_VALUE_RAW="*${INI_VALUE_RAW}" || INI_VALUE_RAW=" ${INI_VALUE_RAW}"
 				[ "${INI_VALUE_RAW}" == "${INI_VALUE}" ] && INI_VALUE_RAW="*${INI_VALUE_RAW}" || INI_VALUE_RAW=" ${INI_VALUE_RAW}"
 				INI_VALUE_HELP=""
-				# MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" ${INI_VALUE_SELECTED} \"${INI_VALUE_HELP}\""
-				# MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" \"${INI_VALUE_COLOR}${INI_VALUE_DESCRIPTION}\" \"${INI_VALUE_HELP}\""
 				MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" \"${INI_VALUE_HELP}\""
 			done
 			;;
@@ -564,18 +566,15 @@ function showOptionMENU {
 				then
 					INI_KEY_HELP="${KEY_VALUE_CONFIG}"
 				else
-					INI_VALUE_RAW=$(echo "${KEY_VALUE_CONFIG}" | sed "s/|.*//")
-					INI_VALUE_DESCRIPTION=$(echo "${KEY_VALUE_CONFIG}" | sed "s/^[^|]*|//" | sed "s/|.*//")
-					# { echo "${KEY_VALUE_CONFIG}" | grep -q "^${INI_VALUE}|"; } && INI_VALUE_SELECTED="ON" || INI_VALUE_SELECTED="off"
-					{ echo "${KEY_VALUE_CONFIG}" | grep -q "^${INI_VALUE}|"; } && INI_VALUE_COLOR="\Z1\Zu" || INI_VALUE_COLOR=""
-					{ echo "${KEY_VALUE_CONFIG}" | grep -q "|.*|"; } && INI_VALUE_HELP=$(echo "${KEY_VALUE_CONFIG}" | sed "s/^.*|//") || INI_VALUE_HELP=""
-					# MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" \"${INI_VALUE_DESCRIPTION}\" ${INI_VALUE_SELECTED} \"${INI_VALUE_HELP}\""
+					INI_VALUE_RAW="${KEY_VALUE_CONFIG%%|*}"
+					INI_VALUE_DESCRIPTION="${KEY_VALUE_CONFIG#*|}" && INI_VALUE_DESCRIPTION="${INI_VALUE_DESCRIPTION%%|*}"
+					[ "${INI_VALUE_RAW}" == "${INI_VALUE}" ] && INI_VALUE_COLOR="\Z1\Zu" || INI_VALUE_COLOR=""
+					INI_VALUE_HELP="${KEY_VALUE_CONFIG##*|}" && [ "${INI_VALUE_HELP}" == "${INI_VALUE_DESCRIPTION}" ] && INI_VALUE_HELP=""
 					MENU_ITEMS="${MENU_ITEMS} \"${INI_VALUE_RAW}\" \"${INI_VALUE_COLOR}${INI_VALUE_DESCRIPTION}\" \"${INI_VALUE_HELP}\""
 				fi
 			done
 			;;
 	esac
-	# INI_KEY_HELP="${INI_KEY_HELP}\n\nPress space to select a value;\nan asterisk marks the selected one"
 	
 	setupDIALOGtempfile
 	eval ${DIALOG} --clear --colors --item-help --ok-label \"Select\" \
@@ -655,6 +654,6 @@ while true; do
 	fi
 done
 
-clear
+#clear
 
 exit 0
