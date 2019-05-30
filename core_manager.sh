@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 0.9.1 - 2019-05-30 - Creating directories when needed.
 # Version 0.9 - 2019-05-30 - First commit, lacking any MiSTer Updater configuration capability.
 
 
@@ -366,6 +367,7 @@ while true; do
 						showInstallMENU "${CORE_CATEGORY_NAME}"
 						case ${DIALOG_RETVAL} in
 							${DIALOG_OK})
+								mkdir -p "${CORE_CATEGORY_PATHS[${CORE_CATEGORY}]}"
 								CORE_URL="${DIALOG_OUTPUT}"
 								ORIGINAL_DOWNLOAD_NEW_CORES="${DOWNLOAD_NEW_CORES}"
 								DOWNLOAD_NEW_CORES="true"
