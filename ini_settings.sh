@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.7 - 2019-05-30 - The menu box uses all available space now.
 # Version 1.1.6 - 2019-05-29 - Speed optimizations.
 # Version 1.1.5 - 2019-05-29 - Added "Please wait..." screens; font value now is stored as font=/font/myfont.pf without the leading /media/fat.
 # Version 1.1.4 - 2019-05-29 - The advanced editor starts with the Cancel button selected.
@@ -520,7 +521,7 @@ function showMainMENU_GUI {
 		${SAVE_BUTTON} \
 		--help-button --help-label \"Advanced...\" \
 		--title \"MiSTer INI Settings\" \
-		--menu \"Please choose an option you want to change.$'\n'Use arrow keys, tab, space, enter and esc.\" 0 0 0 \
+		--menu \"Please choose an option you want to change.$'\n'Use arrow keys, tab, space, enter and esc.\" 0 0 999 \
 		${MENU_ITEMS} \
 		2> ${DIALOG_TEMPFILE}
 	readDIALOGtempfile
@@ -580,7 +581,7 @@ function showOptionMENU {
 	eval ${DIALOG} --clear --colors --item-help --ok-label \"Select\" \
 		--title \"MiSTer INI Settings: ${INI_KEY}\" \
 		${ADDITIONAL_OPTIONS} \
-		--menu \"${INI_KEY_HELP}\" 0 0 0 \
+		--menu \"${INI_KEY_HELP}\" 0 0 999 \
 		${MENU_ITEMS} \
 		2> ${DIALOG_TEMPFILE}
 	readDIALOGtempfile
