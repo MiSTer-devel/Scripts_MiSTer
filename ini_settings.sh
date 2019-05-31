@@ -658,6 +658,6 @@ while true; do
 	fi
 done
 
-#clear
+clear
 
 exit 0
