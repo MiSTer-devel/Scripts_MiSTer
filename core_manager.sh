@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 0.9.2 - 2019-05-31 - Added DIALOG_HEIGHT parameter.
 # Version 0.9.1 - 2019-05-30 - Creating directories when needed.
 # Version 0.9 - 2019-05-30 - First commit, lacking any MiSTer Updater configuration capability.
 
@@ -27,6 +28,10 @@
 
 # ========= ADVANCED OPTIONS =========
 UPDATER_URL="https://github.com/MiSTer-devel/Updater_script_MiSTer/blob/master/mister_updater.sh"
+
+DIALOG_HEIGHT="31"
+
+
 
 # ========= CODE STARTS HERE =========
 
@@ -291,7 +296,7 @@ function showMainMENU {
 	setupDIALOGtempfile
 	${DIALOG} --clear --no-tags --item-help --ok-label "Select" \
 		--title "${DIALOG_TITLE}" \
-		--menu "Please choose an option.\nUse arrow keys, tab, space, enter and esc." 0 0 999 \
+		--menu "Please choose an option.\nUse arrow keys, tab, space, enter and esc." ${DIALOG_HEIGHT} 0 999 \
 		"installCOMPUTER" "Install/Update Computer core" "" \
 		"deleteCOMPUTER" "Delete Computer core" "" \
 		"installCONSOLE" "Install/Update Console core" "" \
@@ -324,7 +329,7 @@ function showInstallMENU {
 		--extra-button --extra-label \"README\" \
 		--title \"${DIALOG_TITLE}: Install/Update ${CORE_CATEGORY_NAME,,} core\" \
 		${ADDITIONAL_OPTIONS} \
-		--menu \"Please select the ${CORE_CATEGORY_NAME,,} core you wish to install or update.\" 0 0 999 \
+		--menu \"Please select the ${CORE_CATEGORY_NAME,,} core you wish to install or update.\" ${DIALOG_HEIGHT} 0 999 \
 		${MENU_ITEMS} \
 		2> ${DIALOG_TEMPFILE}
 	readDIALOGtempfile
@@ -342,7 +347,7 @@ function showDeleteMENU {
 	eval ${DIALOG} --clear --colors --ok-label \"Delete\" \
 		--title \"${DIALOG_TITLE}: Delete ${CORE_CATEGORY_NAME,,} core\" \
 		${ADDITIONAL_OPTIONS} \
-		--menu \"Please select the ${CORE_CATEGORY_NAME,,} core you wish to delete.\" 0 0 999 \
+		--menu \"Please select the ${CORE_CATEGORY_NAME,,} core you wish to delete.\" ${DIALOG_HEIGHT} 0 999 \
 		${MENU_ITEMS} \
 		2> ${DIALOG_TEMPFILE}
 	readDIALOGtempfile
