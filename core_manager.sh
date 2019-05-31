@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 0.9.3 - 2019-05-31 - Added ALLOW_INSECURE_SSL="true" in order to not enforce the use of security_fixes.sh
 # Version 0.9.2 - 2019-05-31 - Added DIALOG_HEIGHT parameter.
 # Version 0.9.1 - 2019-05-30 - Creating directories when needed.
 # Version 0.9 - 2019-05-30 - First commit, lacking any MiSTer Updater configuration capability.
@@ -28,6 +29,8 @@
 
 # ========= ADVANCED OPTIONS =========
 UPDATER_URL="https://github.com/MiSTer-devel/Updater_script_MiSTer/blob/master/mister_updater.sh"
+
+ALLOW_INSECURE_SSL="true"
 
 DIALOG_HEIGHT="31"
 
