@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.9 - 2019-06-01 - Add support for DEBs with data.tar.gz.
 # Version 1.1.8 - 2019-05-31 - Added DIALOG_HEIGHT parameter.
 # Version 1.1.7 - 2019-05-30 - The menu box uses all available space now.
 # Version 1.1.6 - 2019-05-29 - Speed optimizations.
@@ -374,14 +375,20 @@ function installDEBS () {
 			echo "Extracting ${ARCHIVE_FILES}"
 			ORIGINAL_DIR="$(pwd)"
 			cd "${TEMP_PATH}"
-			rm data.tar.xz > /dev/null 2>&1
-			ar -x "${TEMP_PATH}/${MAX_DEB_NAME}" data.tar.xz
+			rm data.tar.xz data.tar.gz > /dev/null 2>&1	
+			ar -x "${TEMP_PATH}/${MAX_DEB_NAME}" data.tar.*
 			cd "${ORIGINAL_DIR}"
 			rm "${TEMP_PATH}/${MAX_DEB_NAME}"
 			mkdir -p "${DEST_DIR}"
-			[ ! -f "${TEMP_PATH}/data.tar.xz" ] && echo "Error: no ${TEMP_PATH}/data.tar.xz found." && exit 1
-			tar -xJf "${TEMP_PATH}/data.tar.xz" --wildcards --no-anchored --strip-components="${STRIP_COMPONENTS}" -C "${DEST_DIR}" "${ARCHIVE_FILES}"
-			rm "${TEMP_PATH}/data.tar.xz" > /dev/null 2>&1
+			if [ -f "${TEMP_PATH}/data.tar.xz" ]
+			then
+				tar -xJf "${TEMP_PATH}/data.tar.xz" --wildcards --no-anchored --strip-components="${STRIP_COMPONENTS}" -C "${DEST_DIR}" "${ARCHIVE_FILES}"
+				rm "${TEMP_PATH}/data.tar.xz" > /dev/null 2>&1
+			else
+			  	[ ! -f "${TEMP_PATH}/data.tar.gz" ] && echo "Error: no ${TEMP_PATH}/data.tar found." && exit 1
+			  	tar -xzf "${TEMP_PATH}/data.tar.gz" --wildcards --no-anchored --strip-components="${STRIP_COMPONENTS}" -C "${DEST_DIR}" "${ARCHIVE_FILES}"
+			  	rm "${TEMP_PATH}/data.tar.gz" > /dev/null 2>&1
+			fi
 		fi
 	done
 }
