@@ -22,7 +22,8 @@
 # Version 1.1 - 2019-01-08 - Changed "http://ip-api.com/json/" to "http://www.ip-api.com/json/".
 # Version 1.0 - 2019-01-08 - First commit.
 
-TIMEZONE="$(curl -sLf "http://www.ip-api.com/json/" | grep -o "\"timezone\" *: *\"[^\"]*" | grep -o "[^\"]*$")"
+TIMEZONE="$(curl -sLf "http://www.ip-api.com/json/" | sed 's/^.*timezone":"// ; s/",.*$//')"
+
 if echo "$TIMEZONE" | grep -q "/"
 then
 	cp "/usr/share/zoneinfo/posix/$TIMEZONE" "/media/fat/linux/timezone"
