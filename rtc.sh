@@ -18,11 +18,12 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.1 - 2019-06-10 - Pinging the NTP server for testing Internet connectivity instead of google.com.
 # Version 1.0 - 2019-01-08 - First commit.
 
 NTP_SERVER="0.pool.ntp.org"
 
-if ! ping -q -w1 -c1 google.com &>/dev/null
+if ! ping -q -w1 -c1 ${NTP_SERVER} &>/dev/null
 then
 	echo "No Internet connection"
 	exit 1
