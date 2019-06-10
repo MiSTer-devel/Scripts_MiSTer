@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 0.9.4 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com.
 # Version 0.9.3 - 2019-05-31 - Added ALLOW_INSECURE_SSL="true" in order to not enforce the use of security_fixes.sh
 # Version 0.9.2 - 2019-05-31 - Added DIALOG_HEIGHT parameter.
 # Version 0.9.1 - 2019-05-30 - Creating directories when needed.
@@ -114,7 +115,7 @@ function setupCURL
 	CURL_RETRY="--connect-timeout 15 --max-time 120 --retry 3 --retry-delay 5"
 	# test network and https by pinging the most available website 
 	SSL_SECURITY_OPTION=""
-	curl ${CURL_RETRY} --silent https://google.com > /dev/null 2>&1
+	curl ${CURL_RETRY} --silent https://github.com > /dev/null 2>&1
 	case $? in
 		0)
 			;;
