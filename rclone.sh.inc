@@ -16,13 +16,14 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.1 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com.
 # Version 1.0 - 2019-02-05 - First commit
 
 
 
 if [ ! -f /media/fat/linux/rclone ]
 then
-	curl -sf https://google.com &>/dev/null
+	curl -sf https://github.com &>/dev/null
 	case $? in
 		0)
 			echo "Downloading and extracting"
