@@ -18,7 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
-# Version 1.2.10 - 2019-06-03 - Testing Internet connectivity with github.com instead of google.com; refined the check for standard root password.
+# Version 1.2.10 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com; refined the check for standard root password.
 # Version 1.2.9 - 2019-06-03 - Refined the check for standard root password.
 # Version 1.2.8 - 2019-05-27 - Refined the check for standard root password.
 # Version 1.2.7 - 2019-05-25 - Refined the check for standard root password.
