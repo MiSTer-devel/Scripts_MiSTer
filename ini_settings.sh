@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.10 - 2019-06-12 - Font option value is saved without the leading slash, i.e. font=font/myfont.pf.
 # Version 1.1.9 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com.
 # Version 1.1.8 - 2019-05-31 - Added DIALOG_HEIGHT parameter.
 # Version 1.1.7 - 2019-05-30 - The menu box uses all available space now.
@@ -483,7 +484,7 @@ function getVALUE () {
 function setVALUE () {
 	INI_KEY="${1}"
 	INI_VALUE="${2}"
-	[ ${INI_KEY} == "font" ] && INI_VALUE="${FONTS_DIRECTORY/\/media\/fat/}/${INI_VALUE/[* ]/}.${FONTS_EXTENSION}"
+	[ ${INI_KEY} == "font" ] && INI_VALUE="${FONTS_DIRECTORY/\/media\/fat\//}/${INI_VALUE/[* ]/}.${FONTS_EXTENSION}"
 	#valueCACHE["${INI_KEY}"]="${INI_VALUE}"
 	INI_VALUE=$(echo "${INI_VALUE}" | sed 's/\//\\\//g' | sed 's/\./\\\./g')
 	checkKEY ${INI_KEY} || MISTER_INI=$(echo "${MISTER_INI}" | sed "1,/^\s*;\s*$INI_KEY\s*=\s*/{s/^\s*;\s*$INI_KEY\s*=\s*/$INI_KEY=/}")
