@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.3 - 2019-06-16 - Remounting root filesystem RW (and back RO) when needed, for making the script compatible with the new Framebuffer Terminal.
 # Version 1.2.10 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com; refined the check for standard root password.
 # Version 1.2.9 - 2019-06-03 - Refined the check for standard root password.
 # Version 1.2.8 - 2019-05-27 - Refined the check for standard root password.
@@ -57,6 +58,8 @@ if (( $EUID != 0 )); then
     exit 3
 fi
 
+mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
+
 if cat /etc/shadow | grep -o "^root:[^:]*" | md5sum | grep -q "\(^9104842aa3318a956e51a081d052d2ee \)\|\(^18de777543175ec29c71ebf177590199 \)\|\(^b136a9bff6f6f09feb2f30e12be37e22 \)\|\(^beca3beae21066c49e2f11d13fe68342 \)\|\(^8fe03c31a7fcc77d0af7177bd1f84825 \)\|\(^dba15e7cbfe81723120d89dba1cb6b91 \)\|\(^6b0cbc28900d54dc8517793507fd70f4 \)\|\(^62c14fc8d7fcb2e776f44302094c2ccd \)\|\(^c71576bf3b576b79ee29bf6e4f0ea822 \)"
 then
 	echo "root password is the original one from"
@@ -65,12 +68,14 @@ then
 	echo ""
 	case "$REPLY" in
 		y|Y)
+			[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
 			until passwd root
 			do
 				echo "Password not set, try again."
 				sleep 1
 			done
 			sync
+			[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
 			echo "root password succesfully changed."
 			;;
 	esac
@@ -89,6 +94,7 @@ case $? in
 		echo ""
 		case "$REPLY" in
 			y|Y)
+				[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
 				if  (( $(ls -A /etc/ssl/certs| wc -l) > 0 ))
 				then
 					echo "/etc/ssl/certs is not empty, please backup its content first and then empty it."
@@ -116,6 +122,7 @@ case $? in
 				for PEM in /etc/ssl/certs/*.pem; do mv "$PEM" "$(dirname "$PEM")/$(cat "$PEM" | grep -m 1 '^[^#]').pem"; done
 				for PEM in /etc/ssl/certs/*.pem; do for HASH in $(openssl x509 -subject_hash_old -hash -noout -in "$PEM" 2>/dev/null); do ln -s "$(basename "$PEM")" "$(dirname "$PEM")/$HASH.0"; done; done
 				sync
+				[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
 				echo "CA certificates have been successfully fixed."
 				;;
 			esac
@@ -143,10 +150,12 @@ then
 			echo "run something like \"ssh-keygen -R MiSTer\""
 			echo "on your Linux/BSD/OSX machine."
 			
+			[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
 			rm /etc/ssh/ssh_host_*
 			echo "Creating new SSH host keys; this may take some time..."
 			ssh-keygen -A
 			sync
+			[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
 			echo "SSH host keys have been successfully fixed."
 			;;
 	esac
@@ -165,12 +174,14 @@ then
 	echo ""
 	case "$REPLY" in
 		y|Y)
+			[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
 			mv /etc/init.d/S50sshd /etc/init.d/_S50sshd > /dev/null 2>&1
 			if [ -f /media/fat/linux/iptables.up.rules ]
 			then
 				sed -e '/--dport 22 /s/^#*/#/g' -i /media/fat/linux/iptables.up.rules
 			fi
 			sync
+			[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
 			echo "Now SSH is inactive at startup."
 			;;
 	esac
@@ -189,12 +200,14 @@ then
 	echo ""
 	case "$REPLY" in
 		y|Y)
+			[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
 			mv /etc/init.d/S50proftpd /etc/init.d/_S50proftpd > /dev/null 2>&1
 			if [ -f /media/fat/linux/iptables.up.rules ]
 			then
 				sed -e '/--dport 21 /s/^#*/#/g' -i /media/fat/linux/iptables.up.rules
 			fi
 			sync
+			[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
 			echo "Now FTP is inactive at startup."
 			;;
 	esac
@@ -213,6 +226,7 @@ then
 	echo ""
 	case "$REPLY" in
 		y|Y)
+			[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
 			mv /etc/init.d/S91smb /etc/init.d/_S91smb > /dev/null 2>&1
 			if [ -f /media/fat/linux/iptables.up.rules ]
 			then
@@ -222,6 +236,7 @@ then
 				sed -e '/--dport 445 /s/^#*/#/g' -i /media/fat/linux/iptables.up.rules
 			fi
 			sync
+			[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
 			echo "Now Samba is inactive at startup."
 			;;
 		*)
@@ -246,8 +261,10 @@ then
 	echo ""
 	case "$REPLY" in
 		y|Y)
+			[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
 			sed '/\[global\]/a\\n   min protocol = SMB2\n' -i /etc/samba/smb.conf
 			sync
+			[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
 			echo "Now Samba is configured with \"min protocol = SMB2\"."
 			;;
 		*)
@@ -385,8 +402,10 @@ then
 				fi
 				if [ ! -f /etc/network/if-pre-up.d/iptables ]
 				then
+					[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
 					echo "#!/bin/bash"$'\n'"iptables-restore < /media/fat/linux/iptables.up.rules" > /etc/network/if-pre-up.d/iptables
 					chmod +x /etc/network/if-pre-up.d/iptables
+					[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
 				fi
 				sync
 				echo "Now Firewall is active at startup."
