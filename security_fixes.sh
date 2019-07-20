@@ -221,7 +221,7 @@ then
 	echo "Samba daemon is active at startup;"
 	echo "it should be inactive by default"
 	echo "and manually activated when needed"
-	echo "(i.e. using auxillary ssh_on.sh)."
+	echo "(i.e. using auxillary samba_on.sh)."
 	read -p "Do you want me to fix it?? [y|n]" -n 1 -r
 	echo ""
 	case "$REPLY" in
