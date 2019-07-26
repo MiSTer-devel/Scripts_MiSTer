@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 0.9.5 - 2019-07-26 - The script is compatible with a possible renaming of "Cores" to "Computer Cores" in MiSTer Wiki Sidebar.
 # Version 0.9.4 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com.
 # Version 0.9.3 - 2019-05-31 - Added ALLOW_INSECURE_SSL="true" in order to not enforce the use of security_fixes.sh
 # Version 0.9.2 - 2019-05-31 - Added DIALOG_HEIGHT parameter.
@@ -270,7 +271,7 @@ function setupCoreURLs {
 	done
 	
 	echo "Downloading MiSTer Wiki"
-	CORE_URLS=$(${CURL} "$MISTER_URL/wiki" | awk '/user-content-cores/,/user-content-development/' | grep -io '\(https://github.com/[a-zA-Z0-9./_-]*_MiSTer">[^<]*\)\|\(user-content-[a-z-]*\)')
+	CORE_URLS=$(${CURL} "$MISTER_URL/wiki" | awk '/(user-content-cores)|(user-content-computer-cores)/,/user-content-development/' | grep -io '\(https://github.com/[a-zA-Z0-9./_-]*_MiSTer">[^<]*\)\|\(user-content-[a-z-]*\)')
 	
 	
 	OLD_IFS="$IFS"
@@ -284,6 +285,10 @@ function setupCoreURLs {
 			eval ${CORE_CATEGORY_NAMES[$CORE_CATEGORY]^^}_CORE_URLS[${CORE_NAME}]=${CORE_URL}
 		else
 			CORE_CATEGORY=$(echo "$CORE_URL" | sed 's/user-content-//g')
+			if [ "$CORE_CATEGORY" == "computer-cores" ]
+			then
+				CORE_CATEGORY="cores"
+			fi
 		fi
 	done
 	IFS="$OLD_IFS"
