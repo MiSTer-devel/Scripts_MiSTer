@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.11 - 2019-08-20 - Added support for direct_video.
 # Version 1.1.10 - 2019-06-12 - Font option value is saved without the leading slash, i.e. font=font/myfont.pf.
 # Version 1.1.9 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com.
 # Version 1.1.8 - 2019-05-31 - Added DIALOG_HEIGHT parameter.
@@ -56,7 +57,7 @@ DIALOG_HEIGHT="31"
 FONTS_DIRECTORY="/media/fat/font"
 FONTS_EXTENSION="pf"
 
-INI_KEYS="video_mode video_mode_ntsc video_mode_pal vsync_adjust vscale_mode vscale_border hdmi_limited dvi_mode vga_scaler forced_scandoubler ypbpr composite_sync hdmi_audio_96k video_info font volumectl mouse_throttle bootscreen key_menu_as_rgui keyrah_mode rbf_hide_datecode bootcore bootcore_timeout fb_size fb_terminal"
+INI_KEYS="video_mode video_mode_ntsc video_mode_pal vsync_adjust vscale_mode vscale_border hdmi_limited dvi_mode vga_scaler forced_scandoubler ypbpr composite_sync direct_video hdmi_audio_96k video_info font volumectl mouse_throttle bootscreen key_menu_as_rgui keyrah_mode rbf_hide_datecode bootcore bootcore_timeout fb_size fb_terminal"
 
 KEY_video_mode=(
 	"Video resolution and frequency"
@@ -155,6 +156,12 @@ KEY_composite_sync=(
 	"Sets composite sync on HSync signal of analog video output; used for display compatibility"
 	"0|Off|Separate sync (RGBHV); used for VGA monitors"
 	"1|On|Composite sync (RGBS); used for most other displays including RGB CRTs, PVMs, BVMS, and upscaler devices"
+)
+
+KEY_direct_video=(
+	"Enables direct video out for using HDMI-VGA adapters in order to output zero lag non scaled analog RGB"
+	"0|Off|No direct video out; used for regular HDMI use"
+	"1|On|Video direct out; used for getting zero lag non scaled analog RGB out from HDMI-VGA adapters"
 )
 
 KEY_hdmi_audio_96k=(
