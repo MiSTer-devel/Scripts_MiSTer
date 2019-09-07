@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.12 - 2019-09-07 - Added support for hdmi_limited=2 (16-255) for AG620x DACs; to be used with direct_video=1.
 # Version 1.1.11 - 2019-08-20 - Added support for direct_video.
 # Version 1.1.10 - 2019-06-12 - Font option value is saved without the leading slash, i.e. font=font/myfont.pf.
 # Version 1.1.9 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com.
@@ -126,6 +127,7 @@ KEY_hdmi_limited=(
 	"Sets HDMI RGB output to limited (16-235, full range otherwise)"
 	"0|Off|Full RGB (0-255) HDMI output"
 	"1|On|Limited RGB (16-235) HDMI output"
+	"2|16-255|Special setting for AG620x DACs; to be used with direct_video=1"
 )
 
 KEY_dvi_mode=(
