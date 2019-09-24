@@ -25,7 +25,7 @@
 # Change MAME_DIR to point to where you have your mame roms mounted
 MAME_DIR="/media/fat/Mame/MAME 0.213 ROMs (non-merged)"
 
-WORK_DIR="/media/fat/Scripts/.mame"
+WORK_DIR="/media/fat/Scripts/other_authors/.mame"
 OUTPUT_DIR="/media/fat/bootrom"
 CURL_RETRY="--insecure --connect-timeout 15 --max-time 120 --retry 3 --retry-delay 5"
 MISTER_URL="https://github.com/MiSTer-devel/Main_MiSTer"
@@ -33,7 +33,7 @@ MISTER_URL="https://github.com/MiSTer-devel/Main_MiSTer"
 setup_workspace() {
     mkdir "$WORK_DIR" &>/dev/null
     mkdir "$OUTPUT_DIR" &>/dev/null
-    cp /media/fat/Scripts/flips /bin &>/dev/null
+    cp /media/fat/Scripts/other_authors/flips /bin &>/dev/null
 }
 
 cleanup() {
