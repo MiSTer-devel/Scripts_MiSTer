@@ -33,7 +33,8 @@ MISTER_URL="https://github.com/MiSTer-devel/Main_MiSTer"
 setup_workspace() {
     mkdir "$WORK_DIR" &>/dev/null
     mkdir "$OUTPUT_DIR" &>/dev/null
-    curl $CURL_RETRY -sLF "https://github.com/MiSTer-devel/Scripts_MiSTer/raw/master/other_authors/flips" -o "/media/fat/linux/flip"
+    curl $CURL_RETRY -sLf "https://github.com/MiSTer-devel/Scripts_MiSTer/raw/master/other_authors/flips" -o "$WORK_DIR/flips"
+    cp "$WORK_DIR/flips" "/bin"
 }
 
 cleanup() {
