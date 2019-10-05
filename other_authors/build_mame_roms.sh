@@ -15,20 +15,46 @@
 
 # Copyright 2019 "self_slaughter"
 
+# Version 1.1 - 2019-10-05 - Read mame dir from ini file instead of editing script directly
 # Version 1.0 - 2019-09-24 - First commit
 
 # Note: Some code taken from Locutus73's updater scripts found here:
 # https://github.com/MiSTer-devel/Updater_script_MiSTer
 
-
-
-# Change MAME_DIR to point to where you have your mame roms mounted
-MAME_DIR="/media/fat/Mame/MAME 0.213 ROMs (non-merged)"
-
 WORK_DIR="/media/fat/Scripts/.mame"
 OUTPUT_DIR="/media/fat/bootrom"
 CURL_RETRY="--insecure --connect-timeout 15 --max-time 120 --retry 3 --retry-delay 5"
 MISTER_URL="https://github.com/MiSTer-devel/Main_MiSTer"
+
+read_ini() {
+    mame_ini="${0%.*}.ini"
+    if [ ! -f "$mame_ini" ]
+    then
+        create_ini
+    fi
+    source "$mame_ini"
+    if [ ! -d "$MAME_DIR" ]
+    then
+        ini_error
+        exit 1
+    fi
+}
+
+create_ini(){
+    echo "# Change this to point to where you have your mame roms mounted" > "$mame_ini"
+    echo "" >> "$mame_ini"
+    echo 'MAME_DIR="/media/fat/mame/roms"' >> "$mame_ini"
+    echo "" >> "$mame_ini"
+}
+
+ini_error(){
+    echo "Please edit the file"
+    echo "$mame_ini" | sed 's/.*\///'
+    echo "in /media/fat/Scripts"
+    echo "and point it to where"
+    echo "you have your mame roms"
+    echo "mounted and try again"
+}
 
 setup_workspace() {
     mkdir "$WORK_DIR" &>/dev/null
@@ -62,7 +88,7 @@ grab_scripts()
     mkdir "$WORK_DIR/${CORE_NAME[$1]}" &>/dev/null
     echo "- Downloading Scripts"
 
-    SCRIPT_URLS=$(curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/master/releases/" | grep -io '\"\/MiSTer\-devel\/[a-zA-Z0-9].*\?\(\.ini\|\.sh\|\.bin\|\.1\|\.2\|\.3\|\.ips\)\"')
+    SCRIPT_URLS=$(curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/master/releases/" | grep -io '\"\/MiSTer\-devel\/[a-zA-Z0-9].*\?\(\.ini\|\.sh\|\.bin\|\.1\|\.2\|\.3\|\.ips\|\.snd\)\"')
     for buildFiles in $SCRIPT_URLS; do
         buildFile=$(echo "$buildFiles" | sed -e 's/^"//' -e 's/"$//' | grep -io 'releases/.*' | grep -io '/.*' | sed -e 's/\///')
         curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/master/releases/$buildFile" -o "$WORK_DIR/${CORE_NAME[$1]}/$buildFile"
@@ -136,6 +162,7 @@ show_stats()
     echo "Skipped:     ${#skipped[@]}"
 }
 
+read_ini
 find_urls
 find_core_names
 cleanup
