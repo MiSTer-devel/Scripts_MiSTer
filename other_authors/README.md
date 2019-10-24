@@ -27,3 +27,6 @@ Flips is licensed under GNU General Public License, version 3.0 or higher. The f
   it however you want.
 ```
 
+###### wifi.sh by MiSTerAddons
+
+Script adapted for use with MiSTer FPGA project by MiSterAddons
