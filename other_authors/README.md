@@ -2,6 +2,7 @@
 Miscellaneous Bash scripts for MiSTer from other authors
 
 
+
 ###### build_mame_roms.sh by self_slaughter
 
 Small script based on locutus73s updater, to search github for official build scripts to
@@ -27,6 +28,8 @@ Flips is licensed under GNU General Public License, version 3.0 or higher. The f
   it however you want.
 ```
 
+
+
 ###### wifi.sh by MiSTerAddons
 
-Script adapted for use with MiSTer FPGA project by MiSterAddons
+Script adapted from RetroPie for use with MiSTer FPGA project by MiSterAddons
