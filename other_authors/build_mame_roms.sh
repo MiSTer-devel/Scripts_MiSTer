@@ -15,6 +15,7 @@
 
 # Copyright 2019 "self_slaughter"
 
+# Version 1.2 - 2019-10-27 - Handle special cases
 # Version 1.1 - 2019-10-05 - Read mame dir from ini file instead of editing script directly
 # Version 1.0 - 2019-09-24 - First commit
 
@@ -23,6 +24,7 @@
 
 WORK_DIR="/media/fat/Scripts/.mame"
 OUTPUT_DIR="/media/fat/bootrom"
+ALT_OUTPUT_DIR="/media/fat"
 CURL_RETRY="--insecure --connect-timeout 15 --max-time 120 --retry 3 --retry-delay 5"
 MISTER_URL="https://github.com/MiSTer-devel/Main_MiSTer"
 
@@ -87,12 +89,30 @@ grab_scripts()
     echo -e "\n${CORE_NAME[$1]} ($count/$totalCount)"
     mkdir "$WORK_DIR/${CORE_NAME[$1]}" &>/dev/null
     echo "- Downloading Scripts"
-
     SCRIPT_URLS=$(curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/master/releases/" | grep -io '\"\/MiSTer\-devel\/[a-zA-Z0-9].*\?\(\.ini\|\.sh\|\.bin\|\.1\|\.2\|\.3\|\.ips\|\.snd\)\"')
-    for buildFiles in $SCRIPT_URLS; do
-        buildFile=$(echo "$buildFiles" | sed -e 's/^"//' -e 's/"$//' | grep -io 'releases/.*' | grep -io '/.*' | sed -e 's/\///')
-        curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/master/releases/$buildFile" -o "$WORK_DIR/${CORE_NAME[$1]}/$buildFile"
-    done
+
+# special case handling
+    case ${CORE_NAME[$1]} in
+        Alibaba) # build script out of sync with released core (20180313), use old script instead.
+            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/848a483d0d4aef920c68b28c0fd8679069be8040/releases/build_rom.ini" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
+            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/848a483d0d4aef920c68b28c0fd8679069be8040/releases/build_rom.sh" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.sh"
+            ;;
+        CrushRoller) # build script out of sync with released core (20180313), use old script instead.
+            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/cd204aa69490eecd98248da5476f1d8a0b3011b4/releases/build_rom.ini" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
+            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/cd204aa69490eecd98248da5476f1d8a0b3011b4/releases/build_rom.sh" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.sh"
+            ;;
+        MsPacman) # build script out of sync with released core (20180313), use old script instead.
+            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/8d4895eb1ddadd8c9da66a5bf1576d0e4091432f/releases/build_rom.ini" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
+            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/8d4895eb1ddadd8c9da66a5bf1576d0e4091432f/releases/build_rom.sh" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.sh"
+            sed -i 's/mspacmab.zip/mspacman.zip/g' "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
+            ;;
+        *)
+            for buildFiles in $SCRIPT_URLS; do
+                buildFile=$(echo "$buildFiles" | sed -e 's/^"//' -e 's/"$//' | grep -io 'releases/.*' | grep -io '/.*' | sed -e 's/\///')
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/master/releases/$buildFile" -o "$WORK_DIR/${CORE_NAME[$1]}/$buildFile"
+            done
+            ;;
+    esac
 }
 
 grab_zips()
@@ -146,9 +166,28 @@ build_roms()
                 return 1
             fi
         fi
-        if [ "${ofile}" == "a.JT1943.rom" ] && [ ! -f "$OUTPUT_DIR/a.1943.rom" ]; then
-            cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$OUTPUT_DIR/a.1943.rom"
-        fi
+
+# more special case handling
+        case ${CORE_NAME[$1]} in
+            Druaga) # alt roms
+                mkdir "$ALT_OUTPUT_DIR/a.druaga" &>/dev/null
+                if [ ! -f "$ALT_OUTPUT_DIR/a.druaga/${ofile}" ]; then
+                    cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$ALT_OUTPUT_DIR/a.druaga/${ofile}"
+                fi
+                ;;
+            RallyX) # alt roms
+                mkdir "$ALT_OUTPUT_DIR/a.nrallyx" &>/dev/null
+                if [ ! -f "$ALT_OUTPUT_DIR/a.nrallyx/${ofile}" ]; then
+                    cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$ALT_OUTPUT_DIR/a.nrallyx/${ofile}"
+                fi
+                ;;
+            1943) # branding issues
+                if [ "${ofile}" == "a.JT1943.rom" ] && [ ! -f "$OUTPUT_DIR/a.1943.rom" ]; then
+                    cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$OUTPUT_DIR/a.1943.rom"
+                fi
+                ;;
+        esac
+
         cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$OUTPUT_DIR/${ofile}"
     done
 }
