@@ -15,6 +15,7 @@
 
 # Copyright 2019 "self_slaughter"
 
+# Version 1.3 - 2019-11-07 - More special cases / More ini options
 # Version 1.2 - 2019-10-27 - Handle special cases
 # Version 1.1 - 2019-10-05 - Read mame dir from ini file instead of editing script directly
 # Version 1.0 - 2019-09-24 - First commit
@@ -24,9 +25,13 @@
 
 WORK_DIR="/media/fat/Scripts/.mame"
 OUTPUT_DIR="/media/fat/bootrom"
-ALT_OUTPUT_DIR="/media/fat"
+ALT_OUTPUT_DIR="/media/fat/games"
 CURL_RETRY="--insecure --connect-timeout 15 --max-time 120 --retry 3 --retry-delay 5"
 MISTER_URL="https://github.com/MiSTer-devel/Main_MiSTer"
+
+# default values in case ini file is missing new options
+OVERWRITE_EXISTING="false"
+USE_OLD_SCRIPTS="true"
 
 read_ini() {
     mame_ini="${0%.*}.ini"
@@ -44,8 +49,13 @@ read_ini() {
 
 create_ini(){
     echo "# Change this to point to where you have your mame roms mounted" > "$mame_ini"
-    echo "" >> "$mame_ini"
     echo 'MAME_DIR="/media/fat/mame/roms"' >> "$mame_ini"
+    echo "" >> "$mame_ini"
+    echo "# Overwrite existing roms instead of skipping them? (true/false)" >> "$mame_ini"
+    echo 'OVERWRITE_EXISTING="false"' >> "$mame_ini"
+    echo "" >> "$mame_ini"
+    echo "# Some build scripts are newer than the released cores, use them instead? (true/false)" >> "$mame_ini"
+    echo 'USE_OLD_SCRIPTS="true"' >> "$mame_ini"
     echo "" >> "$mame_ini"
 }
 
@@ -65,6 +75,9 @@ setup_workspace() {
         curl $CURL_RETRY -sLf "https://github.com/MiSTer-devel/Scripts_MiSTer/raw/master/other_authors/flips" -o "/media/fat/linux/flips"
     fi
     export PATH="/media/fat/linux:$PATH"
+    if [ ! -d "$ALT_OUTPUT_DIR" ]; then
+        mkdir "$ALT_OUTPUT_DIR" &>/dev/null
+    fi
 }
 
 cleanup() {
@@ -92,27 +105,52 @@ grab_scripts()
     SCRIPT_URLS=$(curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/master/releases/" | grep -io '\"\/MiSTer\-devel\/[a-zA-Z0-9].*\?\(\.ini\|\.sh\|\.bin\|\.1\|\.2\|\.3\|\.ips\|\.snd\)\"')
 
 # special case handling
-    case ${CORE_NAME[$1]} in
-        Alibaba) # build script out of sync with released core (20180313), use old script instead.
-            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/848a483d0d4aef920c68b28c0fd8679069be8040/releases/build_rom.ini" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
-            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/848a483d0d4aef920c68b28c0fd8679069be8040/releases/build_rom.sh" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.sh"
-            ;;
-        CrushRoller) # build script out of sync with released core (20180313), use old script instead.
-            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/cd204aa69490eecd98248da5476f1d8a0b3011b4/releases/build_rom.ini" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
-            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/cd204aa69490eecd98248da5476f1d8a0b3011b4/releases/build_rom.sh" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.sh"
-            ;;
-        MsPacman) # build script out of sync with released core (20180313), use old script instead.
-            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/8d4895eb1ddadd8c9da66a5bf1576d0e4091432f/releases/build_rom.ini" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
-            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/8d4895eb1ddadd8c9da66a5bf1576d0e4091432f/releases/build_rom.sh" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.sh"
-            sed -i 's/mspacmab.zip/mspacman.zip/g' "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
-            ;;
-        *)
-            for buildFiles in $SCRIPT_URLS; do
-                buildFile=$(echo "$buildFiles" | sed -e 's/^"//' -e 's/"$//' | grep -io 'releases/.*' | grep -io '/.*' | sed -e 's/\///')
-                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/master/releases/$buildFile" -o "$WORK_DIR/${CORE_NAME[$1]}/$buildFile"
-            done
-            ;;
-    esac
+    if [ $USE_OLD_SCRIPTS = "true" ]; then
+        case ${CORE_NAME[$1]} in
+            Alibaba) # build script out of sync with released core (20180313), use old script instead.
+                echo "- Using Old Scripts"
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/848a483d0d4aef920c68b28c0fd8679069be8040/releases/build_rom.ini" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/848a483d0d4aef920c68b28c0fd8679069be8040/releases/build_rom.sh" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.sh"
+                ;;
+            CrushRoller) # build script out of sync with released core (20180313), use old script instead.
+                echo "- Using Old Scripts"
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/cd204aa69490eecd98248da5476f1d8a0b3011b4/releases/build_rom.ini" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/cd204aa69490eecd98248da5476f1d8a0b3011b4/releases/build_rom.sh" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.sh"
+                ;;
+            DreamShopper) # build script out of sync with released core (20180313), use old script instead.
+                echo "- Using Old Scripts"
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/486cb4dae861763467b8c1be22d95484bc7822f5/releases/build_rom.ini" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/486cb4dae861763467b8c1be22d95484bc7822f5/releases/build_rom.sh" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.sh"
+                ;;
+            Eeekk) # build script out of sync with released core (20180313), use old script instead.
+                echo "- Using Old Scripts"
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/418b78539cd8b73eebc0848e4bac411fd1251e0a/releases/build_rom.ini" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/418b78539cd8b73eebc0848e4bac411fd1251e0a/releases/build_rom.sh" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.sh"
+                ;;
+            Eyes) # build script out of sync with released core (20180313), use old script instead.
+                echo "- Using Old Scripts"
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/2f0799cef9d45b15d5861b161ff43e52620f8b64/releases/build_rom.ini" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/2f0799cef9d45b15d5861b161ff43e52620f8b64/releases/build_rom.sh" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.sh"
+                ;;
+            MsPacman) # build script out of sync with released core (20180313), use old script instead.
+                echo "- Using Old Scripts"
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/8d4895eb1ddadd8c9da66a5bf1576d0e4091432f/releases/build_rom.ini" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
+                curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/8d4895eb1ddadd8c9da66a5bf1576d0e4091432f/releases/build_rom.sh" -o "$WORK_DIR/${CORE_NAME[$1]}/build_rom.sh"
+                sed -i 's/mspacmab.zip/mspacman.zip/g' "$WORK_DIR/${CORE_NAME[$1]}/build_rom.ini"
+                ;;
+            *)
+                for buildFiles in $SCRIPT_URLS; do
+                    buildFile=$(echo "$buildFiles" | sed -e 's/^"//' -e 's/"$//' | grep -io 'releases/.*' | grep -io '/.*' | sed -e 's/\///')
+                    curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/master/releases/$buildFile" -o "$WORK_DIR/${CORE_NAME[$1]}/$buildFile"
+                done
+                ;;
+        esac
+    else
+        for buildFiles in $SCRIPT_URLS; do
+            buildFile=$(echo "$buildFiles" | sed -e 's/^"//' -e 's/"$//' | grep -io 'releases/.*' | grep -io '/.*' | sed -e 's/\///')
+            curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/master/releases/$buildFile" -o "$WORK_DIR/${CORE_NAME[$1]}/$buildFile"
+        done
+    fi
 }
 
 grab_zips()
@@ -127,7 +165,7 @@ grab_zips()
             return 1
         fi
         source "$WORK_DIR/${CORE_NAME[$1]}/$iniFile"
-        if [ -f "$OUTPUT_DIR/${ofile}" ]; then
+        if [ -f "$OUTPUT_DIR/${ofile}" ] && [ $OVERWRITE_EXISTING = "false" ]; then
             echo "- ROM Already Exists"
             skipped+=("${CORE_NAME[$1]}")
             return 1
@@ -171,23 +209,24 @@ build_roms()
         case ${CORE_NAME[$1]} in
             Druaga) # alt roms
                 mkdir "$ALT_OUTPUT_DIR/a.druaga" &>/dev/null
-                if [ ! -f "$ALT_OUTPUT_DIR/a.druaga/${ofile}" ]; then
+                if [ ! -f "$ALT_OUTPUT_DIR/a.druaga/${ofile}" ] || [ $OVERWRITE_EXISTING = "true" ]; then
                     cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$ALT_OUTPUT_DIR/a.druaga/${ofile}"
                 fi
                 ;;
             RallyX) # alt roms
                 mkdir "$ALT_OUTPUT_DIR/a.nrallyx" &>/dev/null
-                if [ ! -f "$ALT_OUTPUT_DIR/a.nrallyx/${ofile}" ]; then
+                if [ ! -f "$ALT_OUTPUT_DIR/a.nrallyx/${ofile}" ] || [ $OVERWRITE_EXISTING = "true" ]; then
                     cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$ALT_OUTPUT_DIR/a.nrallyx/${ofile}"
                 fi
                 ;;
             1943) # branding issues
-                if [ "${ofile}" == "a.JT1943.rom" ] && [ ! -f "$OUTPUT_DIR/a.1943.rom" ]; then
-                    cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$OUTPUT_DIR/a.1943.rom"
+                if [ "${ofile}" == "a.JT1943.rom" ]; then
+                    if [ ! -f "$OUTPUT_DIR/a.1943.rom" ] || [ $OVERWRITE_EXISTING = "true" ]; then
+                         cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$OUTPUT_DIR/a.1943.rom"
+                    fi
                 fi
                 ;;
         esac
-
         cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$OUTPUT_DIR/${ofile}"
     done
 }
