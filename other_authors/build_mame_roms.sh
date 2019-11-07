@@ -15,6 +15,7 @@
 
 # Copyright 2019 "self_slaughter"
 
+# Version 1.4 - 2019-11-07 - Show fails on screen / Generate report
 # Version 1.3 - 2019-11-07 - More special cases / More ini options
 # Version 1.2 - 2019-10-27 - Handle special cases
 # Version 1.1 - 2019-10-05 - Read mame dir from ini file instead of editing script directly
@@ -238,6 +239,19 @@ show_stats()
     echo "Unverified:  ${#unverified[@]}"
     echo "Failed:      ${#failed[@]}"
     echo "Skipped:     ${#skipped[@]}"
+    echo ""
+    echo "Fails: ${failed[@]}"
+}
+
+save_log()
+{
+    LOG_FILE="${0%.*}.log"
+    echo "" >> "$LOG_FILE"
+    date >> "$LOG_FILE"
+    echo "- Verified (${#verified[@]}): ${verified[@]}" >> "$LOG_FILE"
+    echo "- Unverified (${#unverified[@]}): ${unverified[@]}" >> "$LOG_FILE"
+    echo "- Failed (${#failed[@]}): ${failed[@]}" >> "$LOG_FILE"
+    echo "- Skipped (${#skipped[@]}): ${skipped[@]}" >> "$LOG_FILE"
 }
 
 read_ini
@@ -257,4 +271,5 @@ do
 done
 
 show_stats
+save_log
 cleanup
