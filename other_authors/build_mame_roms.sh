@@ -15,6 +15,7 @@
 
 # Copyright 2019 "self_slaughter"
 
+# Version 1.5 - 2019-11-10 - Attempt to future proof alt rom creation
 # Version 1.4 - 2019-11-07 - Show fails on screen / Generate report
 # Version 1.3 - 2019-11-07 - More special cases / More ini options
 # Version 1.2 - 2019-10-27 - Handle special cases
@@ -187,6 +188,7 @@ grab_zips()
 build_roms()
 {
     cd "$WORK_DIR/${CORE_NAME[$1]}"
+    scriptCount=$(ls *.sh | wc -l)
     for buildScript in *.sh; do
         source "$WORK_DIR/${CORE_NAME[$1]}/${buildScript%.*}.ini"
         echo "- Building ROM"
@@ -206,28 +208,24 @@ build_roms()
             fi
         fi
 
-# more special case handling
-        case ${CORE_NAME[$1]} in
-            Druaga) # alt roms
-                mkdir "$ALT_OUTPUT_DIR/a.druaga" &>/dev/null
-                if [ ! -f "$ALT_OUTPUT_DIR/a.druaga/${ofile}" ] || [ $OVERWRITE_EXISTING = "true" ]; then
-                    cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$ALT_OUTPUT_DIR/a.druaga/${ofile}"
+        # handle alt roms
+        if [ $scriptCount -gt 1 ]; then
+            CORE_INTERNAL_NAME="$(curl $CURL_RETRY -sLf "${CORE_URL[$1]}/raw/master/Arcade-${CORE_NAME[$1]}.sv" | awk '/CONF_STR[^=]*=/,/;/' | grep -oE -m1 '".*?;' | sed 's/[";]//g')"
+            if [ ! "$CORE_INTERNAL_NAME" == "" ]; then
+                mkdir "$ALT_OUTPUT_DIR/$CORE_INTERNAL_NAME" &>/dev/null
+                if [ ! -f "$ALT_OUTPUT_DIR/$CORE_INTERNAL_NAME/${ofile}" ] || [ $OVERWRITE_EXISTING = "true" ]; then
+                    cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$ALT_OUTPUT_DIR/$CORE_INTERNAL_NAME/${ofile}"
                 fi
-                ;;
-            RallyX) # alt roms
-                mkdir "$ALT_OUTPUT_DIR/a.nrallyx" &>/dev/null
-                if [ ! -f "$ALT_OUTPUT_DIR/a.nrallyx/${ofile}" ] || [ $OVERWRITE_EXISTING = "true" ]; then
-                    cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$ALT_OUTPUT_DIR/a.nrallyx/${ofile}"
-                fi
-                ;;
-            1943) # branding issues
-                if [ "${ofile}" == "a.JT1943.rom" ]; then
-                    if [ ! -f "$OUTPUT_DIR/a.1943.rom" ] || [ $OVERWRITE_EXISTING = "true" ]; then
-                         cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$OUTPUT_DIR/a.1943.rom"
-                    fi
-                fi
-                ;;
-        esac
+            fi
+        fi
+
+        #handle JT branding
+        if [ "${ofile}" == "a.JT1943.rom" ]; then
+            if [ ! -f "$OUTPUT_DIR/a.1943.rom" ] || [ $OVERWRITE_EXISTING = "true" ]; then
+                 cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$OUTPUT_DIR/a.1943.rom"
+            fi
+        fi
+
         cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$OUTPUT_DIR/${ofile}"
     done
 }
