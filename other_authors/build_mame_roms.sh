@@ -219,13 +219,6 @@ build_roms()
             fi
         fi
 
-        #handle JT branding
-        if [ "${ofile}" == "a.JT1943.rom" ]; then
-            if [ ! -f "$OUTPUT_DIR/a.1943.rom" ] || [ $OVERWRITE_EXISTING = "true" ]; then
-                 cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$OUTPUT_DIR/a.1943.rom"
-            fi
-        fi
-
         cp "$WORK_DIR/${CORE_NAME[$1]}/${ofile}" "$OUTPUT_DIR/${ofile}"
     done
 }
