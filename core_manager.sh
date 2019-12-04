@@ -271,8 +271,8 @@ function setupCoreURLs {
 	done
 	
 	echo "Downloading MiSTer Wiki"
-	CORE_URLS=$(${CURL} "$MISTER_URL/wiki" | awk '/(user-content-cores)|(user-content-computer-cores)/,/user-content-development/' | grep -io '\(https://github.com/[a-zA-Z0-9./_-]*_MiSTer">[^<]*\)\|\(user-content-[a-z-]*\)')
-	
+	CORE_URLS=$(${CURL} "$MISTER_URL/wiki" | awk '/user-content-fpga-cores/,/user-content-development/' | grep -io '\(https://github.com/[a-zA-Z0-9./_-]*_MiSTer">[^<]*\)\|\(user-content-[a-zA-Z0-9-]*\)')
+	ARCADE_URLS=$(${CURL} "$MISTER_URL/wiki/Arcade-Cores-List" | awk '/wiki-content/,/wiki-rightbar/' | grep -io '\(https://github.com/[a-zA-Z0-9./_-]*_MiSTer">[^<]*\)')
 	
 	OLD_IFS="$IFS"
 	IFS=$'\n'
@@ -285,11 +285,23 @@ function setupCoreURLs {
 			eval ${CORE_CATEGORY_NAMES[$CORE_CATEGORY]^^}_CORE_URLS[${CORE_NAME}]=${CORE_URL}
 		else
 			CORE_CATEGORY=$(echo "$CORE_URL" | sed 's/user-content-//g')
-			if [ "$CORE_CATEGORY" == "computer-cores" ]
+			if [ "$CORE_CATEGORY" == "computer-cores" ] || [[ "$CORE_CATEGORY" =~ [a-z]+-comput[a-z]+ ]] 
 			then
 				CORE_CATEGORY="cores"
 			fi
+			if [[ "$CORE_CATEGORY" =~ console.* ]]
+			then
+				CORE_CATEGORY="console-cores"
+			fi
 		fi
+	done
+
+	CORE_CATEGORY="arcade-cores"
+
+	for CORE_URL in $ARCADE_URLS; do
+		CORE_NAME="${CORE_URL#*\">}" && CORE_NAME="${CORE_NAME//\'/\\\'}"
+		CORE_URL="${CORE_URL%\">*}"
+		eval ${CORE_CATEGORY_NAMES[$CORE_CATEGORY]^^}_CORE_URLS[${CORE_NAME}]=${CORE_URL}
 	done
 	IFS="$OLD_IFS"
 }
@@ -327,7 +339,7 @@ function showInstallMENU {
 	ADDITIONAL_OPTIONS="--no-tags"
 	OLD_IFS="$IFS"
 	IFS=$'\n'
-	for CORE_NAME in $(eval echo \"\${!${CORE_CATEGORY_NAME}_CORE_URLS[*]}\"); do
+	for CORE_NAME in $(eval echo \"\${!${CORE_CATEGORY_NAME}_CORE_URLS[*]}\" | sort); do
 		CORE_URL="$(eval echo \${${CORE_CATEGORY_NAME}_CORE_URLS[${CORE_NAME//\'/\\\'}]})"
 		MENU_ITEMS="${MENU_ITEMS} \"${CORE_URL}\" \"${CORE_NAME}\""
 	done
