@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 0.9.6 - 2019-12-04 - Update core manager to latest Wiki core structure by rarcos, thank you very much.
 # Version 0.9.5 - 2019-07-26 - The script is compatible with a possible renaming of "Cores" to "Computer Cores" in MiSTer Wiki Sidebar.
 # Version 0.9.4 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com.
 # Version 0.9.3 - 2019-05-31 - Added ALLOW_INSECURE_SSL="true" in order to not enforce the use of security_fixes.sh
