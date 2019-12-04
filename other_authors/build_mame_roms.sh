@@ -15,6 +15,7 @@
 
 # Copyright 2019 "self_slaughter"
 
+# Version 1.6 - 2019-12-04 - Adapt to new wiki layout
 # Version 1.5 - 2019-11-10 - Attempt to future proof alt rom creation
 # Version 1.4 - 2019-11-07 - Show fails on screen / Generate report
 # Version 1.3 - 2019-11-07 - More special cases / More ini options
@@ -88,7 +89,7 @@ cleanup() {
 
 find_urls() {
     echo "Searching for cores"
-    CORE_URL=($(curl $CURL_RETRY -sLf "$MISTER_URL/wiki"| awk '/(user-content-cores)|(user-content-computer-cores)/,/user-content-development/' | grep -io '\(https://github.com/[a-zA-Z0-9./_-]*_MiSTer\)' | grep 'Arcade.*'))
+    CORE_URL=($(curl $CURL_RETRY $SSL_SECURITY_OPTION -sLf "$MISTER_URL/wiki/Arcade-Cores-List"| awk '/wiki-content/,/wiki-rightbar/' | grep -io '\(https://github.com/[a-zA-Z0-9./_-]*_MiSTer\)'))
     echo "${#CORE_URL[@]} cores found!"
 }
 
