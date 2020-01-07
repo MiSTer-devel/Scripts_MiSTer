@@ -13,11 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Copyright 2019 Alessandro "Locutus73" Miele
+# Copyright 2019-2020 Alessandro "Locutus73" Miele
 
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 0.9.7 - 2020-01-07 - Support for MRA files (MAME Arcade ROMs).
 # Version 0.9.6 - 2019-12-04 - Update core manager to latest Wiki core structure by rarcos, thank you very much.
 # Version 0.9.5 - 2019-07-26 - The script is compatible with a possible renaming of "Cores" to "Computer Cores" in MiSTer Wiki Sidebar.
 # Version 0.9.4 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com.
@@ -93,6 +94,12 @@ function setupScriptINI {
 	
 	echo "${MISTER_UPDATER_CODE}" | \
 		sed -n '/^function checkCoreURL {/,/^}/p' \
+		> "${TMP_INCLUDE_FILE}"
+	source ${TMP_INCLUDE_FILE}
+	rm -f ${TMP_INCLUDE_FILE}
+	
+	echo "${MISTER_UPDATER_CODE}" | \
+		sed -n '/^function checkAdditionalRepository {/,/^}/p' \
 		> "${TMP_INCLUDE_FILE}"
 	source ${TMP_INCLUDE_FILE}
 	rm -f ${TMP_INCLUDE_FILE}
