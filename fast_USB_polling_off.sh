@@ -16,7 +16,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
-# Version 1.0 - 2020-01-222 - first version
+# Version 1.0 - 2020-01-22 - first version
 
 import os
 import sys
