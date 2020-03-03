@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2 - 2020-03-03 - Added support for menu_pal, osd_timeout, recents, reset_combo and controller_info; MiSTer_alt.ini is created when missing.
 # Version 1.1.12 - 2019-09-07 - Added support for hdmi_limited=2 (16-255) for AG620x DACs; to be used with direct_video=1.
 # Version 1.1.11 - 2019-08-20 - Added support for direct_video.
 # Version 1.1.10 - 2019-06-12 - Font option value is saved without the leading slash, i.e. font=font/myfont.pf.
@@ -58,7 +59,7 @@ DIALOG_HEIGHT="31"
 FONTS_DIRECTORY="/media/fat/font"
 FONTS_EXTENSION="pf"
 
-INI_KEYS="video_mode video_mode_ntsc video_mode_pal vsync_adjust vscale_mode vscale_border hdmi_limited dvi_mode vga_scaler forced_scandoubler ypbpr composite_sync direct_video hdmi_audio_96k video_info font volumectl mouse_throttle bootscreen key_menu_as_rgui keyrah_mode rbf_hide_datecode bootcore bootcore_timeout fb_size fb_terminal"
+INI_KEYS="video_mode video_mode_ntsc video_mode_pal vsync_adjust vscale_mode vscale_border hdmi_limited dvi_mode vga_scaler forced_scandoubler ypbpr composite_sync direct_video hdmi_audio_96k menu_pal osd_timeout video_info controller_info recents font volumectl mouse_throttle bootscreen reset_combo key_menu_as_rgui keyrah_mode rbf_hide_datecode bootcore bootcore_timeout fb_size fb_terminal"
 
 KEY_video_mode=(
 	"Video resolution and frequency"
@@ -172,12 +173,37 @@ KEY_hdmi_audio_96k=(
 	"1|On|96KHz/16bit HDMI audio output; better quality but not compatible with all HDMI devices"
 )
 
+KEY_menu_pal=(
+	"PAL mode for menu core"
+	"0|Off|NTSC mode for menu core"
+	"1|On|PAL mode for menu core"
+)
+
 KEY_fb_size=(
 	"Framebuffer resolution"
 	"0|Automatic"
 	"1|Full size"
 	"2|1/2 of resolution"
 	"4|1/4 of resolution"	
+)
+
+KEY_osd_timeout=(
+	"Sets the number of seconds OSD will be displayed; 30 seconds if not set; the background picture will get darker 2*timeout"
+	"0|Off"
+	"5|5 seconds"
+	"10|10 seconds"
+	"20|20 seconds"
+	"30|30 seconds"
+	"60|1 minute"
+	"120|2 minutes"
+	"180|3 minutes"
+	"240|4 minutes"
+	"300|5 minutes"
+	"600|10 minutes"
+	"900|15 minutes"
+	"1800|30 minutes"
+	"2700|45 minutes"
+	"3600|1 hour"
 )
 
 KEY_video_info=(
@@ -195,6 +221,27 @@ KEY_video_info=(
 	"10|10 seconds"
 )
 
+KEY_controller_info=(
+	"Sets the number of seconds controller info will be displayed on startup/change"
+	"0|Off"
+	"1|1 second"
+	"2|2 seconds"
+	"3|3 seconds"
+	"4|4 seconds"
+	"5|5 seconds"
+	"6|6 seconds"
+	"7|7 seconds"
+	"8|8 seconds"
+	"9|9 seconds"
+	"10|10 seconds"
+)
+
+KEY_recents=(
+	"Enables recent loaded/mounted file. WARNING: This option will enable write to SD card on every load/mount which may wear/corrupt the SD card"
+	"0|Off"
+	"1|On|WARNING: This option may wear/corrupt the SD card"
+)
+
 KEY_font=(
 	"Custom font; put custom fonts in ${FONTS_DIRECTORY}"
 )
@@ -202,13 +249,13 @@ KEY_font=(
 KEY_volumectl=(
 	"Enables audio volume control with multimedia keys"
 	"0|Off"
-	"1|on"
+	"1|On"
 )
 
 KEY_fb_terminal=(
 	"Enables the framebuffer terminl (the one you are using now) for the Scripts menu"
 	"0|Off"
-	"1|on"
+	"1|On"
 )
 
 KEY_vscale_border=(
@@ -228,7 +275,15 @@ KEY_vscale_border=(
 KEY_bootscreen=(
 	"Enables boot screen of some cores like Minimig"
 	"0|Off"
-	"1|on"
+	"1|On"
+)
+
+KEY_reset_combo=(
+	"USER button emulation by keybaord. Usually it's the reset button."
+	"0|lctrl+lalt+ralt (lctrl+lgui+rgui on keyrah)"
+	"1|lctrl+lgui+rgui"
+	"2|lctrl+lalt+del"
+	"3|lctrl+lalt+ralt (lctrl+lalt+ralt on keyrah)"
 )
 
 KEY_mouse_throttle=(
@@ -249,7 +304,7 @@ KEY_mouse_throttle=(
 KEY_key_menu_as_rgui=(
 	"Enables the MENU key map to RGUI in Minimig (e.g. for Right Amiga)"
 	"0|Off"
-	"1|on"
+	"1|On"
 )
 
 KEY_keyrah_mode=(
@@ -261,7 +316,7 @@ KEY_keyrah_mode=(
 KEY_rbf_hide_datecode=(
 	"Hides datecodes/timestamps for rbf file names; press F2 for quick temporary toggle"
 	"0|Off|Datecodes/timestamps visible"
-	"1|on|Datecodes/timestamps not visible"
+	"1|On|Datecodes/timestamps not visible"
 )
 
 KEY_bootcore=(
@@ -452,11 +507,17 @@ function readDIALOGtempfile {
 }
 
 function loadMiSTerINI {
+	MISTER_EXAMPLE_INI_FILE="${MISTER_INI_FILE/MiSTer.ini/MiSTer_example.ini}"
+	MISTER_ALT_INI_FILE="${MISTER_INI_FILE/MiSTer.ini/MiSTer_alt.ini}"
+	
 	if [ ! -f "${MISTER_INI_FILE}" ]
 	then
 		if [ -f "/media/fat/config/MiSTer.ini" ]
 		then
 			mv "/media/fat/config/MiSTer.ini" "${MISTER_INI_FILE}"
+		elif [ -f "${MISTER_EXAMPLE_INI_FILE}" ]
+		then
+			cp "${MISTER_EXAMPLE_INI_FILE}" "${MISTER_INI_FILE}"
 		else
 			setupCURL
 			echo "Downloading MiSTer.ini"
@@ -466,6 +527,19 @@ function loadMiSTerINI {
 	fi
 	MISTER_INI_ORIGINAL="$(cat "${MISTER_INI_FILE}" | dos2unix)"
 	MISTER_INI="${MISTER_INI_ORIGINAL}"
+	
+	if [ ! -f "${MISTER_ALT_INI_FILE}" ]
+	then
+		if [ -f "${MISTER_EXAMPLE_INI_FILE}" ]
+		then
+			cp "${MISTER_EXAMPLE_INI_FILE}" "${MISTER_ALT_INI_FILE}"
+		else
+			#setupCURL
+			#echo "Downloading MiSTer_alt.ini"
+			#${CURL} "https://github.com/MiSTer-devel/Main_MiSTer/blob/master/MiSTer.ini?raw=true" -o "${MISTER_ALT_INI_FILE}"
+			cp "${MISTER_INI_FILE}" "${MISTER_ALT_INI_FILE}"
+		fi
+	fi
 }
 
 function checkKEY () {
@@ -647,7 +721,7 @@ while true; do
 				cp "${MISTER_INI_FILE}" "${MISTER_INI_FILE}.bak"
 				echo "${MISTER_INI}" | unix2dos > "${MISTER_INI_FILE}"
 				sync
-				${DIALOG} --clear --title "MiSTer INI Settings" --defaultno --yesno "Do you want to reboot in order to apply the changes?" 0 0 && reboot now
+				${DIALOG} --clear --title "MiSTer INI Settings" --defaultno --yesno "Do you want to reboot in order to apply the changes?" 0 0 && echo "If you have video problems, please hold OSD menu button while rebooting in order to load alternative MiSTer_alt.ini configuration file." && sleep 3 && reboot now
 				break;;
 			${DIALOG_ESC})
 				break;;
