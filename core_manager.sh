@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 0.9.8 - 2020-03-03 - Update core manager to latest Wiki core structure; code clean up by frederic-mahe (thank you very much).
 # Version 0.9.7 - 2020-01-07 - Support for MRA files (MAME Arcade ROMs).
 # Version 0.9.6 - 2019-12-04 - Update core manager to latest Wiki core structure by rarcos, thank you very much.
 # Version 0.9.5 - 2019-07-26 - The script is compatible with a possible renaming of "Cores" to "Computer Cores" in MiSTer Wiki Sidebar.
@@ -269,10 +270,12 @@ function setupCoreURLs {
 	declare -g -A COMPUTER_CORE_URLS
 	declare -g -A CONSOLE_CORE_URLS
 	declare -g -A ARCADE_CORE_URLS
+	declare -g -A OTHER_CORE_URLS
 	declare -g -A UTILITY_CORE_URLS
-	CORE_CATEGORY_NAMES["cores"]="Computer"
+	CORE_CATEGORY_NAMES["computer-cores"]="Computer"
 	CORE_CATEGORY_NAMES["console-cores"]="Console"
 	CORE_CATEGORY_NAMES["arcade-cores"]="Arcade"
+	CORE_CATEGORY_NAMES["other-cores"]="Other"
 	CORE_CATEGORY_NAMES["service-cores"]="Utility"
 	for CORE_CATEGORY in ${!CORE_CATEGORY_NAMES[@]}; do
 		CORE_CATEGORY_REVERSE_NAMES["${CORE_CATEGORY_NAMES[${CORE_CATEGORY}]^^}"]="${CORE_CATEGORY}"
@@ -293,14 +296,21 @@ function setupCoreURLs {
 			eval ${CORE_CATEGORY_NAMES[$CORE_CATEGORY]^^}_CORE_URLS[${CORE_NAME}]=${CORE_URL}
 		else
 			CORE_CATEGORY=$(echo "$CORE_URL" | sed 's/user-content-//g')
-			if [ "$CORE_CATEGORY" == "computer-cores" ] || [[ "$CORE_CATEGORY" =~ [a-z]+-comput[a-z]+ ]] 
-			then
-				CORE_CATEGORY="cores"
-			fi
-			if [[ "$CORE_CATEGORY" =~ console.* ]]
-			then
-				CORE_CATEGORY="console-cores"
-			fi
+			#if [ "$CORE_CATEGORY" == "computer-cores" ] || [[ "$CORE_CATEGORY" =~ [a-z]+-comput[a-z]+ ]] 
+			#then
+			#	CORE_CATEGORY="cores"
+			#fi
+			#if [[ "$CORE_CATEGORY" =~ console.* ]]
+			#then
+			#	CORE_CATEGORY="console-cores"
+			#fi
+			case "${CORE_URL}" in
+				*comput*) CORE_CATEGORY="computer-cores" ;;
+				*console*) CORE_CATEGORY="console-cores" ;;
+				*other-systems*) CORE_CATEGORY="other-cores" ;;
+				"") CORE_CATEGORY="-" ;;
+				*) ;;
+			esac
 		fi
 	done
 
@@ -332,6 +342,8 @@ function showMainMENU {
 		"deleteCONSOLE" "Delete Console core" "" \
 		"installARCADE" "Install/Update Arcade core" "" \
 		"deleteARCADE" "Delete Arcade core" "" \
+		"installOTHER" "Install/Update Other core" "" \
+		"deleteOTHER" "Delete Other core" "" \
 		"installUTILITY" "Install/Update Utility core" "" \
 		"deleteUTILITY" "Delete Utility core" "" \
 		"configureUPDATER" "Configure MiSTer Updater" "Configures ${LOCAL_UPDATER_INI} used both by the updater and by this script" \
@@ -397,6 +409,11 @@ while true; do
 				install*)
 					CORE_CATEGORY_NAME="${DIALOG_OUTPUT/install/}"
 					CORE_CATEGORY="${CORE_CATEGORY_REVERSE_NAMES[${CORE_CATEGORY_NAME}]}"
+					
+					echo "CORE_CATEGORY_NAME=${CORE_CATEGORY_NAME}"
+					echo "CORE_CATEGORY=${CORE_CATEGORY}"
+					sleep 5
+					
 					while true; do
 						showInstallMENU "${CORE_CATEGORY_NAME}"
 						case ${DIALOG_RETVAL} in
