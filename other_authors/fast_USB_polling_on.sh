@@ -57,7 +57,7 @@ os.system("clear")
 print """
 Fast USB polling is ON and will be active after reboot.
 
-This will force 1000mhz polling on all gamepads and joysticks!
+This will force 1000hz polling on all gamepads and joysticks!
 If you have any input issues, please run fast_USB_polling_off.sh
 
 Rebooting in:
