@@ -24,11 +24,11 @@ mame_paths = [
 	]
 
 def find_mame_folder():
-    for x in mame_paths:
-	    if os.path.isdir(x):
-		   return x 
+	for x in mame_paths:
+		if os.path.isdir(x):
+			return x 
 
-    return nil
+	return nil
 
 broken = []
 
