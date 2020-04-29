@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python3
 import os
 import xml.etree.ElementTree as ET
 import zipfile
@@ -41,11 +41,11 @@ def parseMRA(mraFile):
     noCRC = True
     info['mraname']=mraFile
     for item in root.findall('rom'):
-        if (item.attrib.has_key('zip')):
+        if ('zip' in item.attrib):
            zip=item.attrib['zip']
            zipfiles = zipfiles+ zip.split('|')
         for child in item:
-            if (child.attrib.has_key('zip')):
+            if ('zip' in child.attrib):
               zip=child.attrib['zip']
               zipfiles = zipfiles+ zip.split('|')
     #print(zipfiles)
@@ -61,7 +61,7 @@ def parseMRA(mraFile):
           crclist.append('{0:0{1}x}'.format(zi.CRC,8))
       except:
           #print('file not found: '+zipfilename)
-          if info.has_key('filename'):
+          if ('filename' in info):
             info['filename'].append(zipfilename)
           else:
             info['filename']=[]
@@ -70,7 +70,7 @@ def parseMRA(mraFile):
     #print(crclist)
     for item in root.findall('rom/part'):
         #print(item.attrib)
-        if (item.attrib.has_key('crc')):
+        if ('crc' in item.attrib):
           noCRC = False
           crc=item.attrib['crc']
           if (crc.lower() in crclist):
@@ -78,7 +78,7 @@ def parseMRA(mraFile):
             #print('rom found')
           else:
             #print('**ROM NOT FOUND**  '+crc)
-            if info.has_key('crc'):
+            if (crc in info):
               info['crc'].append(crc)
             else:
               info['crc']=[]
@@ -108,7 +108,7 @@ iterateMRAFiles('/media/fat/_Arcade/')
 
 for info in broken:
     missingzips=""
-    if info.has_key('filename'):
+    if ('filename' in info):
       for fname in info['filename']:
         missingzips=missingzips+fname+","
     print("missing: "+missingzips+" for: "+info['mraname'])
