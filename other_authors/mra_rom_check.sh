@@ -41,8 +41,8 @@ def parseMRA(mraFile):
     noCRC = True
     noMameVersion= True
     info['mraname']=mraFile
-    if ('mameversion' in root):
-       noMameVersion = False
+    for item in root.findall('mameversion'):
+	    noMameVersion = False
     for item in root.findall('rom'):
         if ('zip' in item.attrib):
            zip=item.attrib['zip']
@@ -118,6 +118,7 @@ for info in broken:
         missingzips=missingzips+fname+","
     print("missing: "+missingzips+" for: "+info['mraname'])
 
+#working=parseMRA('Xevious.mra')
 #working=parseMRA('Tapper.mra')
 #print('Working:'+str(working))
 #working=parseMRA('Asteroids.mra')
