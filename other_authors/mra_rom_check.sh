@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/bin/python
 import os
 import xml.etree.ElementTree as ET
 import zipfile
@@ -39,7 +39,10 @@ def parseMRA(mraFile):
     zipfiles = []
     info = {}
     noCRC = True
+    noMameVersion= True
     info['mraname']=mraFile
+    if ('mameversion' in root):
+       noMameVersion = False
     for item in root.findall('rom'):
         if ('zip' in item.attrib):
            zip=item.attrib['zip']
@@ -88,6 +91,8 @@ def parseMRA(mraFile):
       broken.append(info)
     if noCRC and len(zipfiles):
       print(mraFile+':NO CRC, Could not validate')
+    if noMameVersion:
+      print(mraFile+':No MameVersion ')
 
     return working
 
