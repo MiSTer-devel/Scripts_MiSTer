@@ -27,7 +27,7 @@ from os import path
 UBOOT_PATH = "/media/fat/linux/u-boot.txt" 
 
 if os.uname()[1] != "MiSTer":
-    print "This script must be run on a MiSTer system."
+    print("This script must be run on a MiSTer system.")
     sys.exit(1)
 
 if path.exists(UBOOT_PATH):
@@ -54,24 +54,24 @@ else:
 
 os.system("clear")
 
-print """
+print("""
 Fast USB polling is ON and will be active after reboot.
 
 This will force 1000hz polling on all gamepads and joysticks!
 If you have any input issues, please run fast_USB_polling_off.sh
 
 Rebooting in:
-""",
+""")
 
 time.sleep(2)
 
 t = 5
 while t > 0:
-    print "...%x" % t
+    print("...%x" % t)
     t -= 1
     time.sleep(1)
 
-print "...NOW!"
+print("...NOW!")
 os.system("reboot")
 
 time.sleep(10) # Reboot without showing "Press any key..."
