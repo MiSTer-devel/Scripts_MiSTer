@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.3.1 - 2020-05-03 - Refined the check for standard root password.
 # Version 1.3 - 2019-06-16 - Remounting root filesystem RW (and back RO) when needed, for making the script compatible with the new Framebuffer Terminal.
 # Version 1.2.10 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com; refined the check for standard root password.
 # Version 1.2.9 - 2019-06-03 - Refined the check for standard root password.
@@ -60,7 +61,7 @@ fi
 
 mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
 
-if cat /etc/shadow | grep -o "^root:[^:]*" | md5sum | grep -q "\(^9104842aa3318a956e51a081d052d2ee \)\|\(^18de777543175ec29c71ebf177590199 \)\|\(^b136a9bff6f6f09feb2f30e12be37e22 \)\|\(^beca3beae21066c49e2f11d13fe68342 \)\|\(^8fe03c31a7fcc77d0af7177bd1f84825 \)\|\(^dba15e7cbfe81723120d89dba1cb6b91 \)\|\(^6b0cbc28900d54dc8517793507fd70f4 \)\|\(^62c14fc8d7fcb2e776f44302094c2ccd \)\|\(^c71576bf3b576b79ee29bf6e4f0ea822 \)"
+if cat /etc/shadow | grep -o "^root:[^:]*" | md5sum | grep -q "\(^9104842aa3318a956e51a081d052d2ee \)\|\(^18de777543175ec29c71ebf177590199 \)\|\(^b136a9bff6f6f09feb2f30e12be37e22 \)\|\(^beca3beae21066c49e2f11d13fe68342 \)\|\(^8fe03c31a7fcc77d0af7177bd1f84825 \)\|\(^dba15e7cbfe81723120d89dba1cb6b91 \)\|\(^6b0cbc28900d54dc8517793507fd70f4 \)\|\(^62c14fc8d7fcb2e776f44302094c2ccd \)\|\(^c71576bf3b576b79ee29bf6e4f0ea822 \)\|\(^215cd7868e129cc429728fef5ba6a568 \)"
 then
 	echo "root password is the original one from"
 	echo "the SD-Installer; it should be changed."
