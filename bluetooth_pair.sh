@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -86,56 +86,61 @@ function readDIALOGtempfile {
 
 checkTERMINAL
 
-echo Switch input device
-echo to pairing mode.
-echo searching...
-echo
+RESCAN=true
 
-MAC_NAMES=$(hcitool scan --flush | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}.*')
-if [ ! -z "${MAC_NAMES}" ]; then
+while $RESCAN; do
+	RESCAN=false
+
+	clear
+	echo Switch input devices
+	echo to pairing mode.
+	echo Searching...
+	echo
+
 	OLD_IFS="$IFS"
 	IFS=$'\n'
-	for MAC_NAME in ${MAC_NAMES}; do
-		MAC=$(echo "${MAC_NAME}" | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')
-		NAME=$(echo "${MAC_NAME}" | sed 's/[^ 	]*[ 	]*//')
-		MENU_ITEMS="${MENU_ITEMS} \"${MAC}\" \"${NAME}\""
-	done
+	MAC_NAMES=( $( btscan ) )
 	IFS="$OLD_IFS"
-	
-	setupDIALOG
-	setupDIALOGtempfile
-	eval ${DIALOG} --clear --colors --ok-label \"Pair\" \
-		--title \"Bluetooth pair\" \
-		${ADDITIONAL_OPTIONS} \
-		--menu \"Please select the Controller/Keyboard/Mouse you want to pair.\" ${DIALOG_HEIGHT} 0 999 \
-		${MENU_ITEMS} \
-		2> ${DIALOG_TEMPFILE}
-	readDIALOGtempfile
-	
-	case ${DIALOG_RETVAL} in
-		${DIALOG_OK})
-			MAC="${DIALOG_OUTPUT}"
-			;;
-		*)
-			exit 1
-			;;
-	esac
-fi
+
+	unset MENU_ITEMS
+	if [ ! -z "${MAC_NAMES[*]}" ]; then
+		for MAC_NAME in "${MAC_NAMES[@]}"; do
+			MAC=$(echo "${MAC_NAME}" | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')
+			NAME=$(echo "${MAC_NAME}" | sed 's/[^ 	]*[ 	]*//')
+			MENU_ITEMS="${MENU_ITEMS} \"${MAC}\" \"${NAME}\""
+		done
+
+		setupDIALOG
+		setupDIALOGtempfile
+		eval ${DIALOG} --clear --colors --ok-label \"Pair\" \
+			--title \"Bluetooth pair\" \
+			--extra-button --extra-label \"Rescan\"\
+			--menu \"Please select the Controller/Keyboard/Mouse you want to pair.\" ${DIALOG_HEIGHT} 0 999 \
+			${MENU_ITEMS} \
+			2> ${DIALOG_TEMPFILE}
+		readDIALOGtempfile
+
+		case ${DIALOG_RETVAL} in
+			${DIALOG_OK})
+				clear
+				MAC="${DIALOG_OUTPUT}"
+				;;
+			${DIALOG_EXTRA})
+				RESCAN=true
+				;;
+			${DIALOG_CANCEL})
+				clear
+				exit 0
+				;;
+			*)
+				exit 1
+				;;
+		esac
+	fi
+done
 
 if [ ! -z "${MAC}" ]; then
-	echo Got device: $MAC
-	echo Pairing...
-	echo
 	pair-agent hci0 $MAC
-	echo Add to trust list...
-	MAC=$(echo $MAC | sed -e 's/:/_/g')
-	BTADAPTER=`dbus-send --system --dest=org.bluez --print-reply / org.bluez.Manager.DefaultAdapter | tail -1 | sed 's/^.*"\(.*\)".*$/\1/'`
-	dbus-send --system --dest=org.bluez --print-reply $BTADAPTER/dev_$MAC org.bluez.Device.SetProperty string:Trusted variant:boolean:true >/dev/nul
-	echo Connecting...
-	dbus-send --system --dest=org.bluez --print-reply $BTADAPTER/dev_$MAC org.bluez.Input.Connect >/dev/nul
-	echo Done.
-	exit 0
 else
 	echo nothing found.
-	exit 1
 fi
