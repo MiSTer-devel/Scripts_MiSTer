@@ -18,19 +18,20 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# version 1.3 - 2020-06-18 - use a query to get the timezone, plus some cleaning
 # Version 1.2 - 2019-03-02 - Changed "/media/fat/timezone" to "/media/fat/linux/timezone", removed -k option from curl.
 # Version 1.1 - 2019-01-08 - Changed "http://ip-api.com/json/" to "http://www.ip-api.com/json/".
 # Version 1.0 - 2019-01-08 - First commit.
 
-TIMEZONE="$(curl -sLf "http://www.ip-api.com/json/" | sed 's/^.*timezone":"// ; s/",.*$//')"
+TIMEZONE="$(curl -sLf "http://www.ip-api.com/line?fields=timezone")"
 
-if echo "$TIMEZONE" | grep -q "/"
-then
-	cp "/usr/share/zoneinfo/posix/$TIMEZONE" "/media/fat/linux/timezone"
-	echo "Timezone set to"
-	echo "$TIMEZONE."
+if grep -q "/" <<< "${TIMEZONE}" ; then
+    cp "/usr/share/zoneinfo/posix/${TIMEZONE}" "/media/fat/linux/timezone"
+    echo "Timezone set to"
+    echo "${TIMEZONE}."
 else
-	echo "Unable to get"
-	echo "your timezone."
+    echo "Unable to get"
+    echo "your timezone."
 fi
+
 exit 0
