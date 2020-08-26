@@ -9,7 +9,7 @@
 # at https://raw.githubusercontent.com/RetroPie/RetroPie-Setup/master/LICENSE.md
 #
 
-#2019-10-21 - Script adapted for use with MiSTer FPGA project (http://misterfpga.org) by MiSterAddons (https://misteraddons.com)
+#2019-10-21 - Script adapted for use with MiSTer FPGA project (http://misterfpga.org) by MiSTerAddons (https://misteraddons.com)
 
 #rp_module_id="wifi"
 #rp_module_desc="Configure Wifi"
@@ -33,13 +33,13 @@ function _set_interface_wifi() {
 function parse_wpa_supplicant() {
     #create wpa_supplicant if it doesn't exist
     if [[ ! -e "/media/fat/linux/wpa_supplicant.conf" ]]; then
-        echo "ctrl_interface=/run/wpa_supplicant\n
-update_config=1\n
-country=US\n
-\n
-network={\n
-	ssid=""\n
-	psk=""\n
+        echo "ctrl_interface=/run/wpa_supplicant
+update_config=1
+country=US
+
+network={
+	ssid=""
+	psk=""
 }" >> /media/fat/linux/wpa_supplicant.conf
 fi
     dialog --backtitle "$__backtitle" --infobox "\nScanning Existing Wifi Entries ..." 5 40 >/dev/tty2
@@ -319,6 +319,7 @@ function gui_wifi() {
 
 #show_wpa_supplicants
 #sleep 10
+parse_wpa_supplicant
 connect_wifi
 #gui_wifi
 
