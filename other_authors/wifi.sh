@@ -16,6 +16,20 @@
 #rp_module_section="config"
 #rp_module_flags="!x11"
 
+function printMsgs() {
+    local type="$1"
+    shift
+    if [[ "$__nodialog" == "1" && "$type" == "dialog" ]]; then
+        type="console"
+    fi
+    for msg in "$@"; do
+        [[ "$type" == "dialog" ]] && dialog --backtitle "$__backtitle" --cr-wrap --no-collapse --msgbox "$msg" 20 60 >/dev/tty
+        [[ "$type" == "console" ]] && echo -e "$msg"
+        [[ "$type" == "heading" ]] && echo -e "\n= = = = = = = = = = = = = = = = = = = = =\n$msg\n= = = = = = = = = = = = = = = = = = = = =\n"
+    done
+    return 0
+}
+
 function _set_interface_wifi() {
     local state="$1"
 
