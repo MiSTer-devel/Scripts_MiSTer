@@ -32,6 +32,11 @@ def find_mame_folder():
 
 broken = []
 
+def output_line(line):
+    print(line)
+    logfile.write(line)
+    logfile.write('\n')
+
 def parseMRA(mraFile):
     working = True
     tree = ET.parse(mraFile)
@@ -51,36 +56,36 @@ def parseMRA(mraFile):
             if ('zip' in child.attrib):
               zip=child.attrib['zip']
               zipfiles = zipfiles+ zip.split('|')
-    #print(zipfiles)
+    #output_line(zipfiles)
     crclist = []
     for zipfilename in zipfiles:
       try:
         mame_folder=find_mame_folder()
         zf = zipfile.ZipFile(mame_folder+'/'+zipfilename)
         for zi in zf.infolist():
-          #print(zi.filename)
-          #print('{:x}'.format(zi.CRC))
-          #print('{0:0{1}x}'.format(zi.CRC,8))
+          #output_line(zi.filename)
+          #output_line('{:x}'.format(zi.CRC))
+          #output_line('{0:0{1}x}'.format(zi.CRC,8))
           crclist.append('{0:0{1}x}'.format(zi.CRC,8))
       except:
-          #print('file not found: '+zipfilename)
+          #output_line('file not found: '+zipfilename)
           if ('filename' in info):
             info['filename'].append(zipfilename)
           else:
             info['filename']=[]
             info['filename'].append(zipfilename)
 
-    #print(crclist)
+    #output_line(crclist)
     for item in root.findall('rom/part'):
-        #print(item.attrib)
+        #output_line(item.attrib)
         if ('crc' in item.attrib):
           noCRC = False
           crc=item.attrib['crc']
           if (crc.lower() in crclist):
             a=1
-            #print('rom found')
+            #output_line('rom found')
           else:
-            #print('**ROM NOT FOUND**  '+crc)
+            #output_line('**ROM NOT FOUND**  '+crc)
             if (crc in info):
               info['crc'].append(crc)
             else:
@@ -90,9 +95,9 @@ def parseMRA(mraFile):
     if not working:
       broken.append(info)
     if noCRC and len(zipfiles):
-      print(mraFile+':NO CRC, Could not validate')
+      output_line(mraFile+':NO CRC, Could not validate')
     if noMameVersion:
-      print(mraFile+':No MameVersion ')
+      output_line(mraFile+':No MameVersion ')
 
     return working
 
@@ -100,15 +105,36 @@ def iterateMRAFiles(directory):
     for filename in os.listdir(directory):
         if filename.endswith(".mra"):
             fullname=os.path.join(directory,filename)
-            #print(fullname)
+            #output_line(fullname)
             try:
               working=parseMRA(fullname)
             except:
-              print('Broken XML:'+fullname)
+              output_line('Broken XML:'+fullname)
             #if not working:
-            #    print('Not Working:'+fullname)
+            #    output_line('Not Working:'+fullname)
             
-print("checking /media/fat/_Arcade/")
+#########################################
+# Create Logs subdirectory for log output
+#########################################
+path = os.getcwd()
+print ("The current working directory is %s" % path)
+path = "Logs"
+
+try:
+    os.mkdir(path)
+except OSError:
+    print ("Directory %s already exists" % path)
+else:
+    print ("Successfully created the directory %s " % path)
+
+#########################################
+# Create Logs subdirectory for log output
+#########################################
+
+logfile = open("Logs/mra_rom_check.log", "w")
+
+output_line("checking /media/fat/_Arcade/")
+#logfile.write("checking /media/fat/_Arcade/")
 iterateMRAFiles('/media/fat/_Arcade/')
 
 for info in broken:
@@ -116,15 +142,17 @@ for info in broken:
     if ('filename' in info):
       for fname in info['filename']:
         missingzips=missingzips+fname+","
-    print("missing: "+missingzips+" for: "+info['mraname'])
+    output_line("missing: "+missingzips+" for: "+info['mraname'])
 
 #working=parseMRA('Xevious.mra')
 #working=parseMRA('Tapper.mra')
-#print('Working:'+str(working))
+#output_line('Working:'+str(working))
 #working=parseMRA('Asteroids.mra')
-#print('Working:'+str(working))
+#output_line('Working:'+str(working))
 #working=parseMRA('Alien Arena.mra')
-#print('Working:'+str(working))
+#output_line('Working:'+str(working))
 #working=parseMRA('Xevious.mra')
-#print('Working:'+str(working))
+#output_line('Working:'+str(working))
+
+logfile.close()
 
