@@ -88,9 +88,12 @@ def parseMRA(mraFile):
             #output_line('**ROM NOT FOUND**  '+crc)
             if (crc in info):
               info['crc'].append(crc)
+              info['name'].append(item.attrib['name'])
             else:
               info['crc']=[]
+              info['name']=[]
               info['crc'].append(crc)
+              info['name'].append(item.attrib['name'])
             working = False
     if not working:
       broken.append(info)
@@ -138,11 +141,23 @@ output_line("checking /media/fat/_Arcade/")
 iterateMRAFiles('/media/fat/_Arcade/')
 
 for info in broken:
+    #print(info)
     missingzips=""
+    wrongcrc=""
     if ('filename' in info):
       for fname in info['filename']:
         missingzips=missingzips+fname+","
-    output_line("missing: "+missingzips+" for: "+info['mraname'])
+    if ('name' in info):
+      for name in info['name']:
+        wrongcrc=wrongcrc+name+","
+    errorstr = ""
+    if (len(missingzips)):
+        errorstr=errorstr+" missing zip: "+missingzips+" "
+    if (len(wrongcrc)):
+        errorstr=errorstr+" wrong crc for: "+wrongcrc+" "
+
+    output_line(errorstr+" for: "+info['mraname'])
+
 
 #working=parseMRA('Xevious.mra')
 #working=parseMRA('Tapper.mra')
