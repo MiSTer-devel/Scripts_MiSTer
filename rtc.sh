@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.2 - 2020-12-07 - Fixed a filesystem permission issue.
 # Version 1.0.1 - 2019-06-10 - Pinging the NTP server for testing Internet connectivity instead of google.com.
 # Version 1.0 - 2019-01-08 - First commit.
 
@@ -35,12 +36,15 @@ if ntpdate -s -b -u $NTP_SERVER
 then
 	echo "Date and time is:"
 	echo "$(date)"
+	mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
+	[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
 	if hwclock -wu
 	then
 		echo "RTC set."
 	else
 		echo "Unable to set the RTC."
 	fi
+	[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
 else
 	echo "Unable to sync."
 fi
