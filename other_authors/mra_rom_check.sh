@@ -37,6 +37,11 @@ def output_line(line):
     logfile.write(line)
     logfile.write('\n')
 
+def output_line_mameversion(line):
+    #print(line)
+    logfile_v.write(line)
+    logfile_v.write('\n')
+
 def parseMRA(mraFile):
     working = True
     tree = ET.parse(mraFile)
@@ -100,7 +105,7 @@ def parseMRA(mraFile):
     if noCRC and len(zipfiles):
       output_line(mraFile+':NO CRC, Could not validate')
     if noMameVersion:
-      output_line(mraFile+':No MameVersion ')
+      output_line_mameversion(mraFile+':No MameVersion ')
 
     return working
 
@@ -135,6 +140,7 @@ else:
 #########################################
 
 logfile = open("Logs/mra_rom_check.log", "w")
+logfile_v = open("Logs/mra_rom_check_mamever.log", "w")
 
 output_line("checking /media/fat/_Arcade/")
 #logfile.write("checking /media/fat/_Arcade/")
@@ -170,4 +176,5 @@ for info in broken:
 #output_line('Working:'+str(working))
 
 logfile.close()
+logfile_v.close()
 
