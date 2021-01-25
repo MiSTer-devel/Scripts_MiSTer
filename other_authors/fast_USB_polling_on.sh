@@ -16,19 +16,81 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1 - 2021-01-24 - Added options for polling rate
 # Version 1.0 - 2020-01-22 - first version
 
 import os
+import select
 import sys
 import time
+import tty
 import re
 from os import path
+
+def has_input(timeout=0):
+    return select.select([sys.stdin], [], [], timeout)[0]
+
+def get_ans(options=None, timeout=20):
+    try:
+        # flush per-character
+        fd = sys.stdin.fileno()
+        old_fd = tty.tcgetattr(fd)
+        tty.setcbreak(fd)
+
+        # countdown while waiting for input
+        i = timeout
+        max_num_length = len(str(timeout))
+        while i:
+            print("\r{:{}}... ".format(i, max_num_length), end="", flush=True)
+            i -= 1
+            if has_input(1):
+                c = sys.stdin.read(1)
+                if options is not None:
+                    if c in options:
+                        return c
+                else:
+                    return c
+        return None
+    finally:
+        # restore attr
+        tty.tcsetattr(fd, tty.TCSAFLUSH, old_fd) 
 
 UBOOT_PATH = "/media/fat/linux/u-boot.txt"
 
 if os.uname()[1] != "MiSTer":
     print ("This script must be run on a MiSTer system.")
     sys.exit(1)
+
+print ("""
+Fast USB polling
+
+Press 1     for 1000hz (1ms) [default]
+Press 2     for  500hz (2ms)
+Press 3     for  250hz (4ms)
+Press 4     for  125hz (8ms)
+Press Enter for default
+""")
+
+poll_input = get_ans(["1", "2", "3", "4", "\n"])
+
+if poll_input == "1":
+    print ("Selected 1000hz (1ms)")
+    poll_value = 1
+elif poll_input == "2":
+    print ("Selected 500hz (2ms)")
+    poll_value = 2
+elif poll_input == "3":
+    print ("Selected 250hz (4ms)")
+    poll_value = 4
+elif poll_input == "4":
+    print ("Selected 125hz (8ms)")
+    poll_value = 8
+else:
+    print ("Using default")
+    poll_value = 1
+
+# give time to see selection on screen
+time.sleep(2)
 
 if path.exists(UBOOT_PATH):
 
@@ -42,22 +104,22 @@ if path.exists(UBOOT_PATH):
             if len(stripped_line) > 0:
                 lines_out.append(stripped_line)
 
-    #rewrites cleaned output with 1ms polling turned on
+    #rewrites cleaned output with selected polling turned on
     with open("/media/fat/linux/u-boot.txt","w") as file:
         for l in lines_out:
             file.write(l + "\n")
-        file.write("v=loglevel=4 usbhid.jspoll=1 xpad.cpoll=1\n")
+        file.write("v=loglevel=4 usbhid.jspoll=%s xpad.cpoll=%s\n" % (poll_value, poll_value))
 
 else:
     with open("/media/fat/linux/u-boot.txt","w") as file:
-        file.write("v=loglevel=4 usbhid.jspoll=1 xpad.cpoll=1\n")
+        file.write("v=loglevel=4 usbhid.jspoll=%s xpad.cpoll=%s\n" % (poll_value, poll_value))
 
 os.system("clear")
 
 print ("""
 Fast USB polling is ON and will be active after reboot.
 
-This will force 1000hz polling on all gamepads and joysticks!
+This will force selected polling on all gamepads and joysticks!
 If you have any input issues, please run fast_USB_polling_off.sh
 
 Rebooting in:
