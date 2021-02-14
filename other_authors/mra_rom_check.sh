@@ -61,6 +61,7 @@ def parseMRA(mraFile):
     zipfiles = []
     info = {}
     noCRC = True
+    missingCRCs = 0
     noMameVersion= True
     info['mraname']=mraFile
     for item in root.findall('mameversion'):
@@ -101,6 +102,12 @@ def parseMRA(mraFile):
     #output_line(crclist)
     for item in root.findall('rom/part'):
         #output_line(item.attrib)
+        if ('name' in item.attrib and 'crc' not in item.attrib):
+          missingCRCs = missingCRCs + 1
+          if ('partnames' not in info):
+              info['partnames'] = []
+          info['partnames'].append(item.attrib['name'])
+
         if ('crc' in item.attrib):
           noCRC = False
           crc=item.attrib['crc']
@@ -109,17 +116,16 @@ def parseMRA(mraFile):
             #output_line('rom found')
           else:
             #output_line('**ROM NOT FOUND**  '+crc)
-            if (crc in info):
-              info['partcrcs'].append(crc)
-              info['partnames'].append(item.attrib['name'])
-            else:
-              info['partcrcs']=[]
-              info['partnames']=[]
-              info['partcrcs'].append(crc)
-              info['partnames'].append(item.attrib['name'])
+            if ('partcrcs' not in info):
+              info['partcrcs'] = []
+            if ('partnames' not in info):
+              info['partnames'] = []
+            info['partcrcs'].append(crc)
+            info['partnames'].append(item.attrib['name'])
             working = False
-    if noCRC and len(zipfiles) and not args.ignore_crc:
-      info['badcrcs']=':NO CRC, Could not validate'
+
+    if (noCRC or missingCRCs > 0) and len(zipfiles) and not args.ignore_crc:
+      info['badcrcs']= 'NO CRC found' if noCRC else '{} Missing CRCs'.format(missingCRCs)
       output_line_logonly(mraFile+info['badcrcs'])
       working = False
 
@@ -205,10 +211,10 @@ for info in broken:
     wrongcrc=""
     if ('zipfilenames' in info):
       for zipname in info['zipfilenames']:
-        missingzips=missingzips+zipname+","
+        missingzips=missingzips+zipname+", "
     if ('partnames' in info):
       for name in info['partnames']:
-        wrongcrc=wrongcrc+name+","
+        wrongcrc=wrongcrc+name+", "
 
     errorstr = ""
     if ('brokenxml') in info:
@@ -216,11 +222,11 @@ for info in broken:
     if ('badmameversion' in info):
         errorstr=errorstr+" wrong mameversion: "+info['badmameversion']+" "
     if ('badcrcs' in info):
-        errorstr=errorstr+" wrong crcs: "+info['badcrcs']+" "
+        errorstr=errorstr+" bad CRCs: "+info['badcrcs']+" "
     if (len(missingzips)):
-        errorstr=errorstr+" missing zip: "+missingzips+" "
+        errorstr=errorstr+" missing ZIP: "+missingzips[:-2]+" "
     if (len(wrongcrc)):
-        errorstr=errorstr+" wrong crc for: "+wrongcrc+" "
+        errorstr=errorstr+" missing CRC for parts: "+wrongcrc[:-2]+" "
 
     output_line(errorstr+" for: "+info['mraname'])
 
