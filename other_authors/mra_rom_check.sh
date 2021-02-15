@@ -102,7 +102,7 @@ def parseMRA(mraFile):
     #output_line(crclist)
     for item in root.findall('rom/part'):
         #output_line(item.attrib)
-        if ('name' in item.attrib and 'crc' not in item.attrib):
+        if ('name' in item.attrib and 'crc' not in item.attrib and 'ignore_crc' not in item.attrib):
           missingCRCs = missingCRCs + 1
           if ('partnames' not in info):
               info['partnames'] = []
