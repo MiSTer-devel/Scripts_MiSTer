@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.3.3 - 2021-02-21 - Changed https://curl.haxx.se/ca/cacert.pem to https://curl.se/ca/cacert.pem and added option to follow redirects.
 # Version 1.3.2 - 2020-12-07 - Refined the check for standard root password.
 # Version 1.3.1 - 2020-05-03 - Refined the check for standard root password.
 # Version 1.3 - 2019-06-16 - Remounting root filesystem RW (and back RO) when needed, for making the script compatible with the new Framebuffer Terminal.
@@ -118,9 +119,9 @@ case $? in
 					ar p /tmp/openssl_1.0.1t-1+deb8u11_armhf.deb data.tar.xz | tar xJ --strip-components=3 -C "/media/fat/linux" ./usr/bin/openssl
 					rm /tmp/openssl_1.0.1t-1+deb8u11_armhf.deb
 				fi
-				echo "Downloading and processing https://curl.haxx.se/ca/cacert.pem into /etc/ssl/certs;"
+				echo "Downloading and processing https://curl.se/ca/cacert.pem into /etc/ssl/certs;"
 				echo "this may take some time..."
-				curl -k "https://curl.haxx.se/ca/cacert.pem"|awk 'split_after==1{n++;split_after=0} /-----END CERTIFICATE-----/ {split_after=1} {if(length($0) > 0) print > "/etc/ssl/certs/cert" n ".pem"}'
+				curl -kL "https://curl.se/ca/cacert.pem"|awk 'split_after==1{n++;split_after=0} /-----END CERTIFICATE-----/ {split_after=1} {if(length($0) > 0) print > "/etc/ssl/certs/cert" n ".pem"}'
 				for PEM in /etc/ssl/certs/*.pem; do mv "$PEM" "$(dirname "$PEM")/$(cat "$PEM" | grep -m 1 '^[^#]').pem"; done
 				for PEM in /etc/ssl/certs/*.pem; do for HASH in $(openssl x509 -subject_hash_old -hash -noout -in "$PEM" 2>/dev/null); do ln -s "$(basename "$PEM")" "$(dirname "$PEM")/$HASH.0"; done; done
 				sync
