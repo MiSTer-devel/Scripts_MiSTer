@@ -19,4 +19,6 @@ This will validate the standard MRAs and report which ones are missing mame zip 
 
 Script adapted from RetroPie for use with MiSTer FPGA project by MiSterAddons
 
+###### Get240pTS.sh by @donluca
 
+This downloads all of the 240p Test Suites for currently supported systems on the MiSTer.
