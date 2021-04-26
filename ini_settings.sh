@@ -813,7 +813,7 @@ while true; do
 			${DIALOG_EXTRA})
 				# Extra=Save
 				cp "${MISTER_INI_FILE}" "${MISTER_INI_FILE}.bak"
-				echo "${MISTER_INI}" | unix2dos > "${MISTER_INI_FILE}"
+				echo "${MISTER_INI}" | dos2unix > "${MISTER_INI_FILE}"
 				sync
 				${DIALOG} --clear --title "MiSTer INI Settings" --defaultno --yesno "Do you want to reboot in order to apply the changes?" 0 0 && echo "If you have video problems, please hold OSD menu button while rebooting in order to load alternative MiSTer_alt.ini configuration file." && sleep 3 && reboot now
 				break;;
