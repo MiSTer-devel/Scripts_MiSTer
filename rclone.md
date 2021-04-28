@@ -57,5 +57,23 @@ These instructions will guide you through the process of creating a *rclone.conf
      * Samba share
      * Copying directly the file with a SD adapter
 
+## Destination directory
+
+A new variable can be define to change the destination directory name.
+
+If not defined, the default value *MiSTer* will be used).
+
+To change this value, create a file *rclone.ini* in the same directory where the rclone scripts are (usually */media/fat/#Scripts*) using the method you prefer, i.e.
+
+Example of content:
+```ini
+DIRECTORY_NAME="mister_backups"
+```
+
+## S3 provider
+
+The *DIRECTORY_NAME* is used as the bucket name.\
+Change this value to a valid bucket name (see [#destination-directory](#destination-directory) section).
+
 ## Enjoy the rclone scripts
 1. Use *rclone_config_download.sh*, *rclone_config_upload.sh*, *rclone_saves_download.sh* and *rclone_saves_upload.sh* either through the OSD Script menu (hit F12 while running MiSTer main menu) or manually launching them in a SSH session.
