@@ -89,20 +89,20 @@ invalidInput=0;
 
 # Links to the various 240p Test Suite latest version
 LINKS=()
-LINKS+=("http://junkerhq.net/240pTestSuite/Dreamcast/240pTestSuite-Dreamcast-1.25.zip") #Dreamcast
+LINKS+=("http://junkerhq.net/240pTestSuite/Dreamcast/240pTestSuite-Dreamcast-latest.zip") #Dreamcast
 LINKS+=("http://junkerhq.net/240pTestSuite/PinoBatch/144pTestSuite.gb") #Game Boy
 LINKS+=("http://junkerhq.net/240pTestSuite/PinoBatch/160pTestSuite.gba") #Game Boy Advanced
-LINKS+=("http://junkerhq.net/240pTestSuite/GameCube/240pTestSuite-GameCube-1.10b.zip") #GameCube
+LINKS+=("http://junkerhq.net/240pTestSuite/GameCube/240pTestSuite-GameCube-latest.zip") #GameCube
 LINKS+=("http://junkerhq.net/240pTestSuite/SegaCD/240pTestSuite-Sega_Mega_CD-latest.zip") #MegaCD
 LINKS+=("http://junkerhq.net/240pTestSuite/MegaDrive/240pTestSuite-MD_Genesis-latest.zip") #Mega Drive
 LINKS+=("http://junkerhq.net/240pTestSuite/PinoBatch/240pTestSuite.nes") #NES
-LINKS+=("http://junkerhq.net/240pTestSuite/PCE/240pTestSuite-PCE_TG16-HuCard-1.10.zip") #PCEngine
-LINKS+=("http://junkerhq.net/240pTestSuite/PCE/240pTestSuite-PCE_TG16-CDROM-1.10.zip") #PCEngine CD
-LINKS+=("http://junkerhq.net/240pTestSuite/PCE/240pTestSuite-PCE_TG16-SuperCDROM-1.10.zip") #PCEngine SuperCD
+LINKS+=("http://junkerhq.net/240pTestSuite/PCE/240pTestSuite-PCE_TG16-HuCard-latest.zip") #PCEngine
+LINKS+=("http://junkerhq.net/240pTestSuite/PCE/240pTestSuite-PCE_TG16-CDROM-latest.zip") #PCEngine CD
+LINKS+=("http://junkerhq.net/240pTestSuite/PCE/240pTestSuite-PCE_TG16-SuperCDROM-latest.zip") #PCEngine SuperCD
 LINKS+=("https://github.com/filipalac/240pTestSuite-PS1/releases/download/19122020/240pTestSuitePS1-EMU.zip") #Playstation
 LINKS+=("https://github.com/sverx/SMSTestSuite/releases/download/v0.32/SMSTestSuite.sms") #Master System
 LINKS+=("http://junkerhq.net/240pTestSuite/SNES/240pTestSuite-SNES-latest.zip.zip") #SNES
-LINKS+=("http://junkerhq.net/240pTestSuite/Wii/240pTestSuite-Wii-1.10b.zip") #Wii
+LINKS+=("http://junkerhq.net/240pTestSuite/Wii/240pTestSuite-Wii-latest.zip") #Wii
 
 # Look for the folder used to store ROMs and ISOs
 ACTIVEMOUNTS=`mount | awk '{ print $3 }'`
