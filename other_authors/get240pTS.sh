@@ -101,7 +101,7 @@ LINKS+=("http://junkerhq.net/240pTestSuite/PCE/240pTestSuite-PCE_TG16-CDROM-late
 LINKS+=("http://junkerhq.net/240pTestSuite/PCE/240pTestSuite-PCE_TG16-SuperCDROM-latest.zip") #PCEngine SuperCD
 LINKS+=("https://github.com/filipalac/240pTestSuite-PS1/releases/download/19122020/240pTestSuitePS1-EMU.zip") #Playstation
 LINKS+=("https://github.com/sverx/SMSTestSuite/releases/download/v0.32/SMSTestSuite.sms") #Master System
-LINKS+=("http://junkerhq.net/240pTestSuite/SNES/240pTestSuite-SNES-latest.zip.zip") #SNES
+LINKS+=("http://junkerhq.net/240pTestSuite/SNES/240pTestSuite-SNES-latest.zip") #SNES
 LINKS+=("http://junkerhq.net/240pTestSuite/Wii/240pTestSuite-Wii-latest.zip") #Wii
 
 # Look for the folder used to store ROMs and ISOs
