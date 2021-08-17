@@ -26,9 +26,9 @@
 
 if [ "$(uname -n)" != "MiSTer" ]
 then
-	echo "This script must be run"
+	echo "This script should be run"
 	echo "on a MiSTer system."
-	exit 1
+	#exit 1
 fi
 
 /etc/init.d/S91smb stop 2> /dev/null
