@@ -23,22 +23,21 @@
 # Version 1.0 - 2019-02-02 - First commit
 
 
-
-if [ "$(uname -n)" != "MiSTer" ]
+if [ -f "/media/fat/MiSTer" ]; 
 then
+    echo "*filter"$'\n'"COMMIT" | iptables-restore
+	mount | grep -q "on / .*[(,]ro[,$]" && RO_ROOT="true"
+	[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
+	rm /etc/network/if-pre-up.d/iptables  > /dev/null 2>&1
+	sync
+	[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
+
+	echo "Firewall is off and"
+	echo "inactive at startup."
+	echo "Done!"
+	exit 0
+else
 	echo "This script must be run"
 	echo "on a MiSTer system."
 	exit 1
 fi
-
-echo "*filter"$'\n'"COMMIT" | iptables-restore
-mount | grep -q "on / .*[(,]ro[,$]" && RO_ROOT="true"
-[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
-rm /etc/network/if-pre-up.d/iptables  > /dev/null 2>&1
-sync
-[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
-
-echo "Firewall is off and"
-echo "inactive at startup."
-echo "Done!"
-exit 0
