@@ -24,30 +24,30 @@
 
 
 
-if [ "$(uname -n)" != "MiSTer" ]
+if [ -f "/media/fat/MiSTer" ];
 then
+	/etc/init.d/S50proftpd stop 2> /dev/null
+	mount | grep -q "on / .*[(,]ro[,$]" && RO_ROOT="true"
+	[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
+	mv /etc/init.d/S50proftpd /etc/init.d/_S50proftpd > /dev/null 2>&1
+	sync
+	[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
+	if [ -f /media/fat/linux/iptables.up.rules ]
+	then
+		sed -e '/--dport 21 /s/^#*/#/g' -i /media/fat/linux/iptables.up.rules
+	fi
+	sync
+	if [ -f /etc/network/if-pre-up.d/iptables ]
+	then
+		/etc/network/if-pre-up.d/iptables
+	fi
+
+	echo "FTP is off and"
+	echo "inactive at startup."
+	echo "Done!"
+	exit 0
+else
 	echo "This script should be run"
 	echo "on a MiSTer system."
 	#exit 1
 fi
-
-/etc/init.d/S50proftpd stop 2> /dev/null
-mount | grep -q "on / .*[(,]ro[,$]" && RO_ROOT="true"
-[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
-mv /etc/init.d/S50proftpd /etc/init.d/_S50proftpd > /dev/null 2>&1
-sync
-[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
-if [ -f /media/fat/linux/iptables.up.rules ]
-then
-	sed -e '/--dport 21 /s/^#*/#/g' -i /media/fat/linux/iptables.up.rules
-fi
-sync
-if [ -f /etc/network/if-pre-up.d/iptables ]
-then
-	/etc/network/if-pre-up.d/iptables
-fi
-
-echo "FTP is off and"
-echo "inactive at startup."
-echo "Done!"
-exit 0
