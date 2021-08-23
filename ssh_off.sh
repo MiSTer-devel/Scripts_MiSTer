@@ -30,25 +30,24 @@ then
 	echo "This script must be run"
 	echo "on a MiSTer system."
 	exit 1
-else
-	/etc/init.d/S50sshd stop 2> /dev/null
-	mount | grep -q "on / .*[(,]ro[,$]" && RO_ROOT="true"
-	[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
-	mv /etc/init.d/S50sshd /etc/init.d/_S50sshd > /dev/null 2>&1
-	sync
-	[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
-	if [ -f /media/fat/linux/iptables.up.rules ]
-	then
-		sed -e '/--dport 22 /s/^#*/#/g' -i /media/fat/linux/iptables.up.rules
-	fi
-	sync
-	if [ -f /etc/network/if-pre-up.d/iptables ]
-	then
-		/etc/network/if-pre-up.d/iptables
-	fi
-
-	echo "SSH is off and"
-	echo "inactive at startup."
-	echo "Done!"
-	exit 0
 fi
+/etc/init.d/S50sshd stop 2> /dev/null
+mount | grep -q "on / .*[(,]ro[,$]" && RO_ROOT="true"
+[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
+mv /etc/init.d/S50sshd /etc/init.d/_S50sshd > /dev/null 2>&1
+sync
+[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
+if [ -f /media/fat/linux/iptables.up.rules ]
+then
+	sed -e '/--dport 22 /s/^#*/#/g' -i /media/fat/linux/iptables.up.rules
+fi
+sync
+if [ -f /etc/network/if-pre-up.d/iptables ]
+then
+	/etc/network/if-pre-up.d/iptables
+fi
+
+echo "SSH is off and"
+echo "inactive at startup."
+echo "Done!"
+exit 0

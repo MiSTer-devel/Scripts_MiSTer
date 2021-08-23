@@ -31,26 +31,25 @@ then
 	echo "This script should be run"
 	echo "on a MiSTer system."
 	exit 1
-else
-	mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
-	[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
-	mv /etc/init.d/_S50sshd /etc/init.d/S50sshd > /dev/null 2>&1
-	sync
-	[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
-
-	# start listening port 22 (SSH)
-	IP_FILTERING="/media/fat/linux/iptables.up.rules"
-	[[ -f "${IP_FILTERING}" ]] && sed -i '/--dport 22 / s/^#//' "${IP_FILTERING}"
-	sync
-
-	if [ -f /etc/network/if-pre-up.d/iptables ]
-	then
-		/etc/network/if-pre-up.d/iptables
-	fi
-	/etc/init.d/S50sshd start
-
-	echo "SSH is on and"
-	echo "active at startup."
-	echo "Done!"
-	exit 0
 fi
+mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
+[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
+mv /etc/init.d/_S50sshd /etc/init.d/S50sshd > /dev/null 2>&1
+sync
+[ "$RO_ROOT" == "true" ] && mount / -o remount,ro
+
+# start listening port 22 (SSH)
+IP_FILTERING="/media/fat/linux/iptables.up.rules"
+[[ -f "${IP_FILTERING}" ]] && sed -i '/--dport 22 / s/^#//' "${IP_FILTERING}"
+sync
+
+if [ -f /etc/network/if-pre-up.d/iptables ]
+then
+	/etc/network/if-pre-up.d/iptables
+fi
+/etc/init.d/S50sshd start
+
+echo "SSH is on and"
+echo "active at startup."
+echo "Done!"
+exit 0
