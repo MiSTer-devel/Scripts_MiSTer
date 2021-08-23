@@ -116,6 +116,11 @@ TDIR="${TEMP_TDIR[0]}/"
 if [[ -d "${TDIR}games" ]]; then TDIR+="games/"; fi
 
 # Create the cache file if it doesn't exist and load it
+if [[ ! -d "/media/fat/Scripts/.cache/" ]]
+then
+    echo "/media/fat/Scripts/.cache/ directory does not exist. Creating..."
+    mkdir /media/fat/Scripts/.cache/
+fi
 if [[ ! -f "${CACHEFILE}" ]]
 then
     > "${CACHEFILE}"
@@ -229,7 +234,7 @@ else
     # Create target directory (if necessary)
     if [[ ! -d "${TDIR}" ]]; then mkdir -p "${TDIR}"; fi
     
-    # Check the cache file and target directory to see if the 240p Test Suite is already downloaed and updated
+    # Check the cache file and target directory to see if the 240p Test Suite is already downloaded and updated
     UPDATE=`curl ${CURL_OPTIONS} -s -I ${LINK} | grep -i etag | awk '{ print $2 }'`
     if [[ "${UPDATE}" != "${CACHE[$INDEX]}" || `ls "${TDIR}"` == "" ]]
     then
