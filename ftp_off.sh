@@ -29,7 +29,7 @@ if [ ! -f "/media/fat/MiSTer" ];
 then
 	echo "This script must be run"
 	echo "on a MiSTer system."
-	#exit 1
+	exit 1
 else
 	/etc/init.d/S50proftpd stop 2> /dev/null
 	mount | grep -q "on / .*[(,]ro[,$]" && RO_ROOT="true"

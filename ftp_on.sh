@@ -29,7 +29,7 @@ if [ ! -f "/media/fat/MiSTer" ];
 then
 	echo "This script must be run"
 	echo "on a MiSTer system."
-	#exit 1
+	exit 1
 else
 	mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
 	[ "$RO_ROOT" == "true" ] && mount / -o remount,rw

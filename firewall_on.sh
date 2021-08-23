@@ -30,7 +30,7 @@ if [ ! -f "/media/fat/MiSTer" ];
 then
 	echo "This script must be run"
 	echo "on a MiSTer system."
-	#exit 1
+	exit 1
 else
 	if ! iptables -L > /dev/null 2>&1
 	then

@@ -28,7 +28,7 @@ if [ ! -f "/media/fat/MiSTer" ];
 then
 	echo "This script must be run"
 	echo "on a MiSTer system."
-	#exit 1
+	exit 1
 else
     echo "*filter"$'\n'"COMMIT" | iptables-restore
 	mount | grep -q "on / .*[(,]ro[,$]" && RO_ROOT="true"

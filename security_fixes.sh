@@ -44,7 +44,7 @@ if [ ! -f "/media/fat/MiSTer" ];
 then
 	echo "This script must be run"
 	echo "on a MiSTer system."
-	#exit 1
+	exit 1
 else
 	if [[ ! (-t 0 && -t 1 && -t 2) ]]
 	then
