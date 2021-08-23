@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.4 - 2021-08-23 - New method for checking if the script is run on a real MiSTer system (thanks to MiSTer Addons).
 # Version 1.3 - 2019-06-16 - Remounting root filesystem RW (and back RO) when needed, for making the script compatible with the new Framebuffer Terminal.
 # Version 1.2.10 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com; refined the check for standard root password.
 # Version 1.2.9 - 2019-06-03 - Refined the check for standard root password.
@@ -39,8 +40,12 @@
 
 echo ""
 
-if [ -f "/media/fat/MiSTer" ]; 
+if [ ! -f "/media/fat/MiSTer" ]; 
 then
+	echo "This script must be run"
+	echo "on a MiSTer system."
+	#exit 1
+else
 	if [[ ! (-t 0 && -t 1 && -t 2) ]]
 	then
 		echo "This script must be run"
@@ -419,9 +424,4 @@ then
 	echo "You can reboot now for actually applying changes."
 
 	exit 0
-
-else
-	echo "This script should be run"
-	echo "on a MiSTer system."
-	#exit 1
 fi

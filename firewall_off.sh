@@ -18,13 +18,18 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.3 - 2021-08-23 - New method for checking if the script is run on a real MiSTer system (thanks to MiSTer Addons).
 # Version 1.0.2 - 2019-02-03 - Remounting / as RW only when needed; downgraded version from 1.1 to 1.0.2.
 # Version 1.0.1 - 2019-02-02 - Remounting / as RW before altering /etc/init.d/ so the script actually works from OSD.
 # Version 1.0 - 2019-02-02 - First commit
 
 
-if [ -f "/media/fat/MiSTer" ]; 
+if [ ! -f "/media/fat/MiSTer" ]; 
 then
+	echo "This script must be run"
+	echo "on a MiSTer system."
+	#exit 1
+else
     echo "*filter"$'\n'"COMMIT" | iptables-restore
 	mount | grep -q "on / .*[(,]ro[,$]" && RO_ROOT="true"
 	[ "$RO_ROOT" == "true" ] && mount / -o remount,rw
@@ -36,8 +41,4 @@ then
 	echo "inactive at startup."
 	echo "Done!"
 	exit 0
-else
-	echo "This script must be run"
-	echo "on a MiSTer system."
-	exit 1
 fi

@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.4 - 2021-08-23 - New method for checking if the script is run on a real MiSTer system (thanks to MiSTer Addons).
 # Version 1.0.3 - 2019-02-05 - Cosmetic changes.
 # Version 1.0.2 - 2019-02-03 - Remounting / as RW only when needed; downgraded version from 1.1 to 1.0.2.
 # Version 1.0.1 - 2019-02-02 - Remounting / as RW before altering /etc/init.d/ so the script actually works from OSD.
@@ -25,8 +26,12 @@
 
 
 
-if [ -f "/media/fat/MiSTer" ];
+if [ ! -f "/media/fat/MiSTer" ]; 
 then
+	echo "This script must be run"
+	echo "on a MiSTer system."
+	#exit 1
+else
 	if ! iptables -L > /dev/null 2>&1
 	then
 		echo "The current Kernel doesn't support iptables/firewalling."
@@ -112,8 +117,4 @@ then
 	echo "active at startup."
 	echo "Done!"
 	exit 0
-else
-	echo "This script should be run"
-	echo "on a MiSTer system."
-	#exit 1
 fi
