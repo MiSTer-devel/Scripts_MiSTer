@@ -16,6 +16,24 @@
 #rp_module_section="config"
 #rp_module_flags="!x11"
 
+## @fn printMsgs()
+## @param type style of display to use - dialog, console or heading
+## @param message string or array of messages to display
+## @brief Prints messages in a variety of ways.
+function printMsgs() {
+    local type="$1"
+    shift
+    if [[ "$__nodialog" == "1" && "$type" == "dialog" ]]; then
+        type="console"
+    fi
+    for msg in "$@"; do
+        [[ "$type" == "dialog" ]] && dialog --backtitle "$__backtitle" --cr-wrap --no-collapse --msgbox "$msg" 20 60 >/dev/tty
+        [[ "$type" == "console" ]] && echo -e "$msg"
+        [[ "$type" == "heading" ]] && echo -e "\n= = = = = = = = = = = = = = = = = = = = =\n$msg\n= = = = = = = = = = = = = = = = = = = = =\n"
+    done
+    return 0
+}
+
 function _set_interface_wifi() {
     local state="$1"
 
