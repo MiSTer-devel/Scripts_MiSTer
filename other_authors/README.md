@@ -19,4 +19,11 @@ This will validate the standard MRAs and report which ones are missing mame zip 
 
 Script adapted from RetroPie for use with MiSTer FPGA project by MiSterAddons
 
+###### change_hostname.sh by MiSTerAddons
+
+Script used to change network hostname so MiSTer devices can be addressed by network name. 
+By default, they are all set to "MiSTer". Security scripts also updated to check for MiSTer
+main binary instead of checking hostname. To use, edit change_hostname.ini by replacing 
+"New_MiSTer_Hostname" with the desired hostname. For example:
+   NEW_HOSTNAME="OOGABOOGA"
 
