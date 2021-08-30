@@ -21,6 +21,7 @@
 
 
 
+# Version 2.0 - 2021-08-30 - Tests if executed on a 5.X Kernel system (thanks to MiSTer Addons for the help with testing).
 # Version 1.0 - 2019-10-26 - First commit.
 
 
@@ -32,6 +33,14 @@
 DIALOG_HEIGHT="31"
 
 # ========= CODE STARTS HERE =========
+
+KERNEL_VERSION="$(uname -r)"
+KERNEL_VERSION="${KERNEL_VERSION%%-*}"
+if [[ "${KERNEL_VERSION}" > "5.0.0" ]]
+then
+	/sbin/btpair
+	exit 0
+fi
 
 function checkTERMINAL {
 #	if [ "$(uname -n)" != "MiSTer" ]

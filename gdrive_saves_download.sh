@@ -18,10 +18,22 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 2.0 - 2021-08-30 - Tests if executed on a 5.X Kernel system (thanks to MiSTer Addons for the help with testing).
 # Version 1.0.1 - 2019-02-05 - Changed the way the include file is loaded.
 # Version 1.0 - 2019-02-02 - First commit
 
 
+
+KERNEL_VERSION="$(uname -r)"
+KERNEL_VERSION="${KERNEL_VERSION%%-*}"
+if [[ "${KERNEL_VERSION}" > "5.0.0" ]]
+then
+	echo "This script is not compatible"
+	echo "with the current 5.X Kernel system"
+	echo "and will be updated"
+	echo "as soon as possible."
+	exit 1
+fi
 
 SCRIPT_PATH="$(realpath "$0")"
 

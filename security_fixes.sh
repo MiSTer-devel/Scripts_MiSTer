@@ -18,7 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
-# Version 1.3.5 - 2021-08-23 - New method for checking if the script is run on a real MiSTer system (thanks to MiSTer Addons).
+# Version 2.0 - 2021-08-30 - Tests if executed on a 5.X Kernel system (thanks to MiSTer Addons for the help with testing).
 # Version 1.3.4 - 2021-03-22 - Refined the check for standard root password.
 # Version 1.3.3 - 2021-02-21 - Changed https://curl.haxx.se/ca/cacert.pem to https://curl.se/ca/cacert.pem and added option to follow redirects.
 # Version 1.3.2 - 2020-12-07 - Refined the check for standard root password.
@@ -42,9 +42,20 @@
 
 
 
+KERNEL_VERSION="$(uname -r)"
+KERNEL_VERSION="${KERNEL_VERSION%%-*}"
+if [[ "${KERNEL_VERSION}" > "5.0.0" ]]
+then
+	echo "This script is not compatible"
+	echo "with the current 5.X Kernel system"
+	echo "and will be updated"
+	echo "as soon as possible."
+	exit 1
+fi
+
 echo ""
 
-if [ ! -f "/media/fat/MiSTer" ]; 
+if [ "$(uname -n)" != "MiSTer" ]
 then
 	echo "This script must be run"
 	echo "on a MiSTer system."
