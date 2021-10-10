@@ -17,6 +17,7 @@
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
 # Version 1.0 - 2020-01-22 - first version
+# Version 1.1 - 2021-09-12 - removed "MiSTer" hostname check
 
 import os
 import sys
@@ -25,10 +26,6 @@ import re
 from os import path
 
 UBOOT_PATH = "/media/fat/linux/u-boot.txt"
-
-if os.uname()[1] != "MiSTer":
-    print ("This script must be run on a MiSTer system.")
-    sys.exit(1)
 
 if path.exists(UBOOT_PATH):
 
