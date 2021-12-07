@@ -54,10 +54,14 @@ def output_line_logonly(line):
     logfile_v.write(line)
     logfile_v.write('\n')
 
+def et_parse(mraFile):
+   with open(mraFile, 'r') as f:
+       text = f.read()
+   return ET.fromstring(text.lower())
+
 def parseMRA(mraFile):
     working = True
-    tree = ET.parse(mraFile)
-    root = tree.getroot()
+    root = et_parse(mraFile)
     zipfiles = []
     info = {}
     noCRC = True
