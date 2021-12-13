@@ -199,7 +199,7 @@ fi
 
 if [ "$USERNAME" == "" ]
 then
-	MOUNT_OPTIONS="guest"
+	MOUNT_OPTIONS="sec=none"
 else
 	MOUNT_OPTIONS="username=$USERNAME,password=$PASSWORD"
 	if [ "$DOMAIN" != "" ]
