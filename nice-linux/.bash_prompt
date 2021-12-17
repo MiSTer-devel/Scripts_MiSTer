@@ -1,0 +1,45 @@
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# Assume no color, unless otherwise detected.
+unset color_prompt
+
+# Check for color capabilities.
+case "$TERM" in
+    xterm-color|*-256color)
+        color_prompt=1
+        ;;
+
+    *)
+        if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+            # We have color support; assume it's compliant with Ecma-48
+            # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+            # a case would tend to support setf rather than setaf.)
+            color_prompt=1
+        fi
+        ;;
+esac
+
+cyan=
+green=
+light_blue=
+normal=
+if [ ! -z "${color_prompt:-}" ]; then
+    none="\[\033[0m\]"
+    blue="\[\033[1;34m\]"
+    cyan="\[\033[0;36m\]"
+    green="\[\033[0;32m\]"
+    grey="\[\033[0;37m\]"
+    unset color_prompt
+fi
+PS1="${grey}[${green}\D{%D %r}${grey}]\n${cyan}${debian_chroot:+($debian_chroot) }\u@\h${grey}:${blue}\w${grey}>${none}"
+unset none blue cyan green grey
+
+case "$TERM" in
+    xterm*|rxvt*)
+        # Set window title.
+        PS1="\[\e]0;${debian_chroot:+($debian_chroot) }\u@\h:\w\a\]$PS1"
+        ;;
+esac
