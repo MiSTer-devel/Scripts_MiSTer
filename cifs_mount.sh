@@ -55,8 +55,10 @@ PASSWORD=""
 DOMAIN=""
 
 #Local directory/directories where the share will be mounted.
-#- It can ba a single directory, i.e. "_CIFS", so the remote share, i.e. \\NAS\MiSTer
-#  will be directly mounted on /media/fat/_CIFS (/media/fat is the root of the SD card).
+#- It can ba a single directory, i.e. "cifs", so the remote share, i.e. \\NAS\MiSTer
+#  will be directly mounted on /media/fat/cifs (/media/fat is the root of the SD card).
+#  NOTE: /media/fat/cifs is a special location that the mister binary will try before looking in
+# the standard games location of /media/fat/games, so using "cifs" is the recommended approach.
 #- It can be a pipe "|" separated list of directories, i.e. "Amiga|C64|NES|SNES",
 #  so the share subdirectiories with those names,
 #  i.e. \\NAS\MiSTer\Amiga, \\NAS\MiSTer\C64, \\NAS\MiSTer\NES and \\NAS\MiSTer\SNES
