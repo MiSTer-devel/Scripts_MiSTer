@@ -27,3 +27,6 @@ main binary instead of checking hostname. To use, edit change_hostname.ini by re
 "New_MiSTer_Hostname" with the desired hostname. For example:
    NEW_HOSTNAME="OOGABOOGA"
 
+###### Get240pTS.sh by @donluca
+
+This script downloads all of the [240p Test Suites](http://junkerhq.net/xrgb/index.php?title=240p_test_suite) for currently supported systems on the MiSTer.
