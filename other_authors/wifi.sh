@@ -27,7 +27,7 @@ function printMsgs() {
         type="console"
     fi
     for msg in "$@"; do
-        [[ "$type" == "dialog" ]] && dialog --backtitle "$__backtitle" --cr-wrap --no-collapse --msgbox "$msg" 20 60 >/dev/tty
+        [[ "$type" == "dialog" ]] && dialog --backtitle "$__backtitle" --cr-wrap --no-collapse --msgbox "$msg" 20 60 >/dev/tty2
         [[ "$type" == "console" ]] && echo -e "$msg"
         [[ "$type" == "heading" ]] && echo -e "\n= = = = = = = = = = = = = = = = = = = = =\n$msg\n= = = = = = = = = = = = = = = = = = = = =\n"
     done
@@ -161,7 +161,7 @@ function connect_wifi() {
         printMsgs "dialog" "No wlan0 interface detected"
         return 1
     fi
-    dialog --backtitle "$__backtitle" --infobox "\nSearching ..." 5 40 >/dev/tty2
+    dialog --backtitle "$__backtitle" --infobox "\nSearching for WiFi networks......" 5 40 >/dev/tty2
     local essids=()
     local essid
     local types=()
@@ -321,6 +321,8 @@ function gui_wifi() {
                     connect_wifi
                     ;;
                 2)
+                    dialog --defaultno --yesno "This will remove the WiFi configuration and stop the WiFi.\n\nAre you sure you want to continue ?" 12 35 2>&1 >/dev/tty
+                    [[ $? -ne 0 ]] && continue
                     remove_wifi
                     ;;
                 3)
@@ -336,7 +338,7 @@ function gui_wifi() {
 }
 
 #show_wpa_supplicants
-#sleep 10
+sleep 5
 connect_wifi
 #gui_wifi
 
