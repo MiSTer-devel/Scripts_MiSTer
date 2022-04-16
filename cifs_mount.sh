@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/CIFS_MiSTer
 
+# Version 2.1.0 - 2022-04-16 - Introduced "SHARE_DIRECTORY" option; useful if you don't have a dedicated MiSTer-share on the remote server, but only a specific folder which should be mounted here.
 # Version 2.0.1 - 2019-05-06 - Removed kernel modules downloading, now the script asks to update the MiSTer Linux system when necessary.
 # Version 2.0 - 2019-02-05 - Renamed from mount_cifs.sh and umount_cifs.sh to cifs_mount.sh and cifs_umount.sh for having them sequentially listed in alphabetical order.
 # Version 1.8 - 2019-02-03 - Added MOUNT_AT_BOOT option: "true" for automounting CIFS shares at boot time; it will create start/kill scripts in /etc/network/if-up.d and /etc/network/if-down.d.
@@ -44,6 +45,9 @@ SERVER=""
 
 #The share name on the Server.
 SHARE="MiSTer"
+
+#Use this if only a specific directory from the share's root should be mounted.
+SHARE_DIRECTORY=""
 
 #The user name, leave blank for guest access.
 USERNAME=""
@@ -243,6 +247,9 @@ else
 	fi
 fi
 
+MOUNT_SOURCE="//$SERVER/$SHARE"
+[ $SHARE_DIRECTORY != "" ] && MOUNT_SOURCE+=/$SHARE_DIRECTORY
+
 if [ "$LOCAL_DIR" == "*" ] || { echo "$LOCAL_DIR" | grep -q "|"; }
 then
 	if [ "$SINGLE_CIFS_CONNECTION" == "true" ]
@@ -250,9 +257,9 @@ then
 		SCRIPT_NAME=${ORIGINAL_SCRIPT_PATH##*/}
 		SCRIPT_NAME=${SCRIPT_NAME%.*}
 		mkdir -p "/tmp/$SCRIPT_NAME" > /dev/null 2>&1
-		if mount -t cifs "//$SERVER/$SHARE" "/tmp/$SCRIPT_NAME" -o "$MOUNT_OPTIONS"
+		if mount -t cifs "$MOUNT_SOURCE" "/tmp/$SCRIPT_NAME" -o "$MOUNT_OPTIONS"
 		then
-			echo "//$SERVER/$SHARE mounted"
+			echo "$MOUNT_SOURCE mounted"
 			if [ "$LOCAL_DIR" == "*" ]
 			then
 				LOCAL_DIR=""
@@ -291,7 +298,7 @@ then
 				fi
 			done
 		else
-			echo "//$SERVER/$SHARE not mounted"
+			echo "$MOUNT_SOURCE not mounted"
 		fi
 	else
 		if [ "$LOCAL_DIR" == "*" ]
@@ -324,7 +331,7 @@ then
 		for DIRECTORY in $LOCAL_DIR
 		do
 			mkdir -p "$BASE_PATH/$DIRECTORY" > /dev/null 2>&1
-			if mount -t cifs "//$SERVER/$SHARE/$DIRECTORY" "$BASE_PATH/$DIRECTORY" -o "$MOUNT_OPTIONS"
+			if mount -t cifs "$MOUNT_SOURCE" "$BASE_PATH/$DIRECTORY" -o "$MOUNT_OPTIONS"
 			then
 				echo "$DIRECTORY mounted"
 			else
@@ -334,7 +341,7 @@ then
 	fi
 else
 	mkdir -p "$BASE_PATH/$LOCAL_DIR" > /dev/null 2>&1
-	if mount -t cifs "//$SERVER/$SHARE" "$BASE_PATH/$LOCAL_DIR" -o "$MOUNT_OPTIONS"
+	if mount -t cifs "$MOUNT_SOURCE" "$BASE_PATH/$LOCAL_DIR" -o "$MOUNT_OPTIONS"
 	then
 			echo "$LOCAL_DIR mounted"
 	else
