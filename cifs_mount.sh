@@ -248,7 +248,7 @@ else
 fi
 
 MOUNT_SOURCE="//$SERVER/$SHARE"
-[ $SHARE_DIRECTORY != "" ] && MOUNT_SOURCE+=/$SHARE_DIRECTORY
+[ "$SHARE_DIRECTORY" != "" ] && MOUNT_SOURCE+=/$SHARE_DIRECTORY
 
 if [ "$LOCAL_DIR" == "*" ] || { echo "$LOCAL_DIR" | grep -q "|"; }
 then
