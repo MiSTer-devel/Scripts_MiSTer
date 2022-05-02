@@ -21,4 +21,10 @@ sed -i -E 's|^#[[:blank:]]*ClientAliveInterval[[:blank:]]*.*$|ClientAliveInterva
 echo " - Configuring Bluetooth timeouts..."
 sed -i -E 's|^(DiscoverableTimeout = ).*%|\10|g; s|^(PairableTimeout = ).*$|\10|g; s|^(AutoConnectTimeout = ).*$|\160|g; s|^(FastConnectable = ).*$|\1true|g' /etc/bluetooth/main.conf
 
+echo " - Setting user-startup script to keep Linux nice even after updating the Linux system..."
+USER_STARTUP_SCRIPT=/media/fat/linux/user-startup.sh
+USER_STARTUP_BACKUP=/media/fat/linux/user-startup.sh_make_linux_nice_backup
+[ -x "${USER_STARTUP_BACKUP}" ] || mv "${USER_STARTUP_SCRIPT}" "${USER_STARTUP_BACKUP}"
+cp -f "$this_dir/nice-linux/user-startup.sh" "${USER_STARTUP_SCRIPT}"
+
 echo "Done."
