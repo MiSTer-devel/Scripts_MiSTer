@@ -602,7 +602,7 @@ function readDIALOGtempfile {
 
 function loadMiSTerINI {
 	MISTER_EXAMPLE_INI_FILE="${MISTER_INI_FILE/MiSTer.ini/MiSTer_example.ini}"
-	MISTER_ALT_INI_FILE="${MISTER_INI_FILE/MiSTer.ini/MiSTer_alt.ini}"
+	MISTER_ALT_INI_FILE="${MISTER_INI_FILE/MiSTer.ini/MiSTer_alt"*".ini}"
 	
 	if [ ! -f "${MISTER_INI_FILE}" ]
 	then
