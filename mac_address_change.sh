@@ -42,17 +42,9 @@ if [[ -f "${INI_PATH}" ]] ; then
 	rm -f ${TMP}
 fi
 
-# very rarely the hexdump thing plus bitwise operations fails, so I repeat the MAC address generation to be sure
-until echo "${MAC_ADDRESS}" | grep -qE "[0-9A-F]{2}(\:[0-9A-F]{2}){5}"
-do
-	MAC_ADDRESS="$(printf "%012X" $(( 0x$(hexdump -n6 -e '/1 "%02X"' /dev/random) & 0xFEFFFFFFFFFF | 0x020000000000 )) | sed 's/.\{2\}/&:/g' | sed s/:$//g)"
-done
-
-echo "ethaddr=${MAC_ADDRESS}" > /media/fat/linux/u-boot.txt
-
-echo "The new MAC address is:"
-echo "${MAC_ADDRESS}"
-echo "it will become effective"
-echo "on next reboot."
+# generate new MAC address
+MAC_ADDRESS="$(printf "%012x" $(( 0x$(hexdump -n6 -ve '/1 "%02X"' /dev/urandom) & 0xFCFFFFFFFFFF )) | sed 's/../:&/2g;s/^://')"
+echo "ethaddr=${MAC_ADDRESS^^}" > /media/fat/linux/u-boot.txt
+echo -e "The new MAC address is:\n${MAC_ADDRESS^^}\nit will become effective\non next reboot.\n"
 
 exit 0
