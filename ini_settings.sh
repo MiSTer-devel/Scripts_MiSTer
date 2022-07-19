@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2.2 - 2022-07-18 - Added various missing .ini options from the last couple years like vrr_mode (and the refresh min max for that), hdmi_game_mode, wheel_force, one extra video_mode that uses pixel repetition, vga_sog (which has always been there but was left out of the template .ini).
 # Version 1.2.1 - 2020-05-27 - Added support for osd_rotate, refresh_min, refresh_max, jammasd_vid, jammasd_pid, sniper_mode and browse_expand; added video_mode values 12 (1920x1440 60Hz) and 13 (2048x1536 60Hz); rearranged the options order.
 # Version 1.2 - 2020-03-03 - Added support for menu_pal, osd_timeout, recents, reset_combo and controller_info; MiSTer_alt.ini is created when missing.
 # Version 1.1.12 - 2019-09-07 - Added support for hdmi_limited=2 (16-255) for AG620x DACs; to be used with direct_video=1.
