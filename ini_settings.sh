@@ -62,7 +62,7 @@ DIALOG_HEIGHT="31"
 FONTS_DIRECTORY="/media/fat/font"
 FONTS_EXTENSION="pf"
 
-INI_KEYS="video_mode vscale_mode vsync_adjust vrr_mode hdmi_game_mode hdmi_audio_96k direct_video hdmi_limited dvi_mode vscale_border vga_scaler forced_scandoubler vga_sog ypbpr composite_sync video_mode_ntsc video_mode_pal refresh_min refresh_max vrr_min_framerate vrr_max_framerate vrr_vesa_framerate menu_pal osd_rotate browse_expand rbf_hide_datecode fb_terminal fb_size osd_timeout video_off video_info controller_info recents font volumectl mouse_throttle wheel_force sniper_mode bootscreen reset_combo key_menu_as_rgui keyrah_mode jammasd_vid jammasd_pid bootcore bootcore_timeout"
+INI_KEYS="video_mode vscale_mode vsync_adjust vrr_mode hdmi_game_mode hdmi_audio_96k direct_video hdmi_limited dvi_mode vscale_border vga_scaler forced_scandoubler vga_sog ypbpr composite_sync video_mode_ntsc video_mode_pal refresh_min refresh_max vrr_min_framerate vrr_max_framerate vrr_vesa_framerate menu_pal osd_rotate browse_expand rbf_hide_datecode fb_terminal fb_size osd_timeout video_off video_info controller_info recents font mouse_throttle wheel_force sniper_mode bootscreen reset_combo key_menu_as_rgui keyrah_mode jammasd_vid jammasd_pid bootcore bootcore_timeout"
 
 KEY_video_mode=(
 	"Video resolution and frequency"
@@ -497,12 +497,6 @@ KEY_recents=(
 
 KEY_font=(
 	"Custom font; put custom fonts in ${FONTS_DIRECTORY}"
-)
-
-KEY_volumectl=(
-	"Enables audio volume control with multimedia keys"
-	"0|Off"
-	"1|On"
 )
 
 KEY_mouse_throttle=(
