@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2.4 - 2022-12-21 - Added disable_autofire setting option
 # Version 1.2.3 - 2022-08-19 - Add video_off timeout setting from Main_MiSTer
 # Version 1.2.2 - 2022-07-18 - Added various missing .ini options from the last couple years like vrr_mode (and the refresh min max for that), hdmi_game_mode, wheel_force, one extra video_mode that uses pixel repetition, vga_sog (which has always been there but was left out of the template .ini).
 # Version 1.2.1 - 2020-05-27 - Added support for osd_rotate, refresh_min, refresh_max, jammasd_vid, jammasd_pid, sniper_mode and browse_expand; added video_mode values 12 (1920x1440 60Hz) and 13 (2048x1536 60Hz); rearranged the options order.
@@ -62,7 +63,7 @@ DIALOG_HEIGHT="31"
 FONTS_DIRECTORY="/media/fat/font"
 FONTS_EXTENSION="pf"
 
-INI_KEYS="video_mode vscale_mode vsync_adjust vrr_mode hdmi_game_mode hdmi_audio_96k direct_video hdmi_limited dvi_mode vscale_border vga_scaler forced_scandoubler vga_sog ypbpr composite_sync video_mode_ntsc video_mode_pal refresh_min refresh_max vrr_min_framerate vrr_max_framerate vrr_vesa_framerate menu_pal osd_rotate browse_expand rbf_hide_datecode fb_terminal fb_size osd_timeout video_off video_info controller_info recents font mouse_throttle wheel_force sniper_mode bootscreen reset_combo key_menu_as_rgui keyrah_mode jammasd_vid jammasd_pid bootcore bootcore_timeout"
+INI_KEYS="video_mode vscale_mode vsync_adjust vrr_mode hdmi_game_mode hdmi_audio_96k direct_video hdmi_limited dvi_mode vscale_border vga_scaler forced_scandoubler vga_sog ypbpr composite_sync video_mode_ntsc video_mode_pal refresh_min refresh_max vrr_min_framerate vrr_max_framerate vrr_vesa_framerate menu_pal osd_rotate browse_expand rbf_hide_datecode fb_terminal fb_size osd_timeout video_off video_info controller_info recents font disable_autofire mouse_throttle wheel_force sniper_mode bootscreen reset_combo key_menu_as_rgui keyrah_mode jammasd_vid jammasd_pid bootcore bootcore_timeout"
 
 KEY_video_mode=(
 	"Video resolution and frequency"
@@ -497,6 +498,12 @@ KEY_recents=(
 
 KEY_font=(
 	"Custom font; put custom fonts in ${FONTS_DIRECTORY}"
+)
+
+KEY_disable_autofire=(
+	"Disables autofire if for some reason you do not require it or if it's accidentally triggered."
+	"0|Off"
+	"1|On"
 )
 
 KEY_mouse_throttle=(
