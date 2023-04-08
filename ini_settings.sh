@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2.5 - 2023-04-08 - Added vga_mode, 
 # Version 1.2.4 - 2022-12-21 - Added disable_autofire setting option
 # Version 1.2.3 - 2022-08-19 - Add video_off timeout setting from Main_MiSTer
 # Version 1.2.2 - 2022-07-18 - Added various missing .ini options from the last couple years like vrr_mode (and the refresh min max for that), hdmi_game_mode, wheel_force, one extra video_mode that uses pixel repetition, vga_sog (which has always been there but was left out of the template .ini).
@@ -63,7 +64,7 @@ DIALOG_HEIGHT="31"
 FONTS_DIRECTORY="/media/fat/font"
 FONTS_EXTENSION="pf"
 
-INI_KEYS="video_mode vscale_mode vsync_adjust vrr_mode hdmi_game_mode hdmi_audio_96k direct_video hdmi_limited dvi_mode vscale_border vga_scaler forced_scandoubler vga_sog ypbpr composite_sync video_mode_ntsc video_mode_pal refresh_min refresh_max vrr_min_framerate vrr_max_framerate vrr_vesa_framerate menu_pal osd_rotate browse_expand rbf_hide_datecode fb_terminal fb_size osd_timeout video_off video_info controller_info recents font disable_autofire mouse_throttle wheel_force sniper_mode bootscreen reset_combo key_menu_as_rgui keyrah_mode jammasd_vid jammasd_pid bootcore bootcore_timeout"
+INI_KEYS="video_mode vscale_mode vsync_adjust vrr_mode hdmi_game_mode hdmi_audio_96k direct_video hdmi_limited dvi_mode vscale_border vga_scaler forced_scandoubler vga_sog vga_mode composite_sync video_mode_ntsc video_mode_pal refresh_min refresh_max vrr_min_framerate vrr_max_framerate vrr_vesa_framerate menu_pal osd_rotate browse_expand rbf_hide_datecode fb_terminal fb_size osd_timeout video_off video_info controller_info recents font disable_autofire mouse_throttle wheel_force sniper_mode bootscreen reset_combo key_menu_as_rgui keyrah_mode jammasd_vid jammasd_pid bootcore bootcore_timeout"
 
 KEY_video_mode=(
 	"Video resolution and frequency"
@@ -172,10 +173,12 @@ KEY_vga_sog=(
 	"1|On|Requires Analog IO addon board v6.0 or newer!"
 )
 
-KEY_ypbpr=(
-	"Enables component video (YPbPr) on analog video output"
-	"0|Off|RGB analog video output; please disable Sync-on-Green (SOG) switch (position further from HDMI port)"
-	"1|On|YPbPr analog video output; please enable Sync-on-Green (SOG) switch (position closest to HDMI port)"
+KEY_vga_mode=(
+	"Sets VGA output to use RGB, YPbPr, S-Video, or CVBS signals."
+	"rgb|RGBS/RGsB/RGBHV|For use with RGBS, RGsB, and RGBHV displays such as PVM/BVM, Computer CRTs and upscaler devices. For RGBS and RGsB you should enable composite_sync, but not RGBHV."
+	"ypbpr|YPbPr/Component|For use with devices that allow YPbPr inputs via VGA to Component cable. Remember to disable composite_sync!"
+	"svideo|S-Video/Composite|For use with an external Active YC encoder on displays that have S-Video/Composite inputs. Remember to enable composite_sync!"
+	"cvbs|CVBS|For use only with some external RGB to PAL/NTSC encoders, such as SCART adapters. Don't use for Composite!"
 )
 
 KEY_composite_sync=(
