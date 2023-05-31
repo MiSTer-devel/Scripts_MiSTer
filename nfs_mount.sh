@@ -241,7 +241,7 @@ function mount_nfs() {
   fi
   find "/tmp/${SCRIPT_NAME}" -mindepth 1 -maxdepth 1 -type d | while read -r LDIR; do
     LDIR="${LDIR##*/}"
-    if [ -d "/media/fat/${LDIR}" ] && ! mount | grep -q "/media/fat/${LDIR}"; then
+    if [ -d "/media/fat/${LDIR}" ] && ! mount | grep -qx "/media/fat/${LDIR}"; then
       if ! mount -o bind "/tmp/${SCRIPT_NAME}/${LDIR}" "/media/fat/${LDIR}"; then
         /usr/bin/logger "Error: failed to mount directory /tmp/${SCRIPT_NAME}/${LDIR} to /media/fat/${LDIR}"
         exit 1
