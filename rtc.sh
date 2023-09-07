@@ -24,7 +24,7 @@
 
 NTP_SERVER="0.pool.ntp.org"
 
-if ! ping -q -w1 -c1 ${NTP_SERVER} &>/dev/null
+if ! ping -4 -q -w1 -c1 ${NTP_SERVER} &>/dev/null
 then
 	echo "No Internet connection"
 	exit 1

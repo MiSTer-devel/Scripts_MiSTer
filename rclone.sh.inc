@@ -16,6 +16,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.2 - 2023-08-04 - Replacing the now absent bsdtar command by unzip.
 # Version 1.0.1 - 2019-06-10 - Testing Internet connectivity with github.com instead of google.com.
 # Version 1.0 - 2019-02-05 - First commit
 
@@ -28,13 +29,29 @@ then
 		0)
 			echo "Downloading and extracting"
 			echo "rclone."
-			if ! curl -sLf "$RCLONE_URL" | bsdtar -xf - --strip-components=1 --no-same-owner -C "/media/fat/linux" "*/rclone"
-			then
-				echo "Error downloading"
-				echo "or extracting rclone."
-				rm /media/fat/linux/rclone > /dev/null 2>&1
+			if ! curl -sLf "$RCLONE_URL" > rclone_archive.zip; then
+				echo "Error downloading rclone archive."
+				exit 1
+			fi
+
+			# Extract the archive to a temporary directory
+			if ! unzip -q rclone_archive.zip -d tmp_dir; then
+				echo "Error extracting rclone from the archive."
+				rm rclone_archive.zip
+				exit 2
+			fi
+
+			# Move the contents of the extracted directory to the desired location (/media/fat/linux)
+			if ! find tmp_dir -mindepth 2 -type f -exec mv -t /media/fat/linux {} +; then
+				echo "Error moving extracted files to the desired location."
+				rm -r tmp_dir
+				rm rclone_archive.zip
 				exit 3
 			fi
+
+			rm -r tmp_dir
+			rm rclone_archive.zip
+			echo "Rclone has been downloaded and extracted successfully."
 			;;
 		60)
 			echo "CA certificates need"
