@@ -6,7 +6,9 @@ echo "***" $1 "***"
 
 case "$1" in
 	start)
-		[ ! -f "${MAKE_LINUX_NICE_SCRIPT}" ] || "${MAKE_LINUX_NICE_SCRIPT}" ;;
+		[ ! -f "${MAKE_LINUX_NICE_SCRIPT}" ] || "${MAKE_LINUX_NICE_SCRIPT}"
+		stty -F /dev/ttyS0 4000000
+		;;
 	*)
 		exit 0
 esac
