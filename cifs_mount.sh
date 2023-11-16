@@ -16,8 +16,9 @@
 # Copyright 2018-2019 Alessandro "Locutus73" Miele
 
 # You can download the latest version of this script from:
-# https://github.com/MiSTer-devel/CIFS_MiSTer
+# https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 2.1.1 - 2023-11-16 - Updated Github link, fixed unary operator error if "SHARE_DIRECTORY" not specified.
 # Version 2.1.0 - 2022-04-16 - Introduced "SHARE_DIRECTORY" option; useful if you don't have a dedicated MiSTer-share on the remote server, but only a specific folder which should be mounted here.
 # Version 2.0.1 - 2019-05-06 - Removed kernel modules downloading, now the script asks to update the MiSTer Linux system when necessary.
 # Version 2.0 - 2019-02-05 - Renamed from mount_cifs.sh and umount_cifs.sh to cifs_mount.sh and cifs_umount.sh for having them sequentially listed in alphabetical order.
@@ -248,7 +249,11 @@ else
 fi
 
 MOUNT_SOURCE="//$SERVER/$SHARE"
-[ "$SHARE_DIRECTORY" != "" ] && MOUNT_SOURCE+=/$SHARE_DIRECTORY
+
+if [ -n "$SHARE_DIRECTORY" ] && [ -n "$MOUNT_SOURCE" ]
+then
+	MOUNT_SOURCE+=/$SHARE_DIRECTORY
+ fi
 
 if [ "$LOCAL_DIR" == "*" ] || { echo "$LOCAL_DIR" | grep -q "|"; }
 then
