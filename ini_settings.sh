@@ -227,7 +227,7 @@ KEY_video_mode_pal=(
 )
 
 KEY_refresh_min=(
-	"If you monitor doesn't support very low refresh rate (NTSC monitors may not support PAL) then you can set refresh_min, so vsync_adjust won't be applied for refreshes outside specified value. This parameters is valid only when vsync_adjust is non-zero."
+	"If your monitor doesn't support very low refresh rate (NTSC monitors may not support PAL) then you can set refresh_min, so vsync_adjust won't be applied for refreshes outside specified value. This parameters is valid only when vsync_adjust is non-zero."
 	"0|Not set"
 	"40|40" "40.1|40.1" "40.2|40.2" "40.3|40.3" "40.4|40.4" "40.5|40.5" "40.6|40.6" "40.7|40.7" "40.8|40.8" "40.9|40.9"
 	"41|41" "41.1|41.1" "41.2|41.2" "41.3|41.3" "41.4|41.4" "41.5|41.5" "41.6|41.6" "41.7|41.7" "41.8|41.8" "41.9|41.9"
@@ -253,7 +253,7 @@ KEY_refresh_min=(
 )
 
 KEY_refresh_max=(
-	"If you monitor doesn't support very high refresh rate (PAL monitors may not support NTSC) then you can set refresh_max, so vsync_adjust won't be applied for refreshes outside specified value. This parameters is valid only when vsync_adjust is non-zero."
+	"If your monitor doesn't support very high refresh rate (PAL monitors may not support NTSC) then you can set refresh_max, so vsync_adjust won't be applied for refreshes outside specified value. This parameters is valid only when vsync_adjust is non-zero."
 	"0|Not set"
 	"50|50" "50.1|50.1" "50.2|50.2" "50.3|50.3" "50.4|50.4" "50.5|50.5" "50.6|50.6" "50.7|50.7" "50.8|50.8" "50.9|50.9"
 	"51|51" "51.1|51.1" "51.2|51.2" "51.3|51.3" "51.4|51.4" "51.5|51.5" "51.6|51.6" "51.7|51.7" "51.8|51.8" "51.9|51.9"
