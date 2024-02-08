@@ -8,14 +8,16 @@ if [ -x /usr/bin/dircolors ]; then
     more_color_option='-f'
 fi
 
+
+# TODO: move this into .bash_functions after my other PRs land.
+function dir() {
+    ls -FlAh "--time-style=+[%F %H:%M %Z]" --quoting-style=literal --color=always $* | sed -E 's/^([^ ]+ ) *[^ ]+ /\1/'
+}
+
 alias ls="ls --quoting-style=literal"
-#alias la='ls -A'
-#alias l='ls -CF'
-#alias ll='ls -l'
-alias dir="ls -lsAhF --quoting-style=literal $color_option"
-#alias vdir="vdir $color_option"
+alias vdir="vdir $color_option"
 alias less="less -R"
 alias more="more -f"
 alias md5sums='while IFS= read -r -d "" file; do md5sum "$file"; done < <(find * -type f -print0 | sort -s -z)'
 
-unset color_option less_color_option more_color_option
+unset color_option less_color_option more_color_option ls_quoting_option
