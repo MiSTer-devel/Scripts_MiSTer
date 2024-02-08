@@ -6,7 +6,7 @@ echo "***" $1 "***"
 
 case "$1" in
 	start)
-		[ ! -f "${MAKE_LINUX_NICE_SCRIPT}" ] || "${MAKE_LINUX_NICE_SCRIPT}"
+		[ ! -x $MAKE_LINUX_NICE_SCRIPT ] || $MAKE_LINUX_NICE_SCRIPT
 		;;
 	*)
 		exit 0
