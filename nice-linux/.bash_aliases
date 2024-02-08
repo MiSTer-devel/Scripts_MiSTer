@@ -11,8 +11,8 @@ else
     more_color_option=
 fi
 
+alias dir='ls -lahvAF --quoting-style=literal $ls_color_option --time-style="+[%Y-%m-%d %H:%M %Z]"'
 alias ls="ls --quoting-style=literal $ls_color_option"
-alias dir="ls -lsAhF --quoting-style=literal $ls_color_option"
 alias less="less $less_color_option"
 alias more="more $more_color_option"
 alias md5sums='while IFS= read -r -d "" file; do md5sum "$file"; done < <(find * -type f -print0 | sort -s -z)'
