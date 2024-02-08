@@ -1,12 +1,11 @@
 #!/usr/bin/bash
 
-while IS='' read -r -d '' _path; do
-    _dir="${_path%/*}"
-    _name="${_path##*/}"
-    _stem="${_name%.*}"
-    _ext="${_name##*.}"
-    _compacted_name="$_dir/$_stem.compacted.$_ext"
-    echo "Compacting: $_name >> $_compacted_name"
-    sed -e 's/\r$//g; s/[\t ]*;.*$//g' $_path | grep -vx -F '' | sed -e 's/$/\r/g' > "$_compacted_name"
-done < <(find /media/fat/Ini_Files/ -maxdepth 1 -type f -name "*.ini" -not -name "*.compacted.*" -not -name "*.sample.*" -print0)
+INPUT_DIR=/media/fat/ini/source
+OUTPUT_DIR=/media/fat/ini/compacted
 
+if [ -d "$OUTPUT_DIR" ]; then rm "$OUTPUT_DIR"/*; else mkdir "$OUTPUT_DIR"; fi
+
+while IFS='' read -r -d '' INI_FILE_NAME; do
+    echo "Compacting: $INI_FILE_NAME"
+    sed -e 's/\r$//g; s/[\t ]*;.*$//g' "$INPUT_DIR/$INI_FILE_NAME" | grep -vx -F '' | sed -e 's/$/\r/g' > "$OUTPUT_DIR/$INI_FILE_NAME"
+done < <(cd $INPUT_DIR; find * -maxdepth 1 -type f -name "*.ini" -print0)
