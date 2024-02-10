@@ -2,9 +2,9 @@
 
 set -e
 
-if [ "$1" == "" ]; then
-    echo "usage: $0 <FILE_TO_LOG_TO>" >&2
-    exit 1
+LOG_FILE="$1"
+if [ "$LOG_FILE" == "" ]; then
+    LOG_FILE=/dev/null
 fi
 
     SCRIPT=/media/fat/MiSTer
@@ -38,7 +38,7 @@ if [ ! -L $SYMLINK ]; then
     ln -f -s $SYMLINK_TARGET $SYMLINK
 fi
 
-echo '#!/bin/bash'                       > $SCRIPT
-echo "$SYMLINK >"$1" 2>&1 &" >> $SCRIPT
+echo '#!/bin/bash'                             > $SCRIPT
+echo "$SYMLINK >"$LOG_FILE" 2>&1 &" >> $SCRIPT
 chmod +x $SCRIPT
 
