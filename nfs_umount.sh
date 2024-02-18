@@ -16,8 +16,9 @@
 # Copyright 2022 Oliver "RealLarry" Jaksch
 
 # You can download the latest version of this script from:
-# https://github.com/MiSTer-devel/CIFS_MiSTer
+# https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.1 - 2024-02-17 - Update github link
 # Version 1.0 - 2023-03-10 - First commit
 
 #=========NO USER-SERVICEABLE PARTS BELOW THIS LINE=====
