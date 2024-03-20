@@ -2,22 +2,25 @@
 
 set -e
 
-echo "Updating MiSTer_sample.ini..."
-pushd /media/fat/ > /dev/null
+SAMPLE_DIR=/media/fat/ini/sample
+NEW_FILE=$SAMPLE_DIR/MiSTer.ini
+OLD_FILE=$SAMPLE_DIR/MiSTer.ini.old
+DIFF_FILE=$SAMPLE_DIR/$(date +%Y%m%d_%H%M%S).diff
 
-curl -k -o ./MiSTer_sample.ini.NEW https://raw.githubusercontent.com/MiSTer-devel/Main_MiSTer/master/MiSTer.ini
+echo "Updating: ${NEW_FILE}"
 
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-CHANGES_FILE=./MiSTer_sample.ini.CHANGES_$TIMESTAMP
+mv "${NEW_FILE}" "${OLD_FILE}"
+curl --silent -k https://raw.githubusercontent.com/MiSTer-devel/Main_MiSTer/master/MiSTer.ini | sed -e 's/\r//g' > "${NEW_FILE}"
 
-if [ -f ./MiSTer_sample.ini ]; then
-    diff -b -B -w -d -U 0 ./MiSTer_sample.ini ./MiSTer_sample.ini.NEW >> $CHANGES_FILE
-    if [ $(stat -c %s $CHANGES_FILE) -eq 0 ]; then
-        rm -f $CHANGES_FILE
+if [ -f "${NEW_FILE}" ]; then
+    diff -b -B -w -d -U 0 "${OLD_FILE}" "${NEW_FILE}" | unix2dos > "${DIFF_FILE}" || true
+    if [ $(stat -c %s "${DIFF_FILE}") -eq 0 ]; then
+        rm -f "${DIFF_FILE}"
+    else
+        echo "Diff saved to ${DIFF_FILE}."
     fi
+else
+    mv "${OLD_FILE}" "${NEW_FILE}"
 fi
 
-mv -f ./MiSTer_sample.ini.NEW ./MiSTer_sample.ini
-
-popd > /dev/null
-echo "Done."
+rm "${OLD_FILE}"
