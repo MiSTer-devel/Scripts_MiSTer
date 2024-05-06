@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.0.6 - 2024-05-06 - Allow connection to Tapto NFC Service if present
 # Version 1.0.5 - 2023-08-01 - Allow connection to MiSTer Extensions Remote if present
 # Version 1.0.4 - 2021-08-23 - New method for checking if the script is run on a real MiSTer system (thanks to MiSTer Addons).
 # Version 1.0.3 - 2019-02-05 - Cosmetic changes.
@@ -95,6 +96,12 @@ then
 		IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'""
 		IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"# Allow MiSTer Extensions Remote"
 		IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"-A INPUT -p tcp -m state --state NEW --dport 8182 -j ACCEPT"
+	fi
+	if [ -f "/media/fat/Scripts/tapto.sh" ]
+	then
+		IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'""
+		IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"# Allow Tapto NFC service REST API"
+		IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"-A INPUT -p tcp -m state --state NEW --dport 7497 -j ACCEPT"
 	fi
 	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'""
 	IPTABLES_UP_RULES=$IPTABLES_UP_RULES$'\n'"# Allow ping"
