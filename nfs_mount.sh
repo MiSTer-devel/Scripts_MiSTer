@@ -16,8 +16,9 @@
 # Copyright 2022 Oliver "RealLarry" Jaksch
 
 # You can download the latest version of this script from:
-# https://github.com/MiSTer-devel/CIFS_MiSTer
+# https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.1.1 - 2024-02-17 - Update Github link
 # Version 1.1 - 2022-12-25 - Cosmetics
 # Version 1.0 - 2021-12-29 - First commit
 
