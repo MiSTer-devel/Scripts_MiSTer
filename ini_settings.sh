@@ -18,6 +18,7 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
+# Version 1.2.6 - 2024-02-11 - Added osd_lock, osd_lock_time, and debug settings. Fixed naming convention being wrong for jamma_vid and jamma_pid.
 # Version 1.2.5 - 2023-04-08 - Added vga_mode, ntsc_mode, and removed ypbpr (deprecated).
 # Version 1.2.4 - 2022-12-21 - Added disable_autofire setting option
 # Version 1.2.3 - 2022-08-19 - Add video_off timeout setting from Main_MiSTer
@@ -64,7 +65,7 @@ DIALOG_HEIGHT="31"
 FONTS_DIRECTORY="/media/fat/font"
 FONTS_EXTENSION="pf"
 
-INI_KEYS="video_mode vscale_mode vsync_adjust vrr_mode hdmi_game_mode hdmi_audio_96k direct_video hdmi_limited dvi_mode vscale_border vga_scaler forced_scandoubler vga_sog vga_mode ntsc_mode composite_sync video_mode_ntsc video_mode_pal refresh_min refresh_max vrr_min_framerate vrr_max_framerate vrr_vesa_framerate menu_pal osd_rotate browse_expand rbf_hide_datecode fb_terminal fb_size osd_timeout video_off video_info controller_info recents font disable_autofire mouse_throttle wheel_force sniper_mode bootscreen reset_combo key_menu_as_rgui keyrah_mode jammasd_vid jammasd_pid bootcore bootcore_timeout"
+INI_KEYS="video_mode vscale_mode vsync_adjust vrr_mode hdmi_game_mode hdmi_audio_96k direct_video hdmi_limited dvi_mode vscale_border vga_scaler forced_scandoubler vga_sog vga_mode ntsc_mode composite_sync video_mode_ntsc video_mode_pal refresh_min refresh_max vrr_min_framerate vrr_max_framerate vrr_vesa_framerate menu_pal osd_rotate browse_expand rbf_hide_datecode fb_terminal fb_size osd_timeout video_off video_info controller_info recents font disable_autofire mouse_throttle wheel_force sniper_mode bootscreen reset_combo key_menu_as_rgui keyrah_mode jamma_vid jamma_pid bootcore bootcore_timeout osd_lock osd_lock_time debug"
 
 KEY_video_mode=(
 	"Video resolution and frequency"
@@ -559,7 +560,7 @@ KEY_bootscreen=(
 )
 
 KEY_reset_combo=(
-	"USER button emulation by keybaord. Usually it's the reset button."
+	"USER button emulation using a keybaord. Usually it's the reset button."
 	"0|lctrl+lalt+ralt (lctrl+lgui+rgui on keyrah)"
 	"1|lctrl+lgui+rgui"
 	"2|lctrl+lalt+del"
@@ -578,14 +579,24 @@ KEY_keyrah_mode=(
 	"0x23418037|0x23418037|Use this for Arduino Micro"
 )
 
-KEY_jammasd_vid=(
-	"JammaSD keys to joysticks translation; you have to provide correct VID and PID of your input device"
+KEY_jamma_vid=(
+	"JammaSD keys to joysticks translation for Player 1 and Player 2; you have to provide correct VID and PID of your input device"
 	"0x04D8|0x04D8"
 )
 
-KEY_jammasd_pid=(
-	"JammaSD keys to joysticks translation; you have to provide correct VID and PID of your input device"
+KEY_jamma_pid=(
+	"JammaSD keys to joysticks translation for Player 1 and Player 2; you have to provide correct VID and PID of your input device"
 	"0xF3AD|0xF3AD"
+)
+
+KEY_jamma2_vid=(
+	"JammaSD keys to joysticks translation for Player 3 and Player 4; you have to provide correct VID and PID of your input device"
+	"0x1111|0x1111"
+)
+
+KEY_jamma2_pid=(
+	"JammaSD keys to joysticks translation for Player 3 and Player 4; you have to provide correct VID and PID of your input device"
+	"0x2222|0x2222"
 )
 
 KEY_bootcore=(
@@ -597,11 +608,32 @@ KEY_bootcore=(
 
 KEY_bootcore_timeout=(
 	"Sets the timeout before autoboot"
-	 "10|10 seconds" "11|11 seconds" "12|12 seconds" "13|13 seconds" "14|14 seconds"
-	 "15|15 seconds" "16|16 seconds" "17|17 seconds" "18|18 seconds" "19|19 seconds"
-	 "20|20 seconds" "21|21 seconds" "22|22 seconds" "23|23 seconds" "24|24 seconds"
-	 "25|25 seconds" "26|26 seconds" "27|27 seconds" "28|28 seconds" "29|29 seconds"
-	 "30|30 seconds"
+	"10|10 seconds" "11|11 seconds" "12|12 seconds" "13|13 seconds" "14|14 seconds"
+	"15|15 seconds" "16|16 seconds" "17|17 seconds" "18|18 seconds" "19|19 seconds"
+	"20|20 seconds" "21|21 seconds" "22|22 seconds" "23|23 seconds" "24|24 seconds"
+	"25|25 seconds" "26|26 seconds" "27|27 seconds" "28|28 seconds" "29|29 seconds"
+	"30|30 seconds"
+)
+
+KEY_osd_lock=(
+	"Locks access to the OSD behind access code when a core is running"
+	"|Disabled"
+	"DUUUD|↓ ↑ ↑ ↑ ↓|↓ ↑ ↑ ↑ ↓ to unlock OSD"
+	"UDLR|↑ ↓ ← →|↑ ↓ ← → to unlock OSD"
+	"ABBA|A B B A|A B B A to unlock OSD"
+	"UDUDLRLRBA|↑ ↑ ↓ ↓ ← → ← → B A|Konami Code (↑ ↑ ↓ ↓ ← → ← → B A) to unlock OSD"
+)
+
+KEY_osd_lock_time=(
+	"Bypass OSD Lock if less than the x seconds have passed since it was last unlocked"
+	"0|Manual lock from OSD"
+	"3|3 seconds" "5|5 seconds" "10|10 seconds" "30|30 seconds"
+)
+
+KEY_debug=(
+	"Serial console debug output"
+	"0|Off|Disables serial console debug output"
+	"1|On|Default - Enables serial console debug output"
 )
 
 # ========= CODE STARTS HERE =========
