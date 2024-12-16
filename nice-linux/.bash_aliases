@@ -1,11 +1,14 @@
-color_option=
-less_color_option=
-more_color_option=
 if [ -x /usr/bin/dircolors ]; then
+    # This line should causes LS_COLORS to be exported.
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+
     color_option='--color=always'
     less_color_option='-R'
     more_color_option='-f'
+else
+    color_option=
+    less_color_option=
+    more_color_option=
 fi
 
 alias ls="ls --quoting-style=literal $color_option"
