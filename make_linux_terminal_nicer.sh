@@ -20,9 +20,6 @@ cp -rf "$THIS_DIR/nice-linux/.ssh" /root/
 echo " - Configuring ssh KeepAlive settings..."
 sed -i -E 's|^#[[:blank:]]*ClientAliveInterval[[:blank:]]*.*$|ClientAliveInterval 60|g; s|^#[[:blank:]]*ClientAliveCountMax[[:blank:]]*.*$|ClientAliveCountMax 10|g' /etc/ssh/sshd_config
 
-echo " - Configuring Bluetooth timeouts..."
-sed -i -E 's|^(DiscoverableTimeout = ).*%|\10|g; s|^(PairableTimeout = ).*$|\10|g; s|^(AutoConnectTimeout = ).*$|\160|g; s|^(FastConnectable = ).*$|\1true|g' /etc/bluetooth/main.conf
-
 if [ -z "$1" ]; then
     "$THIS_DIR/add_to_user_startup.sh" "$0" "Make Linux terminal nicer"
 fi
