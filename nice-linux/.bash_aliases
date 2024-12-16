@@ -8,10 +8,10 @@ if [ -x /usr/bin/dircolors ]; then
     more_color_option='-f'
 fi
 
-alias ls="ls --quoting-style=literal"
+alias ls="ls --quoting-style=literal $color_option"
 alias dir="ls -lsAhF --quoting-style=literal $color_option"
-alias less="less -R"
-alias more="more -f"
+alias less="less $less_color_option"
+alias more="more $more_color_option"
 alias md5sums='while IFS= read -r -d "" file; do md5sum "$file"; done < <(find * -type f -print0 | sort -s -z)'
 
 unset color_option less_color_option more_color_option
