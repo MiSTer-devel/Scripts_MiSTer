@@ -2,11 +2,13 @@
 
 set -e
 
-echo "Making Linux nice..."
-
 THIS_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 
-echo " - Modifying root user settings..."
+if [ "$1" == "stop" ]; then
+    exit 0
+fi
+
+echo "Making Linux terminal nicer."
 cp -f "$THIS_DIR/nice-linux/.bashrc" /root/
 cp -f "$THIS_DIR/nice-linux/.bash_aliases" /root/
 cp -f "$THIS_DIR/nice-linux/.bash_logout" /root/
@@ -20,5 +22,9 @@ sed -i -E 's|^#[[:blank:]]*ClientAliveInterval[[:blank:]]*.*$|ClientAliveInterva
 
 echo " - Configuring Bluetooth timeouts..."
 sed -i -E 's|^(DiscoverableTimeout = ).*%|\10|g; s|^(PairableTimeout = ).*$|\10|g; s|^(AutoConnectTimeout = ).*$|\160|g; s|^(FastConnectable = ).*$|\1true|g' /etc/bluetooth/main.conf
+
+if [ -z "$1" ]; then
+    "$THIS_DIR/add_to_user_startup.sh" "$0" "Make Linux terminal nicer"
+fi
 
 echo "Done."
