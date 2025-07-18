@@ -170,10 +170,10 @@ function connect_wifi() {
     i=0
     _set_interface_wifi up 2>/dev/null
     sleep 1
-    while read essid; read type; do
-        essids+=("$essid")
+    while IFS= read -r essid; read type; do
+        essids+=("${essid}")
         types+=("$type")
-        options+=("$i" "$essid")
+        options+=("$i" "${essid}")
         ((i++))
     done < <(list_wifi)
     options+=("H" "Hidden ESSID")
