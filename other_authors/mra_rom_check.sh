@@ -64,11 +64,14 @@ def et_parse(mraFile):
         text = f.read()
     return ET.fromstring(text.lower())
 
+def make_info():
+    return {'zipfilenames': [], 'partcrcs': [], 'partnames': [], 'mraname': '', 'badcrcs': '', 'badmameversion': '', 'brokenxml': ''}
+
 def parseMRA(mraFile):
     working = True
     root = et_parse(mraFile)
     zipfiles = []
-    info = {'zipfilenames': [], 'partcrcs': [], 'partnames': [], 'mraname': '', 'badcrcs': '', 'badmameversion': '', 'brokenxml': ''}
+    info = make_info()
     noCRC = True
     missingCRCs = 0
     noMameVersion= True
@@ -167,7 +170,7 @@ def iterateMRAFiles(directory):
                 if working:
                     passing_mras = passing_mras + 1
             except Exception as e:
-                info = {}
+                info = make_info()
                 info['brokenxml'] = str(e)
                 info['mraname'] = fullname
                 broken.append(info)
