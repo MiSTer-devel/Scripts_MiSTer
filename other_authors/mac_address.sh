@@ -1,15 +1,11 @@
 #!/usr/bin/env bash
 
-# Debug
-# iface="${2:-eth0}"
-# file="${1:-/media/fat/linux/u-boot.txt}"
-
-# Mister
+# Hardcoded for MiSTer
 iface="eth0"
 file="/media/fat/linux/u-boot.txt"
 
 update_uboot() {
-	if [ -n "$1" ] && [ "$iface" = "eth0" ]; then
+	if [ -n "$1" ]; then
 		if [ ! -e "$file" ]; then
 			echo "ethaddr=${1^^}" > "$file"
 		elif grep -q 'ethaddr=' "$file"; then
@@ -38,10 +34,11 @@ valid() {
 
 finished() {
 	if dialog --yesno "The MAC address has been changed to '$1'.\nYou will need to do a cold reboot for this to take effect.\n\nWould you like to cold reboot now?" 10 38 1>&2; then
+		dialog --infobox "Rebooting please wait..."  3 28 1>&2
 		reboot
+	else
+		dialog --clear
 	fi
-
-	dialog --clear
 	exit 0
 }
 
@@ -74,44 +71,44 @@ manual() {
 			continue
 		fi
 
-	local mac sta
-	mac=$(valid "$input")
-	sta=$?
+		local mac sta
+		mac=$(valid "$input")
+		sta=$?
 
-	if [ $sta -eq 0 ]; then
-	  if dialog --yesno "'${input^^}' is not a suitable MAC address.\nWould you like to use '$mac' instead?" 7 64 1>&2; then
-		input="$mac"
-		break
-	  fi
-	else
-	  break
-	fi
+		if [ $sta -eq 0 ]; then
+			if dialog --yesno "'${input^^}' is not a suitable MAC address.\n\nWould you like to use '$mac' instead?" 7 64 1>&2; then
+				input="$mac"
+				break
+			fi
+		else
+			if [ "$input" = "$current" ]; then
+				dialog --msgbox "'$input' is the current MAC address." 5 52 1>&2
+				continue
+			fi
+			break
+		fi
 	done
 
 	update_uboot "$mac"
 	finished "$mac"
 }
 
-main_menu() {
-	while true; do
-	  local addr
-	  local choice
-		addr=$(cat "/sys/class/net/$iface/address")
-		choice=$(dialog --menu "The current MAC address for $iface is '${addr^^}'.\n\nWhat do you want to do?" 12 44 3 \
-			A "Automatically generate MAC address" M "Manually set MAC address..." 3>&1 1>&2 2>&3)
+while true; do
+	local addr
+	local choice
+	addr=$(cat "/sys/class/net/$iface/address")
+	choice=$(dialog --menu "The current MAC address for $iface is '${addr^^}'.\n\nWhat do you want to do?" 12 44 3 \
+		A "Automatically generate MAC address" M "Manually set MAC address..." 3>&1 1>&2 2>&3)
 
-		case $choice in
-			A)
-				auto
-			;;
-			M)
-				manual
-			;;
-			*)
-				exit 0
-			;;
-		esac
-	done
-}
-
-main_menu
+	case $choice in
+		A)
+			auto
+		;;
+		M)
+			manual
+		;;
+		*)
+			exit 0
+		;;
+	esac
+done
