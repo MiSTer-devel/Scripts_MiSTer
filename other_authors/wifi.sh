@@ -339,7 +339,6 @@ function gui_wifi() {
 }
 
 #show_wpa_supplicants
-sleep 5
 connect_wifi
 #gui_wifi
 
