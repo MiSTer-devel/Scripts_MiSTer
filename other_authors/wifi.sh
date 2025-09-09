@@ -27,7 +27,7 @@ function printMsgs() {
         type="console"
     fi
     for msg in "$@"; do
-        [[ "$type" == "dialog" ]] && dialog --backtitle "$__backtitle" --cr-wrap --no-collapse --msgbox "$msg" 20 60 >/dev/tty2
+        [[ "$type" == "dialog" ]] && dialog --backtitle "$__backtitle" --cr-wrap --no-collapse --msgbox "$msg" 20 60 1>&2
         [[ "$type" == "console" ]] && echo -e "$msg"
         [[ "$type" == "heading" ]] && echo -e "\n= = = = = = = = = = = = = = = = = = = = =\n$msg\n= = = = = = = = = = = = = = = = = = = = =\n"
     done
@@ -60,14 +60,14 @@ network={\n
 	psk=""\n
 }" >> /media/fat/linux/wpa_supplicant.conf
 fi
-    dialog --backtitle "$__backtitle" --infobox "\nScanning Existing Wifi Entries ..." 5 40 >/dev/tty2
+    dialog --backtitle "$__backtitle" --infobox "\nScanning Existing Wifi Entries ..." 5 40 1>&2
     grep -i "ssid=" '/media/fat/linux/wpa_supplicant.conf' > 'media/fat/linux/wpa_supplicant_tmp'
     sed -i 's/\tssid="//' 'media/fat/linux/wpa_supplicant_tmp'
     sed -i 's/"//' 'media/fat/linux/wpa_supplicant_tmp'
 }
 
 function remove_wifi() {
-    #dialog --backtitle "$__backtitle" --infobox "\nScanning Existing Wifi Entries ..." 5 40 >/dev/tty2
+    #dialog --backtitle "$__backtitle" --infobox "\nScanning Existing Wifi Entries ..." 5 40 1>&2
     #list_wpa_supplicants
     #sed -i '/$wpa_config//d' "/media/fat/linux/wpa_supplicant.conf"
 
@@ -115,7 +115,7 @@ function list_wpa_supplicants() {
 #    echo -e "$essid\n$type"
 
 #    local cmd=(dialog --backtitle "$__backtitle" --menu "Please choose the network you would like to remove" 22 76 16)
-#    choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty2)
+#    choice=$("${cmd[@]}" "${options[@]}" 3>&1 1>&2 2>&3)
 #    [[ -z "$choice" ]] && return
 
 #    essid=${essids[choice]}
@@ -143,7 +143,7 @@ function parse_wpa_supplicants() {
     done < <(list_wpa_supplicants)
 
     local cmd=(dialog --backtitle "$__backtitle" --menu "Please choose the network you would like to remove" 22 76 16)
-    choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty2)
+    choice=$("${cmd[@]}" "${options[@]}" 3>&1 1>&2 2>&3)
     [[ -z "$choice" ]] && return
 
     essid=${essids[choice]}
@@ -161,7 +161,7 @@ function connect_wifi() {
         printMsgs "dialog" "No wlan0 interface detected"
         return 1
     fi
-    dialog --backtitle "$__backtitle" --infobox "\nSearching for WiFi networks......" 5 40 >/dev/tty2
+    dialog --backtitle "$__backtitle" --infobox "\nSearching for WiFi networks......" 5 40 1>&2
     local essids=()
     local essid
     local types=()
@@ -179,13 +179,13 @@ function connect_wifi() {
     options+=("H" "Hidden ESSID")
 
     local cmd=(dialog --backtitle "$__backtitle" --menu "Please choose the network you would like to connect to" 22 76 16)
-    choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty2)
+    choice=$("${cmd[@]}" "${options[@]}" 3>&1 1>&2 2>&3)
     [[ -z "$choice" ]] && return
 
     local hidden=0
     if [[ "$choice" == "H" ]]; then
         cmd=(dialog --backtitle "$__backtitle" --inputbox "Please enter the ESSID" 10 60)
-        essid=$("${cmd[@]}" 2>&1 >/dev/tty2)
+        essid=$("${cmd[@]}" 3>&1 1>&2 2>&3)
         [[ -z "$essid" ]] && return
         cmd=(dialog --backtitle "$__backtitle" --nocancel --menu "Please choose the WiFi type" 12 40 6)
         options=(
@@ -193,7 +193,7 @@ function connect_wifi() {
             wep "WEP"
             open "Open"
         )
-        type=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty2)
+        type=$("${cmd[@]}" "${options[@]}" 3>&1 1>&2 2>&3)
         hidden=1
     else
         essid=${essids[choice]}
@@ -205,7 +205,7 @@ function connect_wifi() {
         cmd=(dialog --backtitle "$__backtitle" --insecure --passwordbox "Please enter the WiFi key/password for $essid" 10 63)
         local key_ok=0
         while [[ $key_ok -eq 0 ]]; do
-            key=$("${cmd[@]}" 2>&1 >/dev/tty2) || return
+            key=$("${cmd[@]}" 3>&1 1>&2 2>&3) || return
             key_ok=1
             if [[ ${#key} -lt 8 || ${#key} -gt 63 ]] && [[ "$type" == "wpa" ]]; then
                 printMsgs "dialog" "Password must be between 8 and 63 characters"
@@ -261,14 +261,14 @@ function gui_connect_wifi() {
     # This workaround not applicable to MiSTer as it does not use SystemD
     # systemctl restart dhcpcd &>/dev/null
     # END workaround
-    dialog --backtitle "$__backtitle" --infobox "\nConnecting ..." 5 40 >/dev/tty2
+    dialog --backtitle "$__backtitle" --infobox "\nConnecting ..." 5 40 1>&2
     local id=""
     i=0
     while [[ -z "$id" && $i -lt 30 ]]; do
         sleep 1
         id=$(iwgetid -r)
         ((i++))
-	    dialog --backtitle "$__backtitle" --infobox "\nSaving ..." 5 40 >/dev/tty2
+	    dialog --backtitle "$__backtitle" --infobox "\nSaving ..." 5 40 1>&2
     done
     if [[ -z "$id" ]]; then
         printMsgs "dialog" "Unable to connect to network $essid"
@@ -282,7 +282,7 @@ function _check_country_wifi() {
     iniConfig "=" "" /media/fat/linux/wpa_supplicant.conf
     iniGet "country"
     if [[ -z "$ini_value" ]]; then
-        dialog --backtitle "$__backtitle" --infobox "You don't currently have your WiFi country set in /media/fat/linux/wpa_supplicant.conf\n\nPlease run 'Set Timezone'." 5 40 >/dev/tty2
+        dialog --backtitle "$__backtitle" --infobox "You don't currently have your WiFi country set in /media/fat/linux/wpa_supplicant.conf\n\nPlease run 'Set Timezone'." 5 40 1>&2
     fi
 }
 
@@ -306,7 +306,7 @@ function gui_wifi() {
             "4 Disable WiFi network adapter"
         )
 
-        local choice=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty2)
+        local choice=$("${cmd[@]}" "${options[@]}" 3>&1 1>&2 2>&3)
         if [[ "${choice[@]:0:4}" == "HELP" ]]; then
             choice="${choice[@]:5}"
             default="${choice/%\ */}"
@@ -322,7 +322,7 @@ function gui_wifi() {
                     connect_wifi
                     ;;
                 2)
-                    dialog --defaultno --yesno "This will remove the WiFi configuration and stop the WiFi.\n\nAre you sure you want to continue ?" 12 35 2>&1 >/dev/tty
+                    dialog --defaultno --yesno "This will remove the WiFi configuration and stop the WiFi.\n\nAre you sure you want to continue ?" 12 35 1>&2
                     [[ $? -ne 0 ]] && continue
                     remove_wifi
                     ;;
