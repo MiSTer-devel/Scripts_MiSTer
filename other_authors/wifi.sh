@@ -11,11 +11,6 @@
 
 #2019-10-21 - Script adapted for use with MiSTer FPGA project (http://misterfpga.org) by MiSterAddons (https://misteraddons.com)
 
-#rp_module_id="wifi"
-#rp_module_desc="Configure Wifi"
-#rp_module_section="config"
-#rp_module_flags="!x11"
-
 ## @fn printMsgs()
 ## @param type style of display to use - dialog, console or heading
 ## @param message string or array of messages to display
@@ -48,40 +43,8 @@ function _set_interface_wifi() {
     fi
 }
 
-function parse_wpa_supplicant() {
-    #create wpa_supplicant if it doesn't exist
-    if [[ ! -e "/media/fat/linux/wpa_supplicant.conf" ]]; then
-        echo "ctrl_interface=/run/wpa_supplicant\n
-update_config=1\n
-country=US\n
-\n
-network={\n
-	ssid=""\n
-	psk=""\n
-}" >> /media/fat/linux/wpa_supplicant.conf
-fi
-    dialog --backtitle "$__backtitle" --infobox "\nScanning Existing Wifi Entries ..." 5 40 1>&2
-    grep -i "ssid=" '/media/fat/linux/wpa_supplicant.conf' > 'media/fat/linux/wpa_supplicant_tmp'
-    sed -i 's/\tssid="//' 'media/fat/linux/wpa_supplicant_tmp'
-    sed -i 's/"//' 'media/fat/linux/wpa_supplicant_tmp'
-}
-
 function remove_wifi() {
-    #dialog --backtitle "$__backtitle" --infobox "\nScanning Existing Wifi Entries ..." 5 40 1>&2
-    #list_wpa_supplicants
-    #sed -i '/$wpa_config//d' "/media/fat/linux/wpa_supplicant.conf"
-
     sed -i '/network={/,/}/d' "/media/fat/linux/wpa_supplicant.conf"
-    #_set_interface_wifi down 2>/dev/null
-
-}
-
-function add_wifi() {
-    cat >> "/media/fat/linux/wpa_supplicant.conf" <<_EOF_
-    network={
-    $wpa_config
-    }
-_EOF_
 }
 
 function list_wifi() {
@@ -96,64 +59,6 @@ function list_wifi() {
         [[ "$line" =~ ^IE:.*WPA ]] && type="wpa"
     done < <(iwlist wlan0 scan | grep -o "Cell .*\|ESSID:\".*\"\|IE: .*WPA\|Encryption key:.*")
     echo -e "$essid\n$type"
-}
-
-function list_wpa_supplicants() {
-    local line
-    local essids=()
-    local essid
-#    while read line; do
-#        [[ "$line" =~ ssid= $essid ]] && echo -e "$essid\n$type"
-#        echo $options
-#        echo $essid
-#        echo $type
-#        essids+=("$essid")
-#        types+=("$type")
-#        options+=("$i" "$essid")
-#        ((i++))
-#    done < <(grep -o "ssid=.*" '/media/fat/linux/wpa_supplicant.conf')
-#    echo -e "$essid\n$type"
-
-#    local cmd=(dialog --backtitle "$__backtitle" --menu "Please choose the network you would like to remove" 22 76 16)
-#    choice=$("${cmd[@]}" "${options[@]}" 3>&1 1>&2 2>&3)
-#    [[ -z "$choice" ]] && return
-
-#    essid=${essids[choice]}
-#    type=${types[choice]}
-
-#    echo $type
-#    echo $essid
-#    echo $key
-
-#    create_config_wifi "$type" "$essid" "$key"
-}
-
-function parse_wpa_supplicants() {
-    local essids=()
-    local essid
-    #local options=()
-    i=0
-    _set_interface_wifi up 2>/dev/null
-    sleep 1
-    while read essid; read type; do
-        essids+=("$essid")
-        types+=("$type")
-        options+=("$i" "$essid")
-        ((i++))
-    done < <(list_wpa_supplicants)
-
-    local cmd=(dialog --backtitle "$__backtitle" --menu "Please choose the network you would like to remove" 22 76 16)
-    choice=$("${cmd[@]}" "${options[@]}" 3>&1 1>&2 2>&3)
-    [[ -z "$choice" ]] && return
-
-    essid=${essids[choice]}
-    type=${types[choice]}
-
-    echo $type
-    echo $essid
-    echo $key
-
-    create_config_wifi "$type" "$essid" "$key"
 }
 
 function connect_wifi() {
@@ -257,10 +162,6 @@ _EOF_
 function gui_connect_wifi() {
     _set_interface_wifi down 2>/dev/null
     _set_interface_wifi up 2>/dev/null
-    # BEGIN workaround for dhcpcd trigger failure on Raspbian stretch
-    # This workaround not applicable to MiSTer as it does not use SystemD
-    # systemctl restart dhcpcd &>/dev/null
-    # END workaround
     dialog --backtitle "$__backtitle" --infobox "\nConnecting ..." 5 40 1>&2
     local id=""
     i=0
@@ -277,69 +178,5 @@ function gui_connect_wifi() {
 	sleep 5
 }
 
-function _check_country_wifi() {
-    [[ ! -f /media/fat/linux/wpa_supplicant.conf ]] && return
-    iniConfig "=" "" /media/fat/linux/wpa_supplicant.conf
-    iniGet "country"
-    if [[ -z "$ini_value" ]]; then
-        dialog --backtitle "$__backtitle" --infobox "You don't currently have your WiFi country set in /media/fat/linux/wpa_supplicant.conf\n\nPlease run 'Set Timezone'." 5 40 1>&2
-    fi
-}
-
-function gui_wifi() {
-
-    _check_country_wifi
-
-    local default
-    while true; do
-        local ip_current="$(getIPAddress)"
-        local ip_wlan="$(getIPAddress wlan0)"
-        local cmd=(dialog --backtitle "$__backtitle" --cancel-label "Exit" --item-help --help-button --default-item "$default" --menu "Configure WiFi\nCurrent IP: ${ip_current:-(unknown)}\nWireless IP: ${ip_wlan:-(unknown)}\nWireless ESSID: $(iwgetid -r)" 22 76 16)
-        local options=(
-            1 "Connect to WiFi network"
-            "1 Connect to your WiFi network"
-            2 "Remove WiFi network"
-            "2 Remove WiFi network configuration(s)"
-            3 "Enable WiFi"
-            "3 Enable WiFi network adapter"
-            4 "Disable WiFi"
-            "4 Disable WiFi network adapter"
-        )
-
-        local choice=$("${cmd[@]}" "${options[@]}" 3>&1 1>&2 2>&3)
-        if [[ "${choice[@]:0:4}" == "HELP" ]]; then
-            choice="${choice[@]:5}"
-            default="${choice/%\ */}"
-            choice="${choice#* }"
-            printMsgs "dialog" "$choice"
-            continue
-        fi
-        default="$choice"
-
-        if [[ -n "$choice" ]]; then
-            case "$choice" in
-                1)
-                    connect_wifi
-                    ;;
-                2)
-                    dialog --defaultno --yesno "This will remove the WiFi configuration and stop the WiFi.\n\nAre you sure you want to continue ?" 12 35 1>&2
-                    [[ $? -ne 0 ]] && continue
-                    remove_wifi
-                    ;;
-                3)
-                    _set_interface_wifi up 2>/dev/null
-                    ;;
-                4)  _set_interface_wifi down 2>/dev/null
-                    ;;
-            esac
-        else
-            break
-        fi
-    done
-}
-
-#show_wpa_supplicants
 connect_wifi
-#gui_wifi
-
 clear
