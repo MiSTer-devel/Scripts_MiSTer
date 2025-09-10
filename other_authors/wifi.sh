@@ -169,13 +169,13 @@ function gui_connect_wifi() {
 		sleep 1
 		id=$(iwgetid -r)
 		((i++))
-		dialog --backtitle "$__backtitle" --infobox "\nSaving ..." 5 40 1>&2
 	done
 	if [[ -z "$id" ]]; then
 		printMsgs "dialog" "Unable to connect to network $essid"
 		_set_interface_wifi down 2>/dev/null
+	else
+		printMsgs "dialog" "Successfully connected to network $essid"
 	fi
-	sleep 5
 }
 
 connect_wifi
