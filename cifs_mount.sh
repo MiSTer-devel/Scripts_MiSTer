@@ -88,6 +88,13 @@ WAIT_FOR_SERVER="false"
 #it will create start/kill scripts in /etc/network/if-up.d and /etc/network/if-down.d.
 MOUNT_AT_BOOT="false"
 
+# Control NetBIOS (nmblookup) usage for non-IP SERVER values.
+#   auto   -> (default) use nmblookup only when SERVER looks like a NetBIOS
+#             name (no dot, length <= 15). FQDNs/long names skip nmblookup.
+#   never  -> never use nmblookup; rely on DNS/hosts; wait using ping (like IPs).
+#   always -> legacy behavior: always use nmblookup for non-IP values.
+# This can be overridden in cifs_mount.ini.
+USE_NETBIOS="auto"
 
 
 #========= ADVANCED OPTIONS =========
@@ -123,7 +130,7 @@ then
 	echo "or making a new"
 	echo "${INI_PATH##*/}"
 	exit 1
-fi 
+fi
 
 for KERNEL_MODULE in $KERNEL_MODULES; do
 	if ! cat /lib/modules/$(uname -r)/modules.builtin | grep -q "$(echo "$KERNEL_MODULE" | sed 's/\./\\\./g')"
@@ -221,22 +228,48 @@ fi
 
 if ! echo "$SERVER" | grep -q "^[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}$"
 then
-	if iptables -L > /dev/null 2>&1; then IPTABLES_SUPPORT="true"; else IPTABLES_SUPPORT="false"; fi
-	[ "$IPTABLES_SUPPORT" == "true" ] && if iptables -C INPUT -p udp --sport 137 -j ACCEPT > /dev/null 2>&1; then PRE_EXISTING_FIREWALL_RULE="true"; else PRE_EXISTING_FIREWALL_RULE="false"; fi
-	[ "$IPTABLES_SUPPORT" == "true" ] && [ "$PRE_EXISTING_FIREWALL_RULE" == "false" ] && iptables -I INPUT -p udp --sport 137 -j ACCEPT > /dev/null 2>&1
-	if [ "$WAIT_FOR_SERVER" == "true" ]
-	then
-		echo "Waiting for $SERVER"
-		until nmblookup $SERVER &>/dev/null
-		do
-			[ "$IPTABLES_SUPPORT" == "true" ] && [ "$PRE_EXISTING_FIREWALL_RULE" == "false" ] && iptables -D INPUT -p udp --sport 137 -j ACCEPT > /dev/null 2>&1
-			sleep 1
-			[ "$IPTABLES_SUPPORT" == "true" ] && if iptables -C INPUT -p udp --sport 137 -j ACCEPT > /dev/null 2>&1; then PRE_EXISTING_FIREWALL_RULE="true"; else PRE_EXISTING_FIREWALL_RULE="false"; fi
-			[ "$IPTABLES_SUPPORT" == "true" ] && [ "$PRE_EXISTING_FIREWALL_RULE" == "false" ] && iptables -I INPUT -p udp --sport 137 -j ACCEPT > /dev/null 2>&1
-		done
+	# Decide whether to use NetBIOS for non-IP SERVER based on USE_NETBIOS and name shape
+	case "$USE_NETBIOS" in
+		always) USE_NMBLOOKUP="true" ;;
+		never)  USE_NMBLOOKUP="false" ;;
+		*)      # auto: NetBIOS name = no dot and length <= 15
+			if echo "$SERVER" | grep -q '\.' || [ ${#SERVER} -gt 15 ]; then
+				USE_NMBLOOKUP="false"
+			else
+				USE_NMBLOOKUP="true"
+			fi
+			;;
+	esac
+	if [ "$USE_NMBLOOKUP" = "true" ]; then
+		if iptables -L > /dev/null 2>&1; then IPTABLES_SUPPORT="true"; else IPTABLES_SUPPORT="false"; fi
+		[ "$IPTABLES_SUPPORT" == "true" ] && if iptables -C INPUT -p udp --sport 137 -j ACCEPT > /dev/null 2>&1; then PRE_EXISTING_FIREWALL_RULE="true"; else PRE_EXISTING_FIREWALL_RULE="false"; fi
+		[ "$IPTABLES_SUPPORT" == "true" ] && [ "$PRE_EXISTING_FIREWALL_RULE" == "false" ] && iptables -I INPUT -p udp --sport 137 -j ACCEPT > /dev/null 2>&1
+		if [ "$WAIT_FOR_SERVER" == "true" ]
+		then
+			echo "Waiting for $SERVER"
+			until nmblookup $SERVER &>/dev/null
+			do
+				[ "$IPTABLES_SUPPORT" == "true" ] && [ "$PRE_EXISTING_FIREWALL_RULE" == "false" ] && iptables -D INPUT -p udp --sport 137 -j ACCEPT > /dev/null 2>&1
+				sleep 1
+				[ "$IPTABLES_SUPPORT" == "true" ] && if iptables -C INPUT -p udp --sport 137 -j ACCEPT > /dev/null 2>&1; then PRE_EXISTING_FIREWALL_RULE="true"; else PRE_EXISTING_FIREWALL_RULE="false"; fi
+				[ "$IPTABLES_SUPPORT" == "true" ] && [ "$PRE_EXISTING_FIREWALL_RULE" == "false" ] && iptables -I INPUT -p udp --sport 137 -j ACCEPT > /dev/null 2>&1
+			done
+		fi
+		SERVER=$(nmblookup $SERVER|awk 'END{print $1}')
+		[ "$IPTABLES_SUPPORT" == "true" ] && [ "$PRE_EXISTING_FIREWALL_RULE" == "false" ] && iptables -D INPUT -p udp --sport 137 -j ACCEPT > /dev/null 2>&1
+	else
+		# Skip NetBIOS: reuse the same ping wait used for IPs
+		if [ "$WAIT_FOR_SERVER" == "true" ]
+		then
+			echo "Waiting for $SERVER"
+			until ping -q -w1 -c1 $SERVER &>/dev/null
+			do
+				sleep 1
+			done
+		fi
+		# Use nslookup to determine the SERVER address
+		SERVER=$(nslookup $SERVER|awk '/^Address:[[:space:]]+[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/ {ip=$2} END{print ip}')
 	fi
-	SERVER=$(nmblookup $SERVER|awk 'END{print $1}')
-	[ "$IPTABLES_SUPPORT" == "true" ] && [ "$PRE_EXISTING_FIREWALL_RULE" == "false" ] && iptables -D INPUT -p udp --sport 137 -j ACCEPT > /dev/null 2>&1
 else
 	if [ "$WAIT_FOR_SERVER" == "true" ]
 	then
