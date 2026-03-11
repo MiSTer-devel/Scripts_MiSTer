@@ -25,7 +25,7 @@
 
 
 
-if [ ! -f "/media/fat/MiSTer" ]; 
+if [ ! -f "/media/fat/MiSTer" ];
 then
 	echo "This script must be run"
 	echo "on a MiSTer system."
@@ -33,6 +33,9 @@ then
 fi
 
 /etc/init.d/S91smb stop 2> /dev/null
+
+[ -f "/media/fat/linux/samba.sh" ] && mv /media/fat/linux/{,_}samba.sh
+
 mount | grep -q "on / .*[(,]ro[,$]" && RO_ROOT="true"
 [ "$RO_ROOT" == "true" ] && mount / -o remount,rw
 mv /etc/init.d/S91smb /etc/init.d/_S91smb > /dev/null 2>&1

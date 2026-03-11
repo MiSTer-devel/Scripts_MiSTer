@@ -25,12 +25,14 @@
 
 
 
-if [ ! -f "/media/fat/MiSTer" ]; 
+if [ ! -f "/media/fat/MiSTer" ];
 then
 	echo "This script must be run"
 	echo "on a MiSTer system."
 	exit 1
 fi
+
+[ -f "/media/fat/linux/_samba.sh" ] && mv /media/fat/linux/{_,}samba.sh
 
 mount | grep "on / .*[(,]ro[,$]" -q && RO_ROOT="true"
 [ "$RO_ROOT" == "true" ] && mount / -o remount,rw
