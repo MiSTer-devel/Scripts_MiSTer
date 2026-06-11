@@ -49,7 +49,7 @@
 
 #=========   USER OPTIONS   =========
 #You can edit these user options or make an ini file with the same
-#name as the script, i.e. mount_cifs.ini, containing the same options.
+#name as the script, i.e. cifs_mount.ini, containing the same options.
 
 #Your CIFS Server, i.e. your NAS name or its IP address.
 SERVER=""
