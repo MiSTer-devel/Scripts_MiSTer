@@ -48,40 +48,6 @@ resolve_path() {
 	echo "$1"
 }
 
-trim_ini_field() {
-	local FIELD="$1"
-	FIELD="${FIELD#"${FIELD%%[!$' \t']*}"}"
-	FIELD="${FIELD%"${FIELD##*[!$' \t']}"}"
-	printf '%s' "$FIELD"
-}
-
-load_cifs_ini() {
-	local INI_FILE="$1"
-	local LINE KEY VALUE
-
-	while IFS= read -r LINE || [ "$LINE" != "" ]
-	do
-		LINE=${LINE%$'\r'}
-		case "$LINE" in
-			*=*) ;;
-			*) continue ;;
-		esac
-		KEY=$(trim_ini_field "${LINE%%=*}")
-		case "$KEY" in
-			''|\#*) continue ;;
-			BASE_PATH|LOCAL_DIR|SINGLE_CIFS_CONNECTION|SPECIAL_DIRECTORIES|LAZY_UNMOUNT_ON_BUSY) ;;
-			*) continue ;;
-		esac
-
-		VALUE=$(trim_ini_field "${LINE#*=}")
-		case "$VALUE" in
-			\"*) VALUE=${VALUE#\"}; VALUE=${VALUE%%\"*} ;;
-			\'*) VALUE=${VALUE#\'}; VALUE=${VALUE%%\'*} ;;
-		esac
-		printf -v "$KEY" '%s' "$VALUE"
-	done < "$INI_FILE"
-}
-
 ORIGINAL_SCRIPT_PATH="$0"
 if [ "$ORIGINAL_SCRIPT_PATH" == "bash" ]
 then
@@ -92,6 +58,14 @@ case "$SCRIPT_REALPATH" in
 	*/*) SCRIPT_DIR=${SCRIPT_REALPATH%/*} ;;
 	*) SCRIPT_DIR="." ;;
 esac
+. "$SCRIPT_DIR/cifs_common.sh"
+CIFS_UMOUNT_INI_KEYS=(
+	BASE_PATH
+	LOCAL_DIR
+	SINGLE_CIFS_CONNECTION
+	SPECIAL_DIRECTORIES
+	LAZY_UNMOUNT_ON_BUSY
+)
 
 MOUNT_INI_PATH="${SCRIPT_DIR}/cifs_mount.ini"
 FALLBACK_INI="/media/fat/Scripts/cifs_mount.ini"
@@ -115,10 +89,10 @@ fi
 
 if [ -f "$MOUNT_INI_PATH" ]
 then
-	load_cifs_ini "$MOUNT_INI_PATH"
+	load_cifs_ini "$MOUNT_INI_PATH" "${CIFS_UMOUNT_INI_KEYS[@]}"
 elif [ "$MOUNT_INI_PATH" != "$FALLBACK_INI" ] && [ -f "$FALLBACK_INI" ]
 then
-	load_cifs_ini "$FALLBACK_INI"
+	load_cifs_ini "$FALLBACK_INI" "${CIFS_UMOUNT_INI_KEYS[@]}"
 fi
 
 IFS="|"

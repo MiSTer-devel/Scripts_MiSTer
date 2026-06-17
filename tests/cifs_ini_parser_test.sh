@@ -3,15 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-
-eval "$(
-	awk '
-		/^trim_ini_field\(\)/ {emit=1}
-		emit {print}
-		/^ORIGINAL_SCRIPT_PATH=/ {exit}
-	' "$SCRIPT_DIR/cifs_mount.sh" |
-	sed '$d'
-)"
+. "$SCRIPT_DIR/cifs_common.sh"
 
 assert_password() {
 	local EXPECTED="$1"
@@ -27,7 +19,7 @@ assert_password() {
 	} > "$TMP_INI"
 
 	PASSWORD=""
-	load_cifs_ini "$TMP_INI"
+	load_cifs_ini "$TMP_INI" SERVER SHARE USERNAME PASSWORD
 	rm -f "$TMP_INI"
 
 	if [ "$PASSWORD" != "$EXPECTED" ]
@@ -59,8 +51,28 @@ TMP_INI=$(mktemp)
 	printf 'PASSWORD="$abc123"\n'
 } > "$TMP_INI"
 PASSWORD=""
-load_cifs_ini "$TMP_INI"
+load_cifs_ini "$TMP_INI" PASSWORD
 rm -f "$TMP_INI"
 [ "$PASSWORD" = '$abc123' ]
+
+TMP_INI=$(mktemp)
+{
+	printf '# comment\r\n'
+	printf '\r\n'
+	printf ' PASSWORD = "$abc123" \r\n'
+	printf 'UNKNOWN_KEY="ignored"\r\n'
+	printf 'USERNAME = "user name"\r\n'
+	printf 'DOMAIN = "work group"\r\n'
+} > "$TMP_INI"
+PASSWORD=""
+USERNAME=""
+DOMAIN=""
+UNKNOWN_KEY="original"
+load_cifs_ini "$TMP_INI" PASSWORD USERNAME DOMAIN
+rm -f "$TMP_INI"
+[ "$PASSWORD" = '$abc123' ]
+[ "$USERNAME" = 'user name' ]
+[ "$DOMAIN" = 'work group' ]
+[ "$UNKNOWN_KEY" = 'original' ]
 
 printf 'cifs_ini_parser_test: ok\n'
