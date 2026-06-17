@@ -138,6 +138,40 @@ resolve_path() {
 	echo "$1"
 }
 
+trim_ini_field() {
+	local FIELD="$1"
+	FIELD="${FIELD#"${FIELD%%[!$' \t']*}"}"
+	FIELD="${FIELD%"${FIELD##*[!$' \t']}"}"
+	printf '%s' "$FIELD"
+}
+
+load_cifs_ini() {
+	local INI_FILE="$1"
+	local LINE KEY VALUE
+
+	while IFS= read -r LINE || [ "$LINE" != "" ]
+	do
+		LINE=${LINE%$'\r'}
+		case "$LINE" in
+			*=*) ;;
+			*) continue ;;
+		esac
+		KEY=$(trim_ini_field "${LINE%%=*}")
+		case "$KEY" in
+			''|\#*) continue ;;
+			SERVER|SHARE|SHARE_DIRECTORY|USERNAME|PASSWORD|DOMAIN|LOCAL_DIR|ADDITIONAL_MOUNT_OPTIONS|WAIT_FOR_SERVER|MOUNT_AT_BOOT|BASE_PATH|KERNEL_MODULES|SINGLE_CIFS_CONNECTION|SPECIAL_DIRECTORIES|BOOT_START_DELAY_SECONDS|NETWORK_READY_TIMEOUT_SECONDS|DEFAULT_ROUTE_READY_TIMEOUT_SECONDS|DUAL_INTERFACE_SETTLE_SECONDS|SERVER_WAIT_TIMEOUT_SECONDS|BOOT_LOG_PATH|RESTART_NTP_AFTER_BOOT_MOUNT|NTP_INIT_SCRIPT) ;;
+			*) continue ;;
+		esac
+
+		VALUE=$(trim_ini_field "${LINE#*=}")
+		case "$VALUE" in
+			\"*) VALUE=${VALUE#\"}; VALUE=${VALUE%%\"*} ;;
+			\'*) VALUE=${VALUE#\'}; VALUE=${VALUE%%\'*} ;;
+		esac
+		printf -v "$KEY" '%s' "$VALUE"
+	done < "$INI_FILE"
+}
+
 ORIGINAL_SCRIPT_PATH="$0"
 if [ "$ORIGINAL_SCRIPT_PATH" == "bash" ]
 then
@@ -171,10 +205,10 @@ fi
 
 if [ -f "$INI_PATH" ]
 then
-	eval "$(tr -d '\r' < "$INI_PATH")"
+	load_cifs_ini "$INI_PATH"
 elif [ "$INI_PATH" != "$FALLBACK_INI" ] && [ -f "$FALLBACK_INI" ]
 then
-	eval "$(tr -d '\r' < "$FALLBACK_INI")"
+	load_cifs_ini "$FALLBACK_INI"
 fi
 
 start_boot_log() {
