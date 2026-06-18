@@ -58,6 +58,14 @@ case "$SCRIPT_REALPATH" in
 	*/*) SCRIPT_DIR=${SCRIPT_REALPATH%/*} ;;
 	*) SCRIPT_DIR="." ;;
 esac
+. "$SCRIPT_DIR/cifs_common.sh"
+CIFS_UMOUNT_INI_KEYS=(
+	BASE_PATH
+	LOCAL_DIR
+	SINGLE_CIFS_CONNECTION
+	SPECIAL_DIRECTORIES
+	LAZY_UNMOUNT_ON_BUSY
+)
 
 MOUNT_INI_PATH="${SCRIPT_DIR}/cifs_mount.ini"
 FALLBACK_INI="/media/fat/Scripts/cifs_mount.ini"
@@ -81,10 +89,10 @@ fi
 
 if [ -f "$MOUNT_INI_PATH" ]
 then
-	eval "$(tr -d '\r' < "$MOUNT_INI_PATH")"
+	load_cifs_ini "$MOUNT_INI_PATH" "${CIFS_UMOUNT_INI_KEYS[@]}"
 elif [ "$MOUNT_INI_PATH" != "$FALLBACK_INI" ] && [ -f "$FALLBACK_INI" ]
 then
-	eval "$(tr -d '\r' < "$FALLBACK_INI")"
+	load_cifs_ini "$FALLBACK_INI" "${CIFS_UMOUNT_INI_KEYS[@]}"
 fi
 
 IFS="|"
