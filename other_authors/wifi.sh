@@ -47,6 +47,30 @@ function remove_wifi() {
 	sed -i '/network={/,/}/d' "/media/fat/linux/wpa_supplicant.conf"
 }
 
+function set_wifi_country() {
+	local country
+	local key_ok=0
+	while [[ $key_ok -eq 0 ]]; do
+		cmd=(dialog --backtitle "$__backtitle" --inputbox "Enter your two-letter WiFi country code (for example US, GB, DE).\n\nLeave blank to keep the current country setting." 12 70)
+		country=$("${cmd[@]}" 3>&1 1>&2 2>&3) || return
+		country=${country^^}
+		key_ok=1
+		if [[ -n "$country" && ! "$country" =~ ^[A-Z]{2}$ ]]; then
+			printMsgs "dialog" "Country code must be two letters, for example US, GB, or DE."
+			key_ok=0
+		fi
+	done
+
+	[[ -z "$country" ]] && return
+
+	touch "/media/fat/linux/wpa_supplicant.conf"
+	if grep -q "^country=" "/media/fat/linux/wpa_supplicant.conf"; then
+		sed -i "s/^country=.*/country=$country/" "/media/fat/linux/wpa_supplicant.conf"
+	else
+		printf "country=%s\n" "$country" >> "/media/fat/linux/wpa_supplicant.conf"
+	fi
+}
+
 function list_wifi() {
 	local line
 	local essid
@@ -124,6 +148,7 @@ function connect_wifi() {
 	fi
 
 	remove_wifi
+	set_wifi_country
 	create_config_wifi "$type" "$essid" "$key"
 	gui_connect_wifi
 }
