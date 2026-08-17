@@ -104,7 +104,6 @@ MOUNT_AT_BOOT="false"
 #========= ADVANCED OPTIONS =========
 BASE_PATH="/media/fat"
 #MISTER_CIFS_URL="https://github.com/MiSTer-devel/CIFS_MiSTer"
-KERNEL_MODULES="md4.ko|md5.ko|des_generic.ko|fscache.ko|cifs.ko"
 IFS="|"
 SINGLE_CIFS_CONNECTION="true"
 #Pipe "|" separated list of directories which will never be mounted when LOCAL_DIR="*"
@@ -201,7 +200,6 @@ CIFS_MOUNT_INI_KEYS=(
 	WAIT_FOR_SERVER
 	MOUNT_AT_BOOT
 	BASE_PATH
-	KERNEL_MODULES
 	SINGLE_CIFS_CONNECTION
 	SPECIAL_DIRECTORIES
 	BOOT_START_DELAY_SECONDS
@@ -792,44 +790,14 @@ then
 	wait_for_default_route || exit 1
 fi
 
-for KERNEL_MODULE in $KERNEL_MODULES; do
-	if ! cat /lib/modules/$(uname -r)/modules.builtin | grep -q "$(echo "$KERNEL_MODULE" | sed 's/\./\\\./g')"
-	then
-		if ! lsmod | grep -q "${KERNEL_MODULE%.*}"
-		then
-			echo "The current Kernel doesn't"
-			echo "support CIFS (SAMBA)."
-			echo "Please update your"
-			echo "MiSTer Linux system."
-			exit 1
-#			if ! insmod "/media/fat/linux/$KERNEL_MODULE" > /dev/null 2>&1
-#			then
-#				echo "Downloading $KERNEL_MODULE"
-#				curl -L "$MISTER_CIFS_URL/blob/master/$KERNEL_MODULE?raw=true" -o "/media/fat/linux/$KERNEL_MODULE"
-#				case $? in
-#					0)
-#						;;
-#					60)
-#						if ! curl -kL "$MISTER_CIFS_URL/blob/master/$KERNEL_MODULE?raw=true" -o "/media/fat/linux/$KERNEL_MODULE"
-#						then
-#							echo "No Internet connection"
-#							exit 2
-#						fi
-#						;;
-#					*)
-#						echo "No Internet connection"
-#						exit 2
-#						;;
-#				esac
-#				if ! insmod "/media/fat/linux/$KERNEL_MODULE" > /dev/null 2>&1
-#				then
-#					echo "Unable to load $KERNEL_MODULE"
-#					exit 1
-#				fi
-#			fi
-		fi
-	fi
-done
+if ! grep -qE '(^|[[:space:]])cifs$' /proc/filesystems
+then
+	echo "The current Kernel doesn't"
+	echo "support CIFS (SAMBA)."
+	echo "Please update your"
+	echo "MiSTer Linux system."
+	exit 1
+fi
 
 if [ "$USERNAME" == "" ]
 then
