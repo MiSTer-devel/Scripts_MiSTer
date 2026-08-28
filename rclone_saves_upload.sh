@@ -24,12 +24,17 @@
 
 SCRIPT_PATH="$(realpath "$0")"
 
+DIRECTORY_NAME="MiSTer"
+
+INI_PATH=rclone.ini
+[ -f $INI_PATH ] && eval "$(cat $INI_PATH | tr -d '\r')"
+
 RCLONE_URL="https://downloads.rclone.org/rclone-current-linux-arm.zip"
 RCLONE_CONFIG="$(dirname "$SCRIPT_PATH")/rclone.conf"
 RCLONE_OPTIONS="--verbose"
 RCLONE_COMMAND="copy"
 RCLONE_SD_DIR="saves"
 RCLONE_SOURCE="/media/fat/$RCLONE_SD_DIR"
-RCLONE_DEST="MiSTer:MiSTer/$RCLONE_SD_DIR"
+RCLONE_DEST="MiSTer:$DIRECTORY_NAME/$RCLONE_SD_DIR"
 
 source "$(dirname "$SCRIPT_PATH")/rclone.sh.inc"
