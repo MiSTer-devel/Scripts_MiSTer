@@ -4,6 +4,11 @@ import os
 import xml.etree.ElementTree as ET
 import zipfile
 import argparse
+import gzip
+import json
+import re
+from collections import defaultdict
+from difflib import SequenceMatcher
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-m", "--mra-folder", default="/media/fat/_Arcade/")
@@ -12,6 +17,9 @@ parser.add_argument("-ir", "--ignore-roms", action='store_true')
 parser.add_argument("-ic", "--ignore-crc", action='store_true')
 parser.add_argument("-im", "--ignore-mameversion", action='store_true')
 parser.add_argument("-r", "--recursive", action='store_true')
+parser.add_argument("--layout-check", action='store_true', help="check top-level/alternative placement using a MAME parent map")
+parser.add_argument("--layout-only", action='store_true', help="run only XML and MRA placement checks")
+parser.add_argument("--parent-map", default="", help="mame-parent-map.json or .json.gz from mister-mra-auditor")
 args = parser.parse_args()
 
 mame_paths = [
@@ -60,9 +68,21 @@ def output_line_logonly(line):
     return line
 
 def et_parse(mraFile):
-    with open(mraFile, 'r') as f:
+    with open(mraFile, 'rb') as f:
         text = f.read()
-    return ET.fromstring(text.lower())
+    # XML is case-sensitive. Lowercasing the whole document hid malformed
+    # pairs such as <rom>...</ROM>.
+    return ET.fromstring(text)
+
+def tag_name(element):
+    return element.tag.rsplit('}', 1)[-1].lower()
+
+def children_named(element, name):
+    return [child for child in element if tag_name(child) == name.lower()]
+
+def child_text(element, name):
+    children = children_named(element, name)
+    return (children[0].text or '').strip() if children else ''
 
 def make_info():
     return {'zipfilenames': [], 'partcrcs': [], 'partnames': [], 'mraname': '', 'badcrcs': '', 'badmameversion': '', 'brokenxml': ''}
@@ -76,9 +96,9 @@ def parseMRA(mraFile):
     missingCRCs = 0
     noMameVersion= True
     info['mraname']=mraFile
-    for item in root.findall('mameversion'):
+    for item in children_named(root, 'mameversion'):
         noMameVersion = False
-    for item in root.findall('rom'):
+    for item in children_named(root, 'rom'):
         if ('zip' in item.attrib):
             zip=item.attrib['zip']
             zipfiles = zipfiles+ zip.split('|')
@@ -109,13 +129,13 @@ def parseMRA(mraFile):
 
     #output_line(crclist)
     parts = []
-    for rom_el in root.findall('rom'):
+    for rom_el in children_named(root, 'rom'):
         for rom_child in rom_el:
-            if rom_child.tag == 'part':
+            if tag_name(rom_child) == 'part':
                 parts.append(rom_child)
-            elif rom_child.tag == 'interleave':
+            elif tag_name(rom_child) == 'interleave':
                 for interlieve_child in rom_child:
-                    if interlieve_child.tag == 'part':
+                    if tag_name(interlieve_child) == 'part':
                         parts.append(interlieve_child)
     #output_line(parts)
 
@@ -180,6 +200,108 @@ def iterateMRAFiles(directory):
             #    output_line('Not Working:'+fullname)
 
     return [total_mras, passing_mras]
+
+def load_parent_map(path):
+    if not path:
+        raise ValueError('--parent-map is required with --layout-check or --layout-only')
+    opener = gzip.open if path.lower().endswith('.gz') else open
+    with opener(path, 'rt', encoding='utf-8') as handle:
+        data = json.load(handle)
+    return data.get('descriptions', {}), data.get('parents', {})
+
+def mra_metadata(path, location):
+    root = et_parse(path)
+    return {
+        'path': path,
+        'location': location,
+        'name': child_text(root, 'name') or os.path.splitext(os.path.basename(path))[0],
+        'setname': child_text(root, 'setname'),
+        'rbf': child_text(root, 'rbf'),
+        'bootleg': child_text(root, 'bootleg').lower(),
+    }
+
+def family_of(setname, parents):
+    current = setname
+    seen = set()
+    while current in parents and current not in seen:
+        seen.add(current)
+        current = parents[current]
+    return current
+
+def is_bootleg(metadata, descriptions):
+    text = '{} {} {}'.format(metadata['name'], descriptions.get(metadata['setname'], ''), metadata['bootleg']).lower()
+    return metadata['bootleg'] == 'yes' or 'bootleg' in text or '[bl]' in text
+
+def normalized_title(value):
+    value = re.sub(r'\([^)]*\)|\[[^]]*\]', ' ', value.lower()).replace('&', 'and')
+    return re.sub(r'[^a-z0-9]+', '', value)
+
+def titles_match(left, right):
+    left = normalized_title(left)
+    right = normalized_title(right)
+    if not left or not right:
+        return False
+    return left == right or left.startswith(right) or right.startswith(left) or SequenceMatcher(None, left, right).ratio() >= 0.84
+
+def check_mra_layout(directory, parent_map):
+    descriptions, parents = load_parent_map(parent_map)
+    roots = []
+    alternatives = []
+    violations = []
+
+    for filename in sorted(os.listdir(directory)):
+        path = os.path.join(directory, filename)
+        if os.path.isfile(path) and filename.lower().endswith('.mra'):
+            try:
+                roots.append(mra_metadata(path, 'root'))
+            except Exception as error:
+                violations.append('well_formed_xml | {} | {}'.format(path, error))
+
+    alternatives_root = os.path.join(directory, '_alternatives')
+    if os.path.isdir(alternatives_root):
+        for current, _, filenames in os.walk(alternatives_root):
+            for filename in sorted(filenames):
+                if not filename.lower().endswith('.mra'):
+                    continue
+                path = os.path.join(current, filename)
+                try:
+                    alternatives.append(mra_metadata(path, 'alternative'))
+                except Exception as error:
+                    violations.append('well_formed_xml | {} | {}'.format(path, error))
+
+    by_family = defaultdict(list)
+    for item in roots:
+        item['family'] = family_of(item['setname'], parents) if item['setname'] else ''
+        if item['family']:
+            by_family[item['family']].append(item)
+    for item in alternatives:
+        item['family'] = family_of(item['setname'], parents) if item['setname'] else ''
+
+    separate_game_families = {'qix', 'sprint1'}
+    for family, items in sorted(by_family.items()):
+        if len(items) > 1 and family not in separate_game_families:
+            evidence = ', '.join('{} ({})'.format(os.path.basename(x['path']), x['setname']) for x in items)
+            violations.append('one_top_level_mra_per_game | parent={} | {}'.format(family, evidence))
+
+        bootlegs = [x for x in items if x['setname'] != family and is_bootleg(x, descriptions)]
+        parent_available = [x for x in roots + alternatives if x.get('setname') == family]
+        if bootlegs and parent_available:
+            evidence = ', '.join('{} ({})'.format(os.path.basename(x['path']), x['setname']) for x in parent_available + bootlegs)
+            violations.append('parent_over_bootleg | parent={} | {}'.format(family, evidence))
+
+    root_titles = []
+    for item in roots:
+        root_titles.extend([item['name'], os.path.splitext(os.path.basename(item['path']))[0]])
+    if os.path.isdir(alternatives_root):
+        for bucket in sorted(os.listdir(alternatives_root)):
+            bucket_path = os.path.join(alternatives_root, bucket)
+            if not os.path.isdir(bucket_path):
+                continue
+            game = bucket.lstrip('_')
+            if not any(titles_match(game, title) for title in root_titles):
+                violations.append('game_must_have_top_level_mra | alternative bucket={} has no matching top-level MRA'.format(bucket))
+
+    return violations
             
 #########################################
 # Create Logs subdirectory for log output
@@ -202,7 +324,13 @@ else:
 logfile = open("Logs/mra_rom_check.log", "w")
 logfile_v = open("Logs/mra_rom_check_mamever.log", "w")
 
-if args.file != "":
+layout_violations = []
+if args.layout_only:
+    args.layout_check = True
+
+if args.layout_only:
+    output_line("checking MRA XML and layout " + args.mra_folder)
+elif args.file != "":
     output_line("checking " + args.file)
     #logfile.write("checking " + args.file)
     working=parseMRA(args.file)
@@ -216,6 +344,17 @@ else:
     totals = iterateMRAFiles(args.mra_folder)
     print ("Total MRAs processed: " + str(totals[0]))
     print ("MRAs passing: " + str(totals[1]))
+
+if args.layout_check:
+    try:
+        layout_violations = check_mra_layout(args.mra_folder, args.parent_map)
+    except Exception as error:
+        layout_violations = ['layout_check_failed | {}'.format(error)]
+
+    for violation in layout_violations:
+        output_line('MRA LAYOUT: ' + violation)
+
+    print("MRA layout violations: " + str(len(layout_violations)))
 
 for info in broken:
     #print(info)
@@ -255,7 +394,7 @@ for info in broken:
 logfile.close()
 logfile_v.close()
 
-if len(broken) > 0:
+if len(broken) > 0 or len(layout_violations) > 0:
     exit(1)
 
 
