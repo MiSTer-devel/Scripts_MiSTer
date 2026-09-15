@@ -45,6 +45,8 @@
 # Version 1.0.1 - 2018-12-22 - Changed some option descriptions, thanks NML32
 # Version 1.0 - 2018-12-20 - First commit
 
+VERSION="2.2.1"
+
 
 
 #=========   USER OPTIONS   =========

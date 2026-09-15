@@ -25,6 +25,8 @@
 # Version 2.0 - 2019-02-05 - Renamed from mount_cifs.sh and umount_cifs.sh to cifs_mount.sh and cifs_umount.sh for having them sequentially listed in alphabetical order.
 # Version 1.0 - 2019.01.05 - First commit
 
+VERSION="2.2.0"
+
 
 
 BASE_PATH="/media/fat"
