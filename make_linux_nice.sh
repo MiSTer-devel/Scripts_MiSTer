@@ -14,6 +14,7 @@ cp -f "$this_dir/nice-linux/.bash_prompt" /root/
 cp -f "$this_dir/nice-linux/.profile" /root/
 cp -f "$this_dir/nice-linux/.vimrc" /root/
 cp -rf "$this_dir/nice-linux/.ssh" /root/
+cp -rf "$this_dir/nice-linux/motd" /etc/
 
 echo " - Configuring ssh KeepAlive settings..."
 sed -i -E 's|^#[[:blank:]]*ClientAliveInterval[[:blank:]]*.*$|ClientAliveInterval 60|g; s|^#[[:blank:]]*ClientAliveCountMax[[:blank:]]*.*$|ClientAliveCountMax 10|g' /etc/ssh/sshd_config
