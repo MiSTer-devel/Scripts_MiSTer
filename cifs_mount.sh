@@ -19,6 +19,10 @@
 # https://github.com/MiSTer-devel/Scripts_MiSTer
 
 # Changelog:
+# Version 2.2.5 - 2026-09-18 - Detect CIFS support from /proc/filesystems
+# Version 2.2.4 - 2026-06-29 - Remove cifs_common, move functions into cifs_mount
+# Version 2.2.3 - 2026-06-19 - Preserve literal CIFS passwords beginning with dollar signs
+# Version 2.2.2 - 2026-06-11 - Fix reference to cifs_mount.ini
 # Version 2.2.1 - 2026-04-30 - Skips already-mounted targets, tries DNS before NetBIOS, logs boot starts,
 #                              and recovers stale /tmp/cifs_mount mounts before remounting.
 #                            - Waits for a default route at boot, settles dual-interface routing,
@@ -45,7 +49,7 @@
 # Version 1.0.1 - 2018-12-22 - Changed some option descriptions, thanks NML32
 # Version 1.0 - 2018-12-20 - First commit
 
-VERSION="2.2.1"
+VERSION="2.2.5"
 
 
 
