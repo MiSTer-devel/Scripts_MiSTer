@@ -18,6 +18,8 @@
 # You can download the latest version of this script from:
 # https://github.com/MiSTer-devel/CIFS_MiSTer
 
+# Version 2.2.2 - 2026-06-29 - Remove cifs_common, move functions into cifs_umount
+# Version 2.2.1 - 2026-06-19 - Preserve literal CIFS passwords beginning with dollar signs
 # Version 2.2.0 - 2026-04-19 - Default unmount now targets cifs_mount.sh managed mounts only.
 #                            - Added --all to preserve the old global "umount -a -t cifs" behavior.
 #                            - Falls back to lazy unmount for busy targets.
@@ -25,7 +27,7 @@
 # Version 2.0 - 2019-02-05 - Renamed from mount_cifs.sh and umount_cifs.sh to cifs_mount.sh and cifs_umount.sh for having them sequentially listed in alphabetical order.
 # Version 1.0 - 2019.01.05 - First commit
 
-VERSION="2.2.0"
+VERSION="2.2.2"
 
 
 
