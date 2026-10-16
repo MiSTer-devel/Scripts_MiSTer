@@ -27,5 +27,5 @@ if [ "$(id -u)" != "0" ]; then
   echo "This script must be run as root. Please run again with sudo or as root user. Exiting."
   exit 1
 else
-  umount -a -t nfs4
+  umount -a -t nfs
 fi
